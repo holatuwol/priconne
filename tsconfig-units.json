@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "es2017.object", "esnext.bigint", "dom"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "outFile": "build/units.js",
+    "skipLibCheck": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "src/units/*"
+  ]
+}
