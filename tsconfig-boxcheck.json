@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "es2017.object", "esnext.bigint", "dom"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "outFile": "build/boxcheck.js",
+    "skipLibCheck": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "src/imports/units.d.ts",
+    "src/util.ts",
+    "src/units.ts",
+    "src/sheets.ts",
+    "src/boxcheck/*.ts",
+    "src/boxcheck.ts"
+  ]
+}
