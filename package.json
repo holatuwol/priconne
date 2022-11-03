@@ -3,6 +3,7 @@
     "typescript": "3.6.3"
   },
   "dependencies": {
-    "@types/underscore": "1.8.3"
+    "@types/underscore": "1.8.3",
+    "@types/jquery": "3.5.14"
   }
 }

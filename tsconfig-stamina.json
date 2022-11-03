@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "es2017.object", "esnext.bigint", "dom"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "outFile": "build/stamina.js",
+    "skipLibCheck": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "src/imports/bootstrap-daterangepicker.d.ts",
+    "src/imports/moment.d.ts",
+    "src/calendar.ts",
+    "src/stamina/*.ts"
+  ]
+}
