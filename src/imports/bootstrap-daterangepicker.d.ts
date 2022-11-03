@@ -1,4 +1,5 @@
 interface BootstrapDateRangePicker {
+	endDate: Moment
 	startDate: Moment
 }
 

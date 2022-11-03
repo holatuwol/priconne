@@ -6,4 +6,6 @@ declare interface Moment {
 	isBefore: (Moment) => boolean
 	valueOf: () => number
 	toDate: () => Date
+	utc: () => Moment
+	year: () => number
 }
