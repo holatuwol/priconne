@@ -36,3 +36,33 @@ function getSiblingRowElement(
 
     return element;
 }
+
+function splitStringAttribute(
+    element: HTMLElement,
+    attributeName: string
+) : string[] {
+
+    var value = element.getAttribute(attributeName);
+
+    if (!value)  {
+        return [];
+    }
+
+    return value.split(',');
+}
+
+function splitIntAttribute(
+    element: HTMLElement,
+    attributeName: string
+) : number[] {
+
+    return splitStringAttribute(element, attributeName).map(it => parseInt(it));
+}
+
+function splitFloatAttribute(
+    element: HTMLElement,
+    attributeName: string
+) : number[] {
+
+    return splitStringAttribute(element, attributeName).map(it => parseFloat(it));
+}
