@@ -15,7 +15,7 @@ function expandGoogleSheetURLs(
 		return;
 	}
 
-	if (href.indexOf('http') != 0) {
+	if ((href.indexOf('http') != 0) && (href.indexOf('/') == -1)) {
 		href = 'https://docs.google.com/spreadsheets/d/e/' + href + '/pub';
 	}
 

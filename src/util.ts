@@ -1,9 +1,10 @@
 function createCell(
+    header: boolean,
     text: string | HTMLElement,
     customClass?: string
 ) : HTMLTableCellElement {
 
-    var cell = document.createElement('td');
+    var cell = <HTMLTableCellElement> document.createElement(header ? 'th' : 'td');
 
     if (typeof text === 'string') {
         cell.textContent = text;

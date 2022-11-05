@@ -119,16 +119,16 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 	cell.appendChild(button);
 	row.appendChild(cell)
 
-	row.appendChild(createCell(team.boss, 'boss'));
+	row.appendChild(createCell(false, team.boss, 'boss'));
 
 	var damage = getDamage(team.damage);
 
-	var damageCell = createCell(team.damage ? (damage.toFixed(2) + 'm') : '', 'damage');
+	var damageCell = createCell(false, team.damage ? (damage.toFixed(2) + 'm') : '', 'damage');
 	damageCell.setAttribute('data-value', '' + damage);
 
 	row.appendChild(damageCell);
 
-	row.appendChild(createCell(team.region, 'region'));
+	row.appendChild(createCell(false, team.region, 'region'));
 
 	var urlPos = team.timeline.indexOf('https://');
 
@@ -149,7 +149,7 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 			}
 		}
 
-		row.appendChild(createCell(timeline, 'timeline'));
+		row.appendChild(createCell(false, timeline, 'timeline'));
 
 		var timingLink = document.createElement('a');
 		timingLink.textContent = team.timing;
@@ -160,10 +160,10 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 			timingLink.setAttribute('rel', 'noreferrer');
 		}
 
-		row.appendChild(createCell(timingLink, 'timing'));
+		row.appendChild(createCell(false, timingLink, 'timing'));
 	}
 	else if (team.timeline && team.timeline.indexOf('\n') != -1) {
-		row.appendChild(createCell('N/A', 'timeline'));
+		row.appendChild(createCell(false, 'N/A', 'timeline'));
 
 		var timingLink = document.createElement('a');
 		timingLink.textContent = team.timing;
@@ -178,10 +178,10 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 			return false;
 		};
 
-		row.appendChild(createCell(timingLink, 'timing'));
+		row.appendChild(createCell(false, timingLink, 'timing'));
 	}
 	else if (team.notes) {
-		row.appendChild(createCell(team.timeline, 'timeline'));
+		row.appendChild(createCell(false, team.timeline, 'timeline'));
 
 		var timingLink = document.createElement('a');
 		timingLink.textContent = team.timing;
@@ -196,11 +196,11 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 			return false;
 		};
 
-		row.appendChild(createCell(timingLink, 'timing'));
+		row.appendChild(createCell(false, timingLink, 'timing'));
 	}
 	else {
-		row.appendChild(createCell(team.timeline, 'timeline'));
-		row.appendChild(createCell(team.timing, 'timing'));
+		row.appendChild(createCell(false, team.timeline, 'timeline'));
+		row.appendChild(createCell(false, team.timing, 'timing'));
 	}
 
 	_.sortBy(team.units, it => {
@@ -209,7 +209,7 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 		return (0 - position) * 100000 - parseInt(unitId);
 	}).forEach((unit) => row.appendChild(getTeamUnitCell(unit)));
 
-	var altBossesCell = createCell('', 'alt-bosses');
+	var altBossesCell = createCell(false, '', 'alt-bosses');
 
 	var altBossesLink = document.createElement('a');
 
@@ -236,7 +236,7 @@ function generateAvailableTeams() {
 	availableHeader.innerHTML = availableHeader.innerHTML;
 	availableBody.innerHTML = '';
 
-	var allTeams = defaultTeams.concat(extraTeams).concat(labAutoTeams).concat(labManualTeams).concat(pcrgTeams);
+	var allTeams = defaultTeams.concat(extraTeams).concat(labAutoTeams).concat(labManualTeams).concat(pcrgTeams).concat(demiurgeTeams);
 
 	addUnits(allTeams);
 
