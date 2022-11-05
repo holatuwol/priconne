@@ -2,6 +2,7 @@ interface LapBoss {
 	lap: number
 	index: number
 	hp: number
+	tier: string
 }
 
 type ClanRanking = Record<string, any> & {

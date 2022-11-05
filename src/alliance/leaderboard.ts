@@ -1,7 +1,5 @@
 function createRow(
-	bossIds: string[],
-	laps: number[][],
-	bossHP: number[],
+	cbId: string,
 	clan: ClanRanking
 ) {
 
@@ -44,43 +42,9 @@ function createRow(
 	scoreCell.textContent = new Intl.NumberFormat('en-US').format(clan.score);
 	row.appendChild(scoreCell);
 
-	var boss = getLapBoss(laps, bossHP, clan.score);
+	var boss = getLapBoss(clan.score);
 
-	var bossElement = document.createElement('img');
-	bossElement.setAttribute('src', getUnitIcon(bossIds[boss.index - 1]));
-	bossElement.setAttribute('width', '50');
-	bossElement.setAttribute('title', 'Boss ' + boss.index);
-
-	var bossCell = document.createElement('td');
-	bossCell.appendChild(bossElement);
-	row.appendChild(bossCell);
-
-	var progressWordsElement = document.createElement('span');
-	progressWordsElement.textContent = 'Lap ' + boss.lap + ' Boss ' + boss.index;
-
-	var hpElement = document.createElement('span');
-	hpElement.textContent = formatBossHP(boss.hp);
-
-	var bossPercentage = ((boss.hp / bossHP[boss.index - 1]) * 100.0).toFixed(1);
-
-	var progressBarElement = document.createElement('div');
-	progressBarElement.classList.add('progress-bar', 'bg-danger');
-	progressBarElement.setAttribute('role', 'progressbar');
-	progressBarElement.setAttribute('aria-valuemin', '0');
-	progressBarElement.setAttribute('aria-valuemax', '' + bossHP[boss.index - 1]);
-	progressBarElement.setAttribute('aria-valuenow', '' + boss.hp);
-	progressBarElement.style.width = bossPercentage + '%';
-	progressBarElement.appendChild(hpElement);
-
-	var progressContainerElement = document.createElement('div');
-	progressContainerElement.classList.add('progress', 'mt-1');
-	progressContainerElement.appendChild(progressBarElement);
-
-	var progressCell = document.createElement('td');
-	progressCell.appendChild(progressWordsElement);
-	progressCell.appendChild(document.createElement('br'));
-	progressCell.appendChild(progressContainerElement);
-	row.appendChild(progressCell);
+	renderBossData(row, cbId, boss.lap, boss.index, boss.hp);
 
 	return row;
 };
@@ -90,38 +54,8 @@ function createSingleCBTable(
 	results: ClanRanking[]
 ) : void {
 
-	var bossIds = splitStringAttribute(anchor, 'data-boss-ids');
-	var dataTiers = splitIntAttribute(anchor, 'data-tiers');
-
-	var laps = [];
-
-	for (var i = 0; i < dataTiers.length; i++) {
-		var multipliers = splitFloatAttribute(anchor, 'data-multipliers-' + (i+1));
-		var bossHP = splitIntAttribute(anchor, 'data-boss-hp-' + (i+1));
-
-		if (bossHP.length == 0) {
-			bossHP = splitIntAttribute(anchor, 'data-boss-hp');
-		}
-
-		var tierScores = bossHP.map((it, i) => it * multipliers[i]);
-
-		for (var j = 0; j < dataTiers[i]; j++) {
-			laps.push(tierScores);
-		}
-	}
-
-	var multipliers = splitFloatAttribute(anchor, 'data-multipliers-' + (dataTiers.length + 1));
-	var bossHP = splitIntAttribute(anchor, 'data-boss-hp-' + (dataTiers.length + 1));
-
-	if (bossHP.length == 0) {
-		bossHP = splitIntAttribute(anchor, 'data-boss-hp');
-	}
-
-	var tierScores = bossHP.map((it, i) => it * multipliers[i]);
-
-	laps.push(tierScores);
-
-	results.map(createRow.bind(null, bossIds, laps, bossHP)).forEach((it: HTMLTableRowElement) => tbody.appendChild(it));
+	var cbId = anchor.getAttribute('data-cb-id') || '0';
+	results.map(createRow.bind(null, cbId)).forEach((it: HTMLTableRowElement) => tbody.appendChild(it));
 };
 
 function loadSingleResult(anchor: HTMLAnchorElement | null) : void {
