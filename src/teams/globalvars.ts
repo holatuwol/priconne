@@ -11,6 +11,7 @@ var extraTeams = <ClanBattleTeam[]> [];
 var labAutoTeams = <ClanBattleTeam[]> [];
 var labManualTeams = <ClanBattleTeam[]> [];
 var pcrgTeams = <ClanBattleTeam[]> [];
+var demiurgeTeams = <ClanBattleTeam[]> [];
 
 var availableUnits = new Set<string>();
 

@@ -150,7 +150,7 @@ function updateExtraTeamsHelper(teams?: ClanBattleTeam[]) : void {
 		extraTeams = teams;
 	}
 
-	var totalExtraTeams = extraTeams.length + labAutoTeams.length + labManualTeams.length + pcrgTeams.length;
+	var totalExtraTeams = extraTeams.length + labAutoTeams.length + labManualTeams.length + pcrgTeams.length + demiurgeTeams.length;
 
 	setTeamCount('extra', totalExtraTeams);
 
@@ -203,11 +203,19 @@ function checkForExtraTeamsSheet(
 	container: HTMLElement
 ) : boolean {
 
-	if (responseText.indexOf('TheLab Sheet') != -1 && typeof(extractLabManualTeams) == 'function') {
+	var titleElement = container.querySelector('#doc-title .name');
+
+	if (!titleElement) {
+		return false;
+	}
+
+	var title = titleElement.textContent || '';
+
+	if (title.indexOf('TheLab Sheet') != -1) {
 		extractLabManualTeams(href, container);
 		return true;
 	}
-	else if (responseText.indexOf('TheLab Auto') != -1 && typeof(extractLabAutoTeams) == 'function') {
+	else if (title.indexOf('TheLab Auto') != -1) {
 		extractLabAutoTeams(href, container);
 		return true;
 	}

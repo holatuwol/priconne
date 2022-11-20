@@ -10,8 +10,12 @@ function updateUnitNames(
 
 var unitIds = <Record<string, string>> Array.from(Object.keys(unitNames)).reduce(updateUnitNames.bind(null, unitNames), <Record<string, string>> {});
 unitIds = Array.from(Object.keys(altNames)).reduce(updateUnitNames.bind(null, altNames), unitIds);
-unitIds['SS.Aoi'] = unitIds['TS.Aoi'];
-unitIds['S.Tama'] = unitIds['S.Tamaki'];
+
+Object.entries(aliases).reduce((acc, next) => {
+	unitIds[next[0]] = unitIds[next[1]];
+
+	return unitIds;
+}, unitIds);
 
 function getUnitIcon(
 	unitId: string,

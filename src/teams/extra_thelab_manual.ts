@@ -22,6 +22,20 @@ function getLabManualDamage(
 	return getDamage(damage.split(/[~\-]/)[0]);
 }
 
+function parseLabManualDamage(
+	boss: string,
+	text: string | null
+) : number {
+	var damageString = (text || '').replace(/ to /g, '-').replace(/[ ,]/g, '');
+	var damageMatcher = /[0-9\.\~\-]+[kms]?/i.exec(damageString);
+
+	if (!damageMatcher) {
+		return 0;
+	}
+
+	return getLabManualDamage(boss, damageMatcher[0].toLowerCase());
+}
+
 function getLabManualTimelineURL(
 	baseURL: string,
 	gid: string,
@@ -46,7 +60,7 @@ function extractLabManualTeamsFromTab(
 	var medias = <string[]> ids.map(getLabManualTimelineURL.bind(null, baseURL, gids[tab]));
 
 	var unitRows = rows.map(it => getSiblingRowElement(it, 2));
-	var damages = unitRows.map(it => getLabManualDamage(boss, (<RegExpExecArray> /[0-9\.\~\-]+[kms]?/i.exec((it.cells[6].textContent || '').replace(/ to /g, '-').replace(/[ ,]/g, '')))[0].toLowerCase()));
+	var damages = unitRows.map(it => parseLabManualDamage(boss, it.cells[6].textContent));
 
 	var unitNames = unitRows.map(it => Array.from(it.cells).splice(1, 5).map(it => it.textContent || ''));
 

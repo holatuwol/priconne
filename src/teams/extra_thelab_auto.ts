@@ -420,7 +420,13 @@ function retrieveLabAutoTeams(
 	teams: ClanBattleTeam[]
 ) : void {
 
-	var tabElement = <HTMLLIElement> Array.from(container.querySelectorAll('#sheet-menu li')).filter(it => it.textContent && it.textContent.trim() == tabName)[0];
+	var tabElements = Array.from(container.querySelectorAll('#sheet-menu li')).filter(it => it.textContent && it.textContent.trim() == tabName);
+
+	if (tabElements.length == 0) {
+		return;
+	}
+
+	var tabElement = <HTMLLIElement> tabElements[0];
 	var listItemId = tabElement.getAttribute('id');
 
 	if (!listItemId) {
@@ -445,7 +451,10 @@ function extractLabAutoTeams(
 	var pageNames = <Record<string, string>> {
 		'Tier A': 'A',
 		'Tier B': 'B',
-		'Tier C': 'C'
+		'Tier C': 'C',
+		'Tier I': 'A',
+		'Tier II': 'B',
+		'Tier III': 'C'
 	};
 
 	var tabs = Array.from(Object.keys(pageNames));
@@ -476,7 +485,10 @@ function extractLabAutoTeamsLocal() : void {
 	var pageNames = <Record<string, string>> {
 		'Tier A': 'A',
 		'Tier B': 'B',
-		'Tier C': 'C'
+		'Tier C': 'C',
+		'Tier I': 'A',
+		'Tier II': 'B',
+		'Tier III': 'C'
 	};
 
 	var teams = <ClanBattleTeam[]> [];
@@ -491,6 +503,10 @@ function extractLabAutoTeamsLocal() : void {
 		xhr.open('GET', '/test/thelab_auto/' + encodeURIComponent(tab) + '.html', false)
 
 		xhr.onload = function() {
+			if (xhr.status != 200) {
+				return;
+			}
+
 			var container = document.implementation.createHTMLDocument().documentElement;
 			container.innerHTML = xhr.responseText;
 
