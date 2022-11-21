@@ -1,9 +1,29 @@
+function toggleFeaturedRow(row: HTMLTableRowElement) : void {
+	if (table.classList.contains('featured')) {
+		table.classList.remove('featured');
+		row.classList.remove('featured');
+
+		if (table.getAttribute('data-sortable-initialized') != null) {
+			table.setAttribute('data-sortable', 'true');
+		}
+	}
+	else {
+		table.classList.add('featured');
+		row.classList.add('featured');
+
+		if (table.getAttribute('data-sortable-initialized') != null) {
+			table.removeAttribute('data-sortable');
+		}
+	}
+}
+
 function createRow(
 	cbId: string,
 	clan: ClanRanking
 ) {
 
 	var row = document.createElement('tr');
+	row.onclick = toggleFeaturedRow.bind(null, row);
 
 	var rankCell = document.createElement('th');
 	rankCell.setAttribute('scope', 'row');
@@ -77,6 +97,7 @@ function loadSingleResult(anchor: HTMLAnchorElement | null) : void {
 	timestampElement.textContent = timestampText;
 
 	table.removeAttribute('data-sortable');
+	table.removeAttribute('data-sortable-initialized')
 
 	thead.innerHTML = '';
 
@@ -121,6 +142,7 @@ function loadSingleResult(anchor: HTMLAnchorElement | null) : void {
 	thead.appendChild(row);
 
 	tbody.innerHTML = '';
+	table.classList.remove('featured')
 
 	loadClanStats(anchor, createSingleCBTable);
 };

@@ -1,4 +1,3 @@
-var maxCBCount = 9;
 var responseCache = <Record<string, ClanRanking[]>> {};
 
 function loadCBStats(
@@ -124,6 +123,7 @@ function createMultiCBTable() : void {
 		var clan = clans[clanNames[i]];
 
 		var row = document.createElement('tr');
+		row.onclick = toggleFeaturedRow.bind(null, row);
 
 		var unitId = unitIds[clan.unitName] || clan.unitName;
 		var unitStars = clan.unitStars;
@@ -142,6 +142,7 @@ function createMultiCBTable() : void {
 		}
 
 		var nameCell = document.createElement('td');
+		nameCell.classList.add('clan-name');
 		nameCell.textContent = clanNames[i];
 		row.appendChild(nameCell);
 
@@ -149,9 +150,7 @@ function createMultiCBTable() : void {
 			row.style.opacity = '0.2';
 		}
 
-		var visibleAnchorCount = Math.min(cbIds.length, maxCBCount);
-
-		for (var j = 0; j < visibleAnchorCount; j++) {
+		for (var j = 0; j < cbIds.length; j++) {
 			var cell = document.createElement('td');
 			cell.textContent = clan[cbIds[j]] || '---';
 			cell.setAttribute('data-value', clan[cbIds[j]] || Number.MAX_SAFE_INTEGER);
@@ -175,24 +174,21 @@ function loadTrendOverTime() : void {
 
 	var cell = document.createElement('th');
 	cell.setAttribute('scope', 'col');
-	cell.classList.add('col-1');
 	cell.textContent = 'Icon';
 	cell.setAttribute('data-sortable', 'false');
 	row.appendChild(cell);
 
 	var anchors = <HTMLAnchorElement[]> Array.from(cbSelectorElement.querySelectorAll('a'));
-	var visibleAnchorCount = Math.min(anchors.length, maxCBCount);
 
 	cell = document.createElement('th');
 	cell.setAttribute('scope', 'col');
-	cell.classList.add('col-' + (11 - visibleAnchorCount));
+	cell.classList.add('clan-name')
 	cell.textContent = 'Clan';
 	row.appendChild(cell);
 
-	for (var i = 0; i < visibleAnchorCount; i++) {
+	for (var i = 0; i < anchors.length; i++) {
 		cell = document.createElement('th');
 		cell.setAttribute('scope', 'col');
-		cell.classList.add('col-1');
 		cell.textContent = 'CB' + anchors[i].getAttribute('data-cb-id');
 		cell.setAttribute('data-sortable-type', 'numeric');
 		row.appendChild(cell);
@@ -201,12 +197,13 @@ function loadTrendOverTime() : void {
 	thead.appendChild(row);
 
 	tbody.innerHTML = '';
+	table.classList.remove('featured');
 
 	var count = 0;
 
-	for (var i = 0; i < visibleAnchorCount; i++) {
+	for (var i = 0; i < anchors.length; i++) {
 		loadClanStats(anchors[i], function() {
-			if (++count == visibleAnchorCount) {
+			if (++count == anchors.length) {
 				createMultiCBTable();
 
 				Sortable.initTable(table);
