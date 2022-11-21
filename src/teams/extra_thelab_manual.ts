@@ -60,8 +60,7 @@ function extractLabManualTeamsFromTab(
 	var medias = <string[]> ids.map(getLabManualTimelineURL.bind(null, baseURL, gids[tab]));
 
 	var unitRows = rows.map(it => getSiblingRowElement(it, 2));
-	var damages = unitRows.map(it => parseLabManualDamage(boss, it.cells[6].textContent));
-
+	var damages = unitRows.map(it => parseLabManualDamage(boss, (<HTMLTableRowElement>it.previousSibling).cells[4].textContent));
 	var unitNames = unitRows.map(it => Array.from(it.cells).splice(1, 5).map(it => it.textContent || ''));
 
 	var buildRows = unitRows.map(it => getSiblingRowElement(it, 5));
@@ -130,9 +129,9 @@ function extractLabManualTeams(
 			continue;
 		}
 
-		var statusCells = Array.from(tab.querySelectorAll('td')).filter(it => it.textContent == 'STATUS');
+		var statusCells = Array.from(tab.querySelectorAll('td')).filter(it => (it.textContent || '').toUpperCase() == 'STATUS');
 
-		var rows = <HTMLTableRowElement[]> statusCells.map(it => it.closest('tr')).filter(it => it && getSiblingRowElement(it, 1).cells[2].textContent != '');
+		var rows = statusCells.map(it => <HTMLTableRowElement> it.closest('tr')).filter(it => it && getSiblingRowElement(it, 1).cells[2].textContent != '');
 
 		teams = teams.concat(extractLabManualTeamsFromTab(href, gids, pageNames[i], rows));
 	}
@@ -172,7 +171,9 @@ function extractLabManualTeamsLocal(
 			var container = document.implementation.createHTMLDocument().documentElement;
 			container.innerHTML = xhr.responseText;
 
-			var rows = Array.from(container.querySelectorAll('td')).filter(it => it.textContent == 'STATUS').map(it => <HTMLTableRowElement> it.closest('tr')).filter(it => getSiblingRowElement(it, 1).cells[2].textContent != '');
+			var statusCells = Array.from(container.querySelectorAll('td')).filter(it => (it.textContent || '').toUpperCase() == 'STATUS');
+
+			var rows = statusCells.map(it => <HTMLTableRowElement> it.closest('tr')).filter(it => getSiblingRowElement(it, 1).cells[2].textContent != '');
 
 			Array.prototype.push.apply(teams, extractLabManualTeamsFromTab(baseURL || '', gids, tab, rows));
 		}
