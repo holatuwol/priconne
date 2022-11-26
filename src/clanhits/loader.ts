@@ -235,6 +235,19 @@ function processInitialAllocation(
 	initialAllocations['' + index] = allocatedHits
 }
 
+function getNextDayInitialStatus(
+	baseStatus : ClanBattleStatus
+) : ClanBattleStatus {
+
+	var dummyStatus = Object.assign(<ClanBattleStatus> {}, baseStatus);
+
+	dummyStatus.day = '' + (parseInt(baseStatus.day) + 1);
+	dummyStatus.hitNumber = 0;
+	dummyStatus.allocation = getInitialAllocation(dummyStatus.day);
+
+	return dummyStatus;
+}
+
 function processCompletedHits(
 	cbId: string,
 	container: HTMLElement,
@@ -242,17 +255,43 @@ function processCompletedHits(
 ) : void {
 
 	var rows = <HTMLTableRowElement[]>Array.from(container.querySelectorAll('[id="' + tabId + '"] tr'));
-	var headerRow = rows.filter(it => !it.cells[1].textContent && it.cells[2].textContent == 'Day')[0];
+	var headerRowIndex = rows.map(it => it.cells[2].textContent == 'Day').indexOf(true);
+
+	if (headerRowIndex == -1) {
+		return;
+	}
+
+	var headerRow = rows[headerRowIndex];
 	var columnNames = Array.from(headerRow.cells).map(it => (it.textContent || '').trim());
-	var dataRows = rows.filter(it => it.cells[1].textContent);
 
-	var status = getInitialClanBattleStatus(cbId);
+	var damageIndex = columnNames.indexOf('Actual Damage');
 
-	statusHistory = [];
+	if (damageIndex == -1) {
+		return;
+	}
+
+	var dataRows = rows.slice(headerRowIndex + 1).filter(it => it.cells[1].textContent && it.cells[damageIndex].textContent);
+
+	var oldStatus = getInitialClanBattleStatus(cbId);
+
+	statusHistory = [oldStatus];
 
 	for (var i = 0; i < dataRows.length; i++) {
-		status = getUpdatedClanBattleStatus(cbId, status, getCompletedHit(cbId, status, columnNames, dataRows[i]));
-		statusHistory.push(status);
+		var newStatus = getUpdatedClanBattleStatus(cbId, oldStatus, getCompletedHit(cbId, oldStatus, columnNames, dataRows[i]));
+
+		if (newStatus.day != '1' && newStatus.hitNumber == 1) {
+			statusHistory.push(getNextDayInitialStatus(oldStatus));
+		}
+
+		statusHistory.push(newStatus);
+
+		oldStatus = newStatus;
+	}
+
+	while (oldStatus.day != '5') {
+		newStatus = getNextDayInitialStatus(oldStatus);
+		statusHistory.push(newStatus);
+		oldStatus = newStatus;
 	}
 }
 

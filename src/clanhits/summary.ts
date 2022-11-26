@@ -1,4 +1,3 @@
-var cbId = '0';
 var selectElement = <HTMLSelectElement> document.getElementById('status-history');
 
 function renderStatusHistory() : void {
@@ -28,7 +27,22 @@ function renderStatusHistory() : void {
 	}
 
 	selectElement.appendChild(optgroupElement);
-	selectElement.selectedIndex = (statusHistory.length - 1);
+
+	var selectedIndex = statusHistory.length - 1;
+
+	while (selectedIndex > 0 && statusHistory[selectedIndex].hitNumber == 0) {
+		--selectedIndex;
+	}
+
+	var currentDate = new Date();
+
+	var elapsed = Math.floor((currentDate.getTime() - cbStartDate.getTime()) / (1000 * 60 * 60 * 24));
+
+	if (selectedIndex + 1 < selectElement.length && parseInt(statusHistory[selectedIndex].day) <= elapsed) {
+		++selectedIndex;
+	}
+
+	selectElement.selectedIndex = selectedIndex;
 	selectElement.onchange = renderClanBattleStatus;
 }
 
@@ -229,7 +243,8 @@ function renderCompletedHitsSummary(status: ClanBattleStatus) : void {
 }
 
 function renderClanBattleStatusHelper() : void {
-	var status = statusHistory[selectElement.selectedIndex];
+	var selectedIndex = selectElement.selectedIndex;
+	var status = selectedIndex == -1 ? getInitialClanBattleStatus(cbId) : statusHistory[selectedIndex];
 
 	renderLapProgress(status);
 	renderRemainingHitsByBoss(status);
@@ -269,8 +284,35 @@ function processHitRecords(
 		gids[tabName] = tabId;
 	}
 
+	var seenDays = new Set();
+
 	for (var i = 1; i <= 5; i++) {
-		processInitialAllocation(container, gids['Day ' + i + ' Alloc'], i);
+		var key = 'Day ' + i + ' Alloc';
+
+		if (key in gids) {
+			seenDays.add(i);
+			processInitialAllocation(container, gids[key], i);
+		}
+	}
+
+	for (var i = 1; i <= 5; i++) {
+		if (seenDays.has(i)) {
+			continue;
+		}
+
+		var seenWildcard = false;
+
+		for (var j = i; j >= 1 && !seenWildcard; j--) {
+			var prefix = 'Day ' + j + '+';
+
+			for (key in gids) {
+				if (key.indexOf(prefix) == 0) {
+					seenWildcard = true;
+					processInitialAllocation(container, gids[key], i);
+				}
+			}
+		}
+
 	}
 
 	processCompletedHits(cbId, container, gids['DPS Log']);

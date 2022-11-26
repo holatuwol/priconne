@@ -1,3 +1,5 @@
+declare var cbId: string;
+declare var cbStartDate: Date;
 declare var defaultSheetId : string;
 
 interface AllocatedHit {
