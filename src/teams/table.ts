@@ -108,11 +108,11 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 		clonedButton.textContent = 'remove';
 		clonedButton.onclick = function() {
 			selectedBody.removeChild(clonedRow);
-			renderAvailableTeams();
+			markUnavailableTeams();
 		}
 
 		selectedBody.appendChild(clonedRow);
-		renderAvailableTeams();
+		markUnavailableTeams();
 	}
 
 	var cell = document.createElement('td');

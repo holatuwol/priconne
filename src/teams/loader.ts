@@ -84,6 +84,7 @@ function loadTeams(
 			}
 
 			callback(teams);
+			markUnavailableTeams();
 		}
 	}
 
@@ -98,6 +99,7 @@ function loadTeams(
 		}
 
 		generateAvailableTeams();
+		markUnavailableTeams();
 	}
 };
 

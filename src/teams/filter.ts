@@ -278,7 +278,7 @@ function hasMemberConflict(
 	return !isViableChoice(borrowStrategy, new Set<string>(), chosenTeams);
 };
 
-function renderAvailableTeam(
+function markUnavailableTeam(
 	borrowStrategy: string,
 	chosenTeams: Record<string, number>[],
 	row: HTMLTableRowElement
@@ -298,13 +298,13 @@ function renderAvailableTeam(
 	}
 };
 
-function renderAvailableTeams() : void {
+function markUnavailableTeams() : void {
 	var borrowStrategyElement = <HTMLInputElement> document.querySelector('input[name="borrow-strategy"]:checked');
 	var borrowStrategy = borrowStrategyElement.value;
 
 	var chosenMembers = Array.from(selectedBody.rows).map(getMembers);
 
-	Array.from(availableBody.rows).forEach(renderAvailableTeam.bind(null, borrowStrategy, chosenMembers));
+	Array.from(availableBody.rows).forEach(markUnavailableTeam.bind(null, borrowStrategy, chosenMembers));
 };
 
 
