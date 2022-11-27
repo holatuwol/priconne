@@ -50,6 +50,10 @@ function expandGoogleSheetURLs(
 	};
 
 	xhr.open('GET', href + '?output=html');
+
+	xhr.setRequestHeader("Cache-Control", "no-cache, no-store, max-age=0");
+	xhr.setRequestHeader("Pragma", "no-cache");
+
 	xhr.send();
 }
 
