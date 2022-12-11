@@ -3,6 +3,7 @@ function getDisplayName(hit: AllocatedHit) : string {
 }
 
 function updateRemainingHitsByBoss(
+	status: ClanBattleStatus,
 	acc: Record<string, HTMLSpanElement>,
 	hit: AllocatedHit
 ) : Record<string, HTMLSpanElement> {
@@ -24,6 +25,8 @@ function updateRemainingHitsByBoss(
 
 	var listItem = document.createElement('li');
 
+	listItem.setAttribute('data-player-name', hit.playerName);
+
 	if (hit.carryover) {
 		listItem.classList.add('carryover');
 		listItem.textContent = hit.playerName + ' (' + hit.carryover + ')';
@@ -32,10 +35,16 @@ function updateRemainingHitsByBoss(
 		var extraInfo = [
 			hit.timeline || '',
 			hit.borrow || ''
-		].filter(it => it).join(', ');
+		].filter(it => it);
 
 		listItem.classList.add('remaining');
-		listItem.textContent = hit.playerName + (extraInfo ? (' (' + extraInfo + ')') : '');
+
+		if (hit.playerName in status.carryover) {
+			extraInfo.push('locked on ' + status.carryover[hit.playerName]);
+			listItem.classList.add('locked');
+		}
+
+		listItem.textContent = hit.playerName + (extraInfo.length ? (' (' + extraInfo.join(', ') + ')') : '');
 	}
 
 	list.appendChild(listItem);
@@ -45,7 +54,7 @@ function updateRemainingHitsByBoss(
 
 function renderRemainingHitsByBoss(status: ClanBattleStatus) : void {
 	var hitsByBoss = <Record<string, HTMLSpanElement>> {};
-	hitsByBoss = status.allocation.remaining.reduce(updateRemainingHitsByBoss, hitsByBoss);
+	hitsByBoss = status.allocation.remaining.reduce(updateRemainingHitsByBoss.bind(null, status), hitsByBoss);
 
 	var bossNames = Array.from(Object.keys(hitsByBoss));
 	bossNames.sort(Intl.Collator().compare);
