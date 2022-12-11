@@ -3,6 +3,12 @@ function addUnit(text: string | null) : void {
 		return;
 	}
 
+	var unitContainer = document.getElementById('units-available');
+
+	if (!unitContainer) {
+		return;
+	}
+
 	var container = document.createElement('div');
 	container.classList.add('checkbox');
 
@@ -25,8 +31,7 @@ function addUnit(text: string | null) : void {
 	label.textContent = text;
 
 	container.appendChild(label);
-
-	(<HTMLDivElement> document.getElementById('units-available')).appendChild(container);
+	unitContainer.appendChild(container);
 };
 
 function addUnits(teams: ClanBattleTeam[]) {
@@ -225,8 +230,11 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 };
 
 function generateAvailableTeams() {
-	var availableUnitsElement = <HTMLDivElement> document.getElementById('units-available');
-	availableUnitsElement.innerHTML = '';
+	var availableUnitsElement = document.getElementById('units-available');
+
+	if (availableUnitsElement) {
+		availableUnitsElement.innerHTML = '';
+	}
 
 	selectedContainer.setAttribute('data-sortable-initialized', 'false');
 	selectedHeader.innerHTML = selectedHeader.innerHTML;
@@ -242,7 +250,7 @@ function generateAvailableTeams() {
 
 	var regions = new Set(allTeams.map(it => it.region));
 
-	document.querySelectorAll('input[name="regions-available"]').forEach((it: HTMLInputElement) => {
+	document.querySelectorAll('input[name="regions-available"][type="checkbox"]').forEach((it: HTMLInputElement) => {
 		it.disabled = !regions.has(it.value);
 		var labelElement = <HTMLLabelElement> document.querySelector('label[for="' + it.getAttribute('id') + '"]');
 		labelElement.style.opacity = it.disabled ? '0.4' : '1.0';
@@ -250,7 +258,7 @@ function generateAvailableTeams() {
 
 	var timings = new Set(allTeams.map(it => it.timing));
 
-	document.querySelectorAll('input[name="timings-available"]').forEach((it: HTMLInputElement) => {
+	document.querySelectorAll('input[name="timings-available"][type="checkbox"]').forEach((it: HTMLInputElement) => {
 		it.disabled = !timings.has(it.value);
 		var labelElement = <HTMLLabelElement> document.querySelector('label[for="' + it.getAttribute('id') + '"]');
 		labelElement.style.opacity = it.disabled ? '0.4' : '1.0';

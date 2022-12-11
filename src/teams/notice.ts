@@ -1,4 +1,8 @@
 function updatePlannerNotice() {
+	if (!noticeElement) {
+		return;
+	}
+
 	if (latestCBId == currentCBId) {
 		noticeElement.classList.add('panel', 'panel-info');
 		noticeElement.innerHTML = `

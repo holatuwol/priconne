@@ -89,6 +89,7 @@ function isPlausibleTeam(
 	availableTimings: Set<String>,
 	row: HTMLTableRowElement
 ) : boolean {
+
 	var boss = row.getAttribute('data-boss');
 
 	if (boss == null || !availableBosses.has(boss)) {
@@ -127,9 +128,9 @@ function filterAvailableTeam(
 };
 
 function filterAvailableTeamsHelper() {
-	var availableBosses = getCheckboxValues('#bosses-available input[type="checkbox"]:checked');
-	var availableRegions = getCheckboxValues('#regions-available input[type="checkbox"]:checked');
-	var availableTimings = getCheckboxValues('#timings-available input[type="checkbox"]:checked');
+	var availableBosses = getCheckboxValues('#bosses-available input[type="checkbox"]:checked, #bosses-available input[type="hidden"]');
+	var availableRegions = getCheckboxValues('#regions-available input[type="checkbox"]:checked, #regions-available input[type="hidden"]');
+	var availableTimings = getCheckboxValues('#timings-available input[type="checkbox"]:checked, #timings-available input[type="hidden"]');
 
 	var filter = <HTMLInputElement> document.getElementById('team-filter');
 
@@ -144,7 +145,7 @@ function filterAvailableTeamsHelper() {
 	var plausibleFilter = isPlausibleTeam.bind(null, availableBosses, availableRegions, availableTimings);
 
 	for (var i = 0; i < searchTerms.length; i++) {
-		Array.from(availableBody.querySelectorAll('tr.filtered-out[data-members="' + searchTerms[i].replace(/"/g, '') + '"]')).filter(plausibleFilter).forEach((it) => it.classList.add('special-visible'));
+		availableBody.querySelectorAll('tr[data-members="' + searchTerms[i].replace(/"/g, '') + '"]').forEach((it) => it.classList.add('special-visible'));
 	}
 
 	var visibleTeams = availableBody.querySelectorAll('tr:not(.filtered-out):not(.unavailable)');
@@ -161,11 +162,19 @@ function filterAvailableTeamsHelper() {
 		pluralElement.style.display = (visibleTeams.length == 1) ? 'none' : 'inline';
 	}
 
+	var altBosses = Array.from(availableBody.rows).reduce(extractAltBosses, <Record<string, string[]>> {});
+
 	var plausibleRows = Array.from(document.querySelectorAll('tbody tr[data-members]')).filter(plausibleFilter);
 
-	var altBosses = plausibleRows.reduce(extractAltBosses, <Record<string, string[]>> {});
-
 	var altUses = plausibleRows.reduce(extractAltUses, <Record<string, number>> {});
+
+	var tierBosses = new Set();
+
+	availableBosses.forEach(boss => {
+		for (var i = 1; i <= 5; i++) {
+			tierBosses.add(boss.charAt(0) + i);
+		}
+	});
 
 	plausibleRows.forEach(function(it1) {
 		var key = it1.getAttribute('data-members');
@@ -182,7 +191,7 @@ function filterAvailableTeamsHelper() {
 		}
 
 		if (altBosses[key].length > 1) {
-			altBossLink.textContent = altBosses[key].map(it2 => it2 == boss ? ('[' + it2 + ']') : it2).join(', ');
+			altBossLink.textContent = altBosses[key].filter(it2 => tierBosses.has(it2)).map(it2 => it2 == boss ? ('[' + it2 + ']') : it2).join(', ');
 		}
 		else if (altUses[key] > 1) {
 			altBossLink.textContent = '[' + boss + ']'
@@ -300,7 +309,7 @@ function markUnavailableTeam(
 
 function markUnavailableTeams() : void {
 	var borrowStrategyElement = <HTMLInputElement> document.querySelector('input[name="borrow-strategy"]:checked');
-	var borrowStrategy = borrowStrategyElement.value;
+	var borrowStrategy = borrowStrategyElement ? borrowStrategyElement.value : 'borrow-all';
 
 	var chosenMembers = Array.from(selectedBody.rows).map(getMembers);
 
@@ -310,7 +319,7 @@ function markUnavailableTeams() : void {
 
 function renderUnavailableTeams() : void {
 	var unavailableStyleElement = <HTMLInputElement> document.querySelector('input[name="unavailable-style"]:checked');
-	var unavailableStyle = unavailableStyleElement.value;
+	var unavailableStyle = unavailableStyleElement ? unavailableStyleElement.value : 'hide';
 
 	if (unavailableStyle == 'hide') {
 		availableContainer.classList.add('hide-unavailable');
@@ -322,7 +331,7 @@ function renderUnavailableTeams() : void {
 
 function toggleBuildVisibility() {
 	var buildVisibilityElement = <HTMLInputElement> document.querySelector('input[name="build-visibility"]:checked');
-	var buildVisibility = buildVisibilityElement.value;
+	var buildVisibility = buildVisibilityElement ? buildVisibilityElement.value : 'show';
 
 	if (buildVisibility == 'hide') {
 		availableContainer.classList.remove('show-unit-info');

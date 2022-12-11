@@ -1,17 +1,23 @@
 function expandGoogleSheetURLs(
 	href : string | null,
 	gids : string[] | null,
-	xhrCallback: (responseText: string, href: string | null, container : HTMLElement) => boolean,
-	gidsCallback: (gids: string[]) => void
+	xhrCallback? : (responseText: string, href: string | null, container : HTMLElement) => boolean,
+	gidsCallback? : (gids: string[]) => void
 ) : void {
 
 	if (href == null) {
-		gidsCallback([]);
+		if (gidsCallback) {
+			gidsCallback([]);
+		}
+
 		return;
 	}
 
 	if (href.indexOf('.json') != -1 || href.indexOf('.csv') != -1) {
-		gidsCallback([href]);
+		if (gidsCallback) {
+			gidsCallback([href]);
+		}
+
 		return;
 	}
 
@@ -20,12 +26,18 @@ function expandGoogleSheetURLs(
 	}
 
 	if (href.indexOf('gid=') != -1) {
-		gidsCallback([href]);
+		if (gidsCallback) {
+			gidsCallback([href]);
+		}
+
 		return;
 	}
 
 	if (gids) {
-		gidsCallback(gids.map(gid => href + '?gid=' + gid));
+		if (gidsCallback) {
+			gidsCallback(gids.map(gid => href + '?gid=' + gid));
+		}
+
 		return;
 	}
 
@@ -35,7 +47,7 @@ function expandGoogleSheetURLs(
 		var container = document.implementation.createHTMLDocument().documentElement;
 		container.innerHTML = xhr.responseText;
 
-		if (xhrCallback(xhr.responseText, href, container)) {
+		if (xhrCallback && xhrCallback(xhr.responseText, href, container)) {
 			gids = [];
 		}
 		else {
@@ -46,7 +58,9 @@ function expandGoogleSheetURLs(
 			}
 		}
 
-		gidsCallback(gids.map(gid => href + (gid ? ('?gid=' + gid) : '')));
+		if (gidsCallback) {
+			gidsCallback(gids.map(gid => href + (gid ? ('?gid=' + gid) : '')));
+		}
 	};
 
 	xhr.open('GET', href + '?output=html');

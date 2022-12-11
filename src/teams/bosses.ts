@@ -47,14 +47,37 @@ function selectAllBosses(stage : Element | string) : void {
 };
 
 function addAvailableBosses() : void {
-	var availableBossesElement = <HTMLElement> document.getElementById('bosses-available');
-	var bossIds = (availableBossesElement.getAttribute('data-boss-ids') || '').split(',');
+	var bossesElement = <HTMLElement> document.getElementById('bosses-available');
 
-	var containers = availableBossesElement.querySelectorAll('span[data-boss-prefix]');
+	var cbBossStats = bossStats[currentCBId];
 
-	for (var i = 0; i < containers.length; i++) {
-		var prefix = containers[i].getAttribute('data-boss-prefix') || '';
-		var multipliers = (containers[i].getAttribute('data-multipliers') || '').split(',');
+	var bossIds = cbBossStats.bossIds;
+
+	var prefixes = Object.keys(cbBossStats.multipliers).sort();
+
+	for (var i = 0; i < prefixes.length; i++) {
+		var prefix = prefixes[i];
+		var multipliers = cbBossStats.multipliers[prefix];
+
+		var x = cbBossStats.lapTiers.indexOf(prefix) + 1;
+		var y = cbBossStats.lapTiers.lastIndexOf(prefix) + 1;
+
+		var container = document.createElement('span');
+
+		container.setAttribute('id', 'bosses-stage-' + (i+1));
+		container.setAttribute('data-boss-prefix', prefix);
+
+		var h4 = document.createElement('h4');
+		h4.appendChild(document.createTextNode('Laps ' + x + (x == y ? '+' : ('-' + y)) + ' ('));
+
+		var selectAllLink = document.createElement('a');
+		selectAllLink.textContent = 'select all';
+		selectAllLink.href = 'javascript:selectAllBosses(' + (i+1) + ');';
+		h4.appendChild(selectAllLink);
+
+		h4.appendChild(document.createTextNode(')'));
+
+		container.appendChild(h4);
 
 		for (var j = 1; j <= bossIds.length; j++) {
 			var holder = document.createElement('span');
@@ -76,14 +99,14 @@ function addAvailableBosses() : void {
 			}
 
 			input.setAttribute('id', 'boss-' + bossName);
-			input.setAttribute('data-multiplier', multipliers[j-1] || '0.0');
+			input.setAttribute('data-multiplier', '' + (multipliers[j-1] || 0.0));
 
 			var label = document.createElement('label');
 			label.setAttribute('for', 'boss-' + bossName);
 			label.innerText = bossName;
 
 			var image = document.createElement('img');
-			image.setAttribute('src', getUnitIcon(bossIds[j-1]));
+			image.setAttribute('src', getUnitIcon('' + bossIds[j-1]));
 
 			label.appendChild(image);
 
@@ -93,7 +116,10 @@ function addAvailableBosses() : void {
 
 			holder.appendChild(input);
 			holder.appendChild(label);
-			containers[i].appendChild(holder);
+
+			container.appendChild(holder);
 		}
+
+		bossesElement.appendChild(container);
 	}
 }

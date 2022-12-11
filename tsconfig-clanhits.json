@@ -12,7 +12,6 @@
     "src/imports/sortable.d.ts",
     "src/imports/units.d.ts",
     "src/util.ts",
-    "src/units.ts",
     "src/sheets.ts",
     "src/clanhits/*.ts"
   ]

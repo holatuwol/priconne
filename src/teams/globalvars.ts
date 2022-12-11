@@ -1,7 +1,7 @@
 var latestCBId = '22';
 
-var noticeElement = <HTMLDivElement> document.getElementById('planner-notice');
-var currentCBId = noticeElement.getAttribute('data-cb-id') || latestCBId;
+var noticeElement = document.getElementById('planner-notice');
+var currentCBId = noticeElement ? noticeElement.getAttribute('data-cb-id') || latestCBId : latestCBId;
 
 var defaultURLs = <string[]> [];
 var parallelLoadCount = 0;
@@ -15,8 +15,8 @@ var demiurgeTeams = <ClanBattleTeam[]> [];
 
 var availableUnits = new Set<string>();
 
-var bookmarkElement = <HTMLInputElement> document.getElementById('units-available-bookmark');
-var extraTeamElement = <HTMLTextAreaElement> document.getElementById('extra-teams');
+var bookmarkElement = <HTMLInputElement | null> document.getElementById('units-available-bookmark');
+var extraTeamElement = <HTMLTextAreaElement | null> document.getElementById('extra-teams');
 
 var availableContainer = <HTMLTableElement> document.querySelector('#teams-available');
 var availableHeader = <HTMLTableSectionElement> availableContainer.tHead;

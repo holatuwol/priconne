@@ -10,7 +10,6 @@
   "include": [
     "src/imports/units.d.ts",
     "src/util.ts",
-    "src/units.ts",
     "src/sheets.ts",
     "src/boxcheck/*.ts",
     "src/boxcheck.ts"

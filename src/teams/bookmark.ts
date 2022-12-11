@@ -39,6 +39,10 @@ function encodeUnit(
 }
 
 function encodeAvailableUnitsHelper() {
+	if (!bookmarkElement) {
+		return;
+	}
+
 	availableUnits = getCheckboxValues('#units-available input[type="checkbox"]:checked');
 
 	var maxUnitId = Math.max.apply(null, Array.from(Object.values(unitIds)).map(it => parseInt(it)));

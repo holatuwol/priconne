@@ -68,7 +68,7 @@ function parseCSVTeams(text: string) : ClanBattleTeam[] {
 function loadTeams(
 	callback: (teams: ClanBattleTeam[]) => void,
 	requestURLs: string[]
-) {
+) : void {
 	++parallelLoadCount;
 
 	var remainingRequestCount = requestURLs.length;
@@ -125,6 +125,10 @@ function updateDefaultTeams(teams: ClanBattleTeam[]) : void {
 };
 
 function updateExtraTeams() : void {
+	if (!extraTeamElement) {
+		return;
+	}
+
 	var extraTeamValue = extraTeamElement.value;
 
 	if (!extraTeamValue) {
@@ -234,12 +238,14 @@ function initializeTeams() : void {
 
 	expandURLs(defaultLines, defaultURLs, loadTeams.bind(null, updateDefaultTeams));
 
-	if (document.location.search) {
+	if (document.location.search && extraTeamElement) {
 		extraTeamElement.value = document.location.search.substring(1).split('&').join('\n');
 		updateExtraTeams();
 	}
 
-	bookmarkElement.value = document.location.href;
+	if (bookmarkElement) {
+		bookmarkElement.value = document.location.href;
+	}
 }
 
 function getTeamAsCSVRow(team: ClanBattleTeam) : string {

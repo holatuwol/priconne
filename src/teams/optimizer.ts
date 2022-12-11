@@ -89,8 +89,6 @@ function getBestTeamValue(
 }
 
 function allocateVisibleTeams(valueAttribute: string) : void {
-	availableUnits = getCheckboxValues('#units-available input[type="checkbox"]:checked');
-
 	var currentRows = Array.from(selectedBody.rows);
 
 	if (currentRows.length == 3) {
