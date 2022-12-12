@@ -420,7 +420,7 @@ function markUnavailableTeam(
 
 function markUnavailableTeams() : void {
 	var borrowStrategyElement = <HTMLInputElement> document.querySelector('input[name="borrow-strategy"]:checked');
-	var borrowStrategy = borrowStrategyElement ? borrowStrategyElement.value : 'borrow-all';
+	var borrowStrategy = borrowStrategyElement ? borrowStrategyElement.value : 'all';
 
 	var chosenMembers = Array.from(selectedBody.rows).map(getMembers);
 

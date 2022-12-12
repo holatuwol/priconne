@@ -130,6 +130,14 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 
 		selectedBody.appendChild(clonedRow);
 		markUnavailableTeams();
+
+		var visibleTeams = availableBody.querySelectorAll('tr:not(.filtered-out):not(.unavailable)');
+
+		var countElement = <HTMLElement | null> document.querySelector('#visible-teams-count');
+
+		if (countElement) {
+			countElement.textContent = '' + visibleTeams.length;
+		}
 	}
 
 	var cell = document.createElement('td');
