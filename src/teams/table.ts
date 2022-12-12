@@ -19,7 +19,7 @@ function addUnit(text: string | null) : void {
 	input.value = text;
 	input.onchange = encodeAvailableUnits;
 
-	if (availableUnits.has(text)) {
+	if (hasUnitAvailable(availableUnits, text)) {
 		input.checked = true;
 	}
 
@@ -57,7 +57,7 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 	var img = document.createElement('img');
 
 	img.setAttribute('title', unit.name);
-	img.setAttribute('data-unit-name', unit.name)
+	img.setAttribute('data-unit-name', unit.name);
 
 	if (unitIds[unit.name]) {
 		img.setAttribute('src', getUnitIcon(unitIds[unit.name], typeof hasSixStar !== 'undefined' && hasSixStar.has(unitNames[unitIds[unit.name]]) ? 6 : 3));
@@ -67,9 +67,21 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 
 	cell.appendChild(img);
 
+	if (unit.build.level) {
+		img.setAttribute('data-level', unit.build.level);
+	}
+
+	if (unit.build.star) {
+		img.setAttribute('data-star', unit.build.star);
+	}
+
+	if (unit.build.rank) {
+		img.setAttribute('data-rank', unit.build.rank);
+	}
+
 	var buildElement = document.createElement('div');
 	buildElement.classList.add('unit-build');
-	buildElement.innerHTML = (unit.build.filter(it => it).length == 0) ? 'no data' : unit.build.join('<br/>');
+	buildElement.innerHTML = getBuildAsString(unit.build, '<br/>');
 
 	cell.appendChild(buildElement);
 

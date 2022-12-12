@@ -40,8 +40,8 @@ function applyBuild(
 		hasSubstitution = true;
 
 		newTeam.units[i] = {
-			'name': oldUnit,
-			'build': [newBuild]
+			name: oldUnit,
+			build: getStringAsBuild(newBuild)
 		};
 	}
 
@@ -62,18 +62,18 @@ function applySubstitution(
 		return false;
 	}
 
-	var newBuild = <string[]> [];
+	var newBuild = <ClanBattleBuild> {};
 
 	if (newUnit.charAt(0) == 'r') {
-		newBuild = ['rank ' + newUnit.substring(1, newUnit.indexOf(' '))];
+		newBuild.rank = newUnit.substring(1, newUnit.indexOf(' '));
 		newUnit = newUnit.substring(newUnit.indexOf(' ')).trim();
 	}
 	else if (newUnit.charAt(1) == '*' || newUnit.charAt(1) == '⭐') {
-		newBuild = [newUnit.charAt(0) + '⭐'];
+		newBuild.star = newUnit.charAt(0);
 		newUnit = newUnit.substring(2).trim();
 	}
 	else if (newUnit.charAt(newUnit.length - 1) == '*' || newUnit.charAt(newUnit.length - 1) == '⭐') {
-		newBuild = [newUnit.charAt(newUnit.length - 2) + '⭐'];
+		newBuild.star = newUnit.charAt(newUnit.length - 2);
 		newUnit = newUnit.substring(0, newUnit.length - 2).trim();
 	}
 
@@ -347,7 +347,11 @@ function getLabAutoTeams(
 	for (var i = 0; i < members.length; i++) {
 		units.push({
 			'name': members[i],
-			'build': [ranks[i], stars[i], ues[i]]
+			'build': {
+				star: stars[i],
+				rank: ranks[i],
+				unique: ues[i]
+			}
 		});
 	}
 

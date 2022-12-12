@@ -7,7 +7,7 @@ function parseRawTeam(text: string): ClanBattleTeam[] {
 		region: 'global',
 		timing: team[1],
 		timeline: "extra team",
-		units: team.slice(3).map(it => { return { "name": fixUnitName(it), "build": [] } })
+		units: team.slice(3).map(it => { return { name: fixUnitName(it), build: {} } })
 	}];
 }
 
@@ -27,7 +27,7 @@ function parseCSVTeams(text: string) : ClanBattleTeam[] {
 		};
 
 		for (var i = 0; i < 5; i++) {
-			result.units[i] = {name: '', build:[]};
+			result.units[i] = {name: '', build: {}};
 		}
 
 		for (var i = 0; i < header.length; i++) {
@@ -55,7 +55,7 @@ function parseCSVTeams(text: string) : ClanBattleTeam[] {
 			}
 			else if (header[i].indexOf('build') == 0) {
 				var index = parseInt(header[i].substring(5)) - 1;
-				result.units[index].build = row[i].split(/; */g);
+				result.units[index].build = getStringAsBuild(row[i]);
 			}
 		}
 
@@ -248,8 +248,88 @@ function initializeTeams() : void {
 	}
 }
 
+function getStringAsBuild(str: string) : ClanBattleBuild {
+	var build = <ClanBattleBuild> {};
+
+	var pattern = /([^;]+)⭐/g;
+	var matcher = pattern.exec(str);
+
+	if (matcher) {
+		build.star = matcher[1].trim();
+		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+	}
+
+	pattern = /R?([0-9]+-[0-9]+)/ig;
+	matcher = pattern.exec(str);
+
+	if (matcher) {
+		build.rank = matcher[1];
+		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+	}
+
+	pattern = /UE\s*([^;]+)/ig;
+	matcher = pattern.exec(str);
+
+	if (matcher) {
+		build.unique = matcher[1];
+		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+	}
+
+	pattern = /UB\s*([^\s;]+)/ig;
+	matcher = pattern.exec(str);
+
+	if (matcher) {
+		build.ub = matcher[1];
+		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+	}
+
+	pattern = /S1\s*([^\s;]+)/ig;
+	matcher = pattern.exec(str);
+
+	if (matcher) {
+		build.s1 = matcher[1];
+		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+	}
+
+	str = str.replace(/^(?:\s*;)+/g, '').trim();
+
+	pattern = /^([0-9]+)[\s\*]*;/g;
+	matcher = pattern.exec(str);
+
+	if (matcher) {
+		build.level = matcher[1];
+		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+	}
+
+	str = str.replace(/^(?:\s*;)+/g, '').trim();
+
+	if (str) {
+		build.extra = str;
+	}
+
+	return build;
+}
+
+function getBuildAsString(
+	build: ClanBattleBuild,
+	separator: string
+) : string {
+
+	var buildArray = [
+		build.level || '',
+		build.star ? build.star + '⭐' : '',
+		build.rank ? 'R' + build.rank : '',
+		build.unique ? 'UE ' + build.unique : '', 
+		build.ub ? 'UB ' + build.ub : '',
+		build.s1 ? 'S1 ' + build.s1 : '',
+		build.extra || ''
+	].filter(it => it);
+
+	return buildArray.length ? buildArray.join(separator) : 'no data';
+}
+
 function getTeamAsCSVRow(team: ClanBattleTeam) : string {
 	var baseData = [team.boss, team.region, team.timing, team.timeline, team.damage];
-	var unitData = team['units'].map(unit => unit['name'] + '\t' + unit['build'].join('; '));
+	var unitData = team['units'].map(unit => unit['name'] + '\t' + getBuildAsString(unit['build'], '; '));
 	return baseData.concat(unitData).concat([team.notes || '']).join('\t');
 }

@@ -12,6 +12,8 @@ declare function renderBossData(
 ) : void;
 
 interface BossStats {
+	maxLevel: number,
+	maxRank: string,
 	bossIds: number[]
 	bossHP: Record<string, number[]>
 	lapTiers: string[]

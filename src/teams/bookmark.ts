@@ -1,14 +1,24 @@
+function storeUnit(
+	acc: Record<string, ClanBattleBuild>,
+	next: string
+) : Record<string, ClanBattleBuild> {
+
+	acc[next] = {};
+
+	return acc;
+}
+
 function decodeUnit(
-	acc: Set<string>,
+	acc: Record<string, ClanBattleBuild>,
 	next: string,
 	index: number
-) : Set<string> {
+) : Record<string, ClanBattleBuild> {
 
 	if (next == '1') {
 		var unitId = (1000+index).toString();
 		var unitName = unitNames[unitId];
 
-		acc.add(unitName);
+		acc[unitName] = {};
 	}
 
 	return acc;
@@ -18,14 +28,18 @@ function decodeAvailableUnits() {
 	var hash = document.location.hash;
 
 	if ((hash == '') || (hash == '#')) {
-		availableUnits = new Set<string>(Object.keys(unitIds));
+		availableUnits = Array.from(Object.keys(unitIds)).reduce(
+			storeUnit,
+			<Record<string, ClanBattleBuild>> {});
 	}
 	else {
-		availableUnits = BigInt('0x' + hash.substring(1)).toString(2).split('').reverse().reduce(decodeUnit, new Set<string>());
+		availableUnits = BigInt('0x' + hash.substring(1)).toString(2).split('').reverse().reduce(
+			decodeUnit,
+			<Record<string, ClanBattleBuild>> {});
 	}
 
 	document.querySelectorAll('#units-available input[type="checkbox"]').forEach((it: HTMLInputElement) => {
-		it.checked = availableUnits.has(it.value);
+		it.checked = hasUnitAvailable(availableUnits, it.value);
 	});
 };
 
@@ -35,6 +49,7 @@ function encodeUnit(
 ) : number[] {
 
 	acc[parseInt(unitIds[next]) - 1000] = 1;
+
 	return acc;
 }
 
@@ -43,11 +58,13 @@ function encodeAvailableUnitsHelper() {
 		return;
 	}
 
-	availableUnits = getCheckboxValues('#units-available input[type="checkbox"]:checked');
+	availableUnits = Array.from(getCheckboxValues('#units-available input[type="checkbox"]:checked')).reduce(
+		storeUnit,
+		<Record<string, ClanBattleBuild>> {});
 
 	var maxUnitId = Math.max.apply(null, Array.from(Object.values(unitIds)).map(it => parseInt(it)));
 	var bits = <number[]> new Array(maxUnitId + 1 - 1000).fill(0);
-	bits = Array.from(availableUnits).reduce(encodeUnit, bits);
+	bits = Array.from(Object.keys(availableUnits)).reduce(encodeUnit, bits);
 
 	var bitString = '0b' + bits.reverse().join('');
 

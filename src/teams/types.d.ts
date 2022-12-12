@@ -1,8 +1,18 @@
 declare var hasSixStar : Set<string>;
 
+interface ClanBattleBuild {
+	level?: string,
+	star?: string,
+	rank?: string,
+	unique?: string,
+	ub?: string,
+	s1?: string,
+	extra?: string
+}
+
 interface ClanBattleUnit {
 	name: string,
-	build: string[]
+	build: ClanBattleBuild
 }
 
 interface ClanBattleTeam {

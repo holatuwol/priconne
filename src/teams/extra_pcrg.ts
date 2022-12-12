@@ -13,7 +13,11 @@ function getPCRGUnits(
 	for (var i = 0; i < 5; i++) {
 		units.push({
 			name: names[i],
-			build: [stars[i] + ' ' + ues[i], ranks[i]]
+			build: {
+				star: stars[i],
+				rank: ranks[i],
+				unique: ues[i]
+			}
 		})
 	}
 

@@ -45,7 +45,12 @@ function extractDemiurgeTeamsFromTab(
 			units: unitNames[i].map((it, j) => {
 				return {
 					'name': it,
-					'build': [levels[i][j], stars[i][j] + '⭐' + (ues[i][j] ? ' UE ' + ues[i][j] : ''), ranks[i][j]]
+					'build': {
+						level: levels[i][j],
+						star: stars[i][j],
+						rank: ranks[i][j],
+						unique: ues[i][j]
+					}
 				}
 			})
 		});

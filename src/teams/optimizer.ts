@@ -13,9 +13,10 @@ function choose(
 };
 
 function getBestAllocation(
+	usableUnits: Record<string, ClanBattleBuild>,
 	borrowStrategy: string,
 	visibleRows: HTMLTableRowElement[],
-	visibleTeams: Record<string, number>[],
+	visibleTeams: Record<string, ClanBattleBuild>[],
 	visibleValues: number[],
 	currentIndices: number[],
 	nextIndex: number
@@ -36,14 +37,14 @@ function getBestAllocation(
 		var nextIndices = currentIndices.concat([i]);
 		var nextTeams = nextIndices.map(it => visibleTeams[it]);
 
-		if (hasMemberConflict(borrowStrategy, nextTeams)) {
+		if (hasMemberConflict(usableUnits, borrowStrategy, nextTeams)) {
 			continue;
 		}
 
 		var nextAllocation = null;
 
 		if (currentIndices.length < 2) {
-			nextAllocation = getBestAllocation(borrowStrategy, visibleRows, visibleTeams, visibleValues, nextIndices, i + 1);
+			nextAllocation = getBestAllocation(usableUnits, borrowStrategy, visibleRows, visibleTeams, visibleValues, nextIndices, i + 1);
 		}
 		else {
 			nextAllocation = currentIndices.concat([i]);
@@ -118,7 +119,7 @@ function allocateVisibleTeams(valueAttribute: string) : void {
 	var borrowStrategy = borrowStrategyElement.value;
 
 	setTimeout(function() {
-		var bestAllocation = getBestAllocation(borrowStrategy, visibleRows, visibleTeams, visibleValues, currentIndices, currentIndices.length);
+		var bestAllocation = getBestAllocation(availableUnits, borrowStrategy, visibleRows, visibleTeams, visibleValues, currentIndices, currentIndices.length);
 
 		bestAllocation.slice(currentRows.length).map(it => visibleRows[it]).map(it => it.querySelector('button')).filter(it => it).forEach((it: HTMLButtonElement) => it.click());
 

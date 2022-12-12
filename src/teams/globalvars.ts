@@ -13,7 +13,7 @@ var labManualTeams = <ClanBattleTeam[]> [];
 var pcrgTeams = <ClanBattleTeam[]> [];
 var demiurgeTeams = <ClanBattleTeam[]> [];
 
-var availableUnits = new Set<string>();
+var availableUnits = <Record<string, ClanBattleBuild>> {};
 
 var bookmarkElement = <HTMLInputElement | null> document.getElementById('units-available-bookmark');
 var extraTeamElement = <HTMLTextAreaElement | null> document.getElementById('extra-teams');

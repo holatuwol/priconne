@@ -204,25 +204,135 @@ function filterAvailableTeamsHelper() {
 
 var filterAvailableTeams = _.debounce(filterAvailableTeamsHelper, 300);
 
-function getMembers(row : HTMLTableRowElement) : Record<string, number> {
-	var members = <Record<string, number>> {};
+function getMembers(row : HTMLTableRowElement) : Record<string, ClanBattleBuild> {
+	return Array.from(row.querySelectorAll('img')).reduce((acc, img) => {
+		var name = img.title;
+		acc[name] = {};
 
-	Array.from(row.querySelectorAll('img')).map((img) => img.title).forEach((title) => members[title] = (members[title] || 0) + 1);
+		var value = img.getAttribute('data-level');
 
-	return members;
+		if (value) {
+			acc[name].level = value;
+		}
+
+		value = img.getAttribute('data-star');
+
+		if (value) {
+			acc[name].star = value;
+		}
+
+		value = img.getAttribute('data-rank');
+
+		if (value) {
+			acc[name].rank = value;
+		}
+
+		return acc;
+	}, <Record<string, ClanBattleBuild>> {});
 };
 
+function getMaxValidValue(
+	str: string,
+	maxValue: number
+) : number {
+
+	if (str.indexOf('+') != -1 || str.toLowerCase() == 'any') {
+		return maxValue;
+	}
+
+	var pattern = /^[0-9]+$/g;
+
+	if (pattern.test(str)) {
+		return parseInt(str);
+	}
+
+	if (str.indexOf('/') != -1) {
+		return Math.max.apply(null, str.split('/').map(it => parseInt(it.trim())));
+	}
+
+	if (str.indexOf('-') != -1 || str.indexOf('~') != -1) {
+		return Math.max.apply(null, str.split(/[\-~]/g).map(it => parseInt(it.trim())));
+	}
+
+	console.log('failed to parse desired build value', str);
+
+	return maxValue;
+}
+
+function isMatchingLevel(
+	desiredBuild: ClanBattleBuild,
+	actualBuild: ClanBattleBuild
+) : boolean {
+
+	if (!actualBuild.level || !desiredBuild.level) {
+		return true;
+	}
+
+	return parseInt(actualBuild.level) <= getMaxValidValue(desiredBuild.level, bossStats[currentCBId].maxLevel);
+}
+
+function isMatchingStar(
+	desiredBuild: ClanBattleBuild,
+	actualBuild: ClanBattleBuild
+) : boolean {
+
+	if (!actualBuild.star || !desiredBuild.star) {
+		return true;
+	}
+
+	return parseInt(actualBuild.star) <= getMaxValidValue(desiredBuild.star, 6);
+}
+
+function isMatchingRank(
+	desiredBuild: ClanBattleBuild,
+	actualBuild: ClanBattleBuild
+) : boolean {
+
+	if (!actualBuild.rank || !desiredBuild.rank) {
+		return true;
+	}
+
+	return actualBuild.rank <= desiredBuild.rank;
+}
+
+function hasUnitAvailable(
+	units: Record<string, ClanBattleBuild>,
+	key: string,
+	desiredBuild?: ClanBattleBuild
+) : boolean {
+
+	var actualBuild = units[key];
+
+	if (actualBuild == null) {
+		return false;
+	}
+
+	if (desiredBuild == undefined) {
+		return true;
+	}
+
+	if (!isMatchingLevel(desiredBuild, actualBuild) ||
+		!isMatchingStar(desiredBuild, actualBuild) ||
+		!isMatchingRank(desiredBuild, actualBuild)) {
+
+		return false;
+	}
+
+	return true;
+}
+
 function isViableChoice(
+	usableUnits: Record<string, ClanBattleBuild>,
 	borrowStrategy: string,
 	usedUnits: Set<string>,
-	remainingTeams: Record<string, number>[]
+	remainingTeams: Record<string, ClanBattleBuild>[]
 ) : boolean {
 
 	var borrow = new Set();
 	var checkTeam = remainingTeams[0];
 
 	for (var key in checkTeam) {
-		if (!availableUnits.has(key)) {
+		if (!hasUnitAvailable(usableUnits, key, checkTeam[key])) {
 			if (borrowStrategy != 'all') {
 				return false;
 			}
@@ -255,10 +365,10 @@ function isViableChoice(
 	}
 
 	if (borrow.size == 1) {
-		return isViableChoice(borrowStrategy, newUsedUnits, newRemainingTeams);
+		return isViableChoice(usableUnits, borrowStrategy, newUsedUnits, newRemainingTeams);
 	}
 
-	if (isViableChoice(borrowStrategy, newUsedUnits, newRemainingTeams)) {
+	if (isViableChoice(usableUnits, borrowStrategy, newUsedUnits, newRemainingTeams)) {
 		return true;
 	}
 
@@ -267,7 +377,7 @@ function isViableChoice(
 			newUsedUnits.delete(key);
 		}
 
-		var isViable = isViableChoice(borrowStrategy, newUsedUnits, newRemainingTeams);
+		var isViable = isViableChoice(usableUnits, borrowStrategy, newUsedUnits, newRemainingTeams);
 
 		newUsedUnits.add(key);
 
@@ -280,22 +390,23 @@ function isViableChoice(
 };
 
 function hasMemberConflict(
+	usableUnits: Record<string, ClanBattleBuild>,
 	borrowStrategy: string,
-	chosenTeams: Record<string, number>[]
+	chosenTeams: Record<string, ClanBattleBuild>[]
 ) : boolean {
 
-	return !isViableChoice(borrowStrategy, new Set<string>(), chosenTeams);
+	return !isViableChoice(usableUnits, borrowStrategy, new Set<string>(), chosenTeams);
 };
 
 function markUnavailableTeam(
 	borrowStrategy: string,
-	chosenTeams: Record<string, number>[],
+	chosenTeams: Record<string, ClanBattleBuild>[],
 	row: HTMLTableRowElement
 ) : void {
 
 	var button = <HTMLButtonElement> row.querySelector('button');
 
-	if (hasMemberConflict(borrowStrategy, chosenTeams.concat(getMembers(row)))) {
+	if (hasMemberConflict(availableUnits, borrowStrategy, chosenTeams.concat(getMembers(row)))) {
 		if (!row.classList.contains('unavailable')) {
 			row.classList.add('unavailable');
 			button.disabled = true;
@@ -315,7 +426,6 @@ function markUnavailableTeams() : void {
 
 	Array.from(availableBody.rows).forEach(markUnavailableTeam.bind(null, borrowStrategy, chosenMembers));
 };
-
 
 function renderUnavailableTeams() : void {
 	var unavailableStyleElement = <HTMLInputElement> document.querySelector('input[name="unavailable-style"]:checked');
