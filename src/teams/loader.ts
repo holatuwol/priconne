@@ -225,6 +225,10 @@ function checkForExtraTeamsSheet(
 		extractLabAutoTeams(href, container);
 		return true;
 	}
+	else if (title.indexOf('CB TLs') != -1 && responseText.indexOf('Demiurge') != -1) {
+		extractDemiurgeTeams(href, container);
+		return true;
+	}
 
 	return false;
 }
@@ -318,7 +322,7 @@ function getBuildAsString(
 	var buildArray = [
 		build.level || '',
 		build.star ? build.star + '⭐' : '',
-		build.rank ? 'R' + build.rank : '',
+		build.rank ? (build.rank.charAt(0) == 'R' ? build.rank : ('R' + build.rank)) : '',
 		build.unique ? 'UE ' + build.unique : '', 
 		build.ub ? 'UB ' + build.ub : '',
 		build.s1 ? 'S1 ' + build.s1 : '',

@@ -1,5 +1,5 @@
 function updatePlannerNotice() {
-	if (!noticeElement) {
+	if (!noticeElement || noticeElement.classList.contains('hide')) {
 		return;
 	}
 

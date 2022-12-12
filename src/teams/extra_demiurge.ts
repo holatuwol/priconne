@@ -7,7 +7,7 @@ function extractDemiurgeTeamsFromTab(
 
 	var boss = tab.split(' ')[0];
 
-	var indices = rows.map(it => 'Demiurge ' + it.cells[3].textContent);
+	var indices = rows.map(it => 'Demiurge ' + (it.cells[3].textContent || '').replace(/\n\s*/g, ' ')).map(it => (it.indexOf(' -> ') != -1) ? it.substring(0, it.indexOf(' -> ')) : it);
 	var ids = rows.map(it => it.cells[0].getAttribute('id'));
 	var medias = <string[]> ids.map(getLabManualTimelineURL.bind(null, baseURL, gids[tab]));
 
@@ -57,6 +57,62 @@ function extractDemiurgeTeamsFromTab(
 	}
 
 	return teams;
+}
+
+function extractDemiurgeTeams(
+	href: string,
+	container: HTMLElement
+) : void {
+
+	var tabElements = container.querySelectorAll('#sheet-menu li');
+
+	var gids = <Record<string, string>> Array.from(tabElements).reduce((acc, next) => {
+		var listItemId = next.getAttribute('id');
+
+		if (!listItemId) {
+			return acc;
+		}
+
+		var tabId = listItemId.substring('sheet-button-'.length);
+		var tabName = (next.textContent || '').trim();
+
+		acc[tabName] = tabId;
+
+		return acc;
+	}, <Record<string, string>> {});
+
+	var pageNames = Object.keys(gids);
+
+	var teams = <ClanBattleTeam[]> [];
+
+	for (var i = 0; i < pageNames.length; i++) {
+		var pageName = pageNames[i]
+		var tabId = gids[pageName];
+
+		var tab = container.querySelector('[id="' + tabId + '"]');
+
+		if (!tab) {
+			continue;
+		}
+
+		var statusCells = Array.from(tab.querySelectorAll('td')).filter(it => (it.textContent || '').toUpperCase() == 'STATUS');
+
+		var rows = statusCells.map(it => <HTMLTableRowElement> it.closest('tr'));
+
+		rows = rows.filter(it => it && getSiblingRowElement(it, 1).cells[1].textContent != '');
+
+		teams = teams.concat(extractDemiurgeTeamsFromTab(href, gids, pageNames[i], rows));
+	}
+
+	teams.forEach(team => {
+		team.units.forEach(unit => {
+			unit.name = fixUnitName(unit.name);
+		})
+	});
+
+	demiurgeTeams = teams;
+
+	updateExtraTeamsHelper();
 }
 
 function extractDemiurgeTeamsLocal(

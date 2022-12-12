@@ -127,6 +127,24 @@ function filterAvailableTeam(
 	}
 };
 
+function updateCountElement() : void {
+	var countElement = <HTMLElement | null> document.querySelector('#visible-teams-count');
+
+	if (!countElement) {
+		return;
+	}
+
+	var visibleTeams = availableBody.querySelectorAll('tr:not(.filtered-out):not(.unavailable)');
+
+	countElement.textContent = '' + visibleTeams.length;
+
+	var pluralElement = <HTMLElement | null> document.querySelector('#visible-teams-plural');
+
+	if (pluralElement) {
+		pluralElement.style.display = (visibleTeams.length == 1) ? 'none' : 'inline';
+	}
+}
+
 function filterAvailableTeamsHelper() {
 	var availableBosses = getCheckboxValues('#bosses-available input[type="checkbox"]:checked, #bosses-available input[type="hidden"]');
 	var availableRegions = getCheckboxValues('#regions-available input[type="checkbox"]:checked, #regions-available input[type="hidden"]');
@@ -148,19 +166,7 @@ function filterAvailableTeamsHelper() {
 		availableBody.querySelectorAll('tr[data-members="' + searchTerms[i].replace(/"/g, '') + '"]').forEach((it) => it.classList.add('special-visible'));
 	}
 
-	var visibleTeams = availableBody.querySelectorAll('tr:not(.filtered-out):not(.unavailable)');
-
-	var countElement = <HTMLElement | null> document.querySelector('#visible-teams-count');
-
-	if (countElement) {
-		countElement.textContent = '' + visibleTeams.length;
-	}
-
-	var pluralElement = <HTMLElement | null> document.querySelector('#visible-teams-plural');
-
-	if (pluralElement) {
-		pluralElement.style.display = (visibleTeams.length == 1) ? 'none' : 'inline';
-	}
+	updateCountElement();
 
 	var altBosses = Array.from(availableBody.rows).reduce(extractAltBosses, <Record<string, string[]>> {});
 

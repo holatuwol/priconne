@@ -35,7 +35,7 @@ function getUnitIcon(
 }
 
 function fixUnitName(unitName: string) : string {
-	unitName = unitName.replace(/\. +/g, '.').trim();
+	unitName = unitName.replace(/[0-9]/g, '').replace(/\. +/g, '.').trim();
 
 	if (!unitName) {
 		return unitName;

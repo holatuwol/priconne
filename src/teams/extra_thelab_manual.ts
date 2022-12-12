@@ -41,6 +41,11 @@ function getLabManualTimelineURL(
 	gid: string,
 	id: string
 ) : string {
+
+	if (baseURL.indexOf('htmlview') != -1 || baseURL.indexOf('pubhtml') != -1) {
+		return baseURL + '?gid=' + gid + '#' + id;
+	}
+
 	var x = id.indexOf('R');
 
 	return baseURL + '#gid=' + gid + '&range=A' + (parseInt(id.substring(x + 1)) + 1);
