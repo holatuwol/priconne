@@ -6,6 +6,11 @@ declare var selectedContainer : HTMLTableElement;
 declare var selectedHeader : HTMLTableSectionElement;
 declare var selectedBody : HTMLTableSectionElement;
 
+declare function getBuildAsString(
+	build: ClanBattleBuild,
+	separator: string
+) : string;
+
 declare function getMembers(row : HTMLTableRowElement) : Record<string, ClanBattleBuild>;
 
 declare function hasUnitAvailable(

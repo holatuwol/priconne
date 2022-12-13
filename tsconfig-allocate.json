@@ -16,7 +16,6 @@
     "src/teams/types.d.ts"
     "src/util.ts",
     "src/sheets.ts",
-    "src/allocate/types.d.ts"
-    "src/allocate/loader.ts"
+    "src/allocate/*.ts"
   ]
 }

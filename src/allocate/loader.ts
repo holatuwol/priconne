@@ -75,49 +75,6 @@ function processUnitEquips(
 	return true;
 }
 
-function markUnavailableTeams() {
-	var borrowStrategy = 'all';
-
-	var chosenMembers = Array.from(selectedBody.rows).map(getMembers);
-
-	Array.from(availableBody.rows).forEach(markUnavailableTeam.bind(null, borrowStrategy, chosenMembers));
-
-	var eligibleMembersElement = <HTMLDivElement> document.getElementById('eligible-players');
-	eligibleMembersElement.innerHTML = '';
-
-	if (chosenMembers.length == 0) {
-		return;
-	}
-
-	var listElement = document.createElement('ul');
-
-	for (var playerName in clanUnits) {
-		var usableUnits = clanUnits[playerName];
-
-		if (!isViableChoice(usableUnits, borrowStrategy, new Set<string>(), chosenMembers)) {
-			continue;
-		}
-
-		var borrows = <string[]> [];
-
-		for (var i = 0; i < chosenMembers.length; i++) {
-			var checkTeam = chosenMembers[i];
-
-			for (var key in checkTeam) {
-				if (!hasUnitAvailable(usableUnits, key, checkTeam[key])) {
-					borrows.push(key);
-				}
-			}
-		}
-
-		var listItemElement = document.createElement('li');
-		listItemElement.textContent = playerName + (borrows.length ? ', must borrow: ' + borrows.join(', ') : '');
-		listElement.appendChild(listItemElement);
-	}
-
-	eligibleMembersElement.appendChild(listElement);
-}
-
 var sheetIds = document.location.search ? document.location.search.substring(1).split('&') : defaultSheetIds;
 
 expandGoogleSheetURLs(sheetIds[0], null, processUnitEquips, () => {});

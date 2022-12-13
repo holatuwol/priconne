@@ -428,9 +428,9 @@ function markUnavailableTeams() : void {
 	var borrowStrategyElement = <HTMLInputElement> document.querySelector('input[name="borrow-strategy"]:checked');
 	var borrowStrategy = borrowStrategyElement ? borrowStrategyElement.value : 'all';
 
-	var chosenMembers = Array.from(selectedBody.rows).map(getMembers);
+	var chosenTeams = Array.from(selectedBody.rows).map(getMembers);
 
-	Array.from(availableBody.rows).forEach(markUnavailableTeam.bind(null, borrowStrategy, chosenMembers));
+	Array.from(availableBody.rows).forEach(markUnavailableTeam.bind(null, borrowStrategy, chosenTeams));
 };
 
 function renderUnavailableTeams() : void {
