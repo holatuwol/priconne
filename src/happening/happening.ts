@@ -30,7 +30,7 @@ function addEvent(
 	eventDetails.push('**' + eventName.replace('*', '\\*') + '**');
 
 	if (endTime < nowTime) {
-		eventDetails.push('ends: <t:' + endTime + ':R>');
+		eventDetails.push('ended: <t:' + endTime + ':R>');
 	}
 	else if (startDate == endDate) {
 		if (startTime < nowTime) {
@@ -51,9 +51,9 @@ function addEvent(
 	eventPostElement.innerText += eventDetails.join(' ') + '\n';
 }
 
-var eventPattern1 = /(\d+\/\d+) (\d+:\d+) UTC to (\d+\/\d+) (\d+:\d+) UTC/;
-var eventPattern2 = /\((\d+\/\d+) (\d+:\d+) UTC\)/;
-var eventPattern3 = /\(After (\d+\/\d+) (\d+:\d+) UTC\)/;
+var eventPattern1 = /(\d+\/\d+)(?:\/\d+)? (\d+:\d+) UTC to (\d+\/\d+)(?:\/\d+)? (\d+:\d+) UTC/;
+var eventPattern2 = /\((\d+\/\d+)(?:\/\d+)? (\d+:\d+) UTC\)/;
+var eventPattern3 = /\(After (\d+\/\d+)(?:\/\d+)? (\d+:\d+) UTC\)/;
 
 function addExtractedEvent(
 	eventName: string,
