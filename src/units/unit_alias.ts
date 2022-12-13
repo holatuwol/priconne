@@ -7,6 +7,7 @@ var aliases = {
 	'SS.Aoi': 'TS.Aoi',
 	'S.Mako': 'S.Makoto',
 	'S.Tama': 'S.Tamaki',
+	'TSAoi': 'TS.Aoi',
 	'X.Chris': 'X.Christina',
 	'X.Illya': 'X.Ilya'
 };

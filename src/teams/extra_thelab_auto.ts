@@ -1,7 +1,13 @@
+
+
 function getLabAutoDamage(
 	matcher: RegExpExecArray,
 	oldTeam: ClanBattleTeam
 ) : number {
+
+	if (isMaxDamage(matcher[0])) {
+		return getMaxDamage(oldTeam.boss);
+	}
 
 	var newDamageString = matcher[1].replace(/,/, '.').trim();
 
@@ -196,24 +202,34 @@ function getSingleSubstitutions(
 
 		if (singleMatcher) {
 			if (hasSubstitution) {
-				hasSubstitution = applySubstitution(newTeam, singleMatcher[1].trim(), singleMatcher[2].trim());
+				var oldUnit = singleMatcher[1].trim();
 
-				if (!hasSubstitution) {
-					console.log('could not identify unit substitution:', oldTeam, description);
+				if (oldUnit.indexOf(' due') != -1 || oldUnit.indexOf(' die') != -1) {
+					singleMatcher = null;
+				}
+				else {
+					hasSubstitution = applySubstitution(newTeam, oldUnit, singleMatcher[2].trim());
+
+					if (!hasSubstitution) {
+						console.log('could not identify unit substitution:', oldTeam, description);
+					}
 				}
 			}
 		}
-		else if (rankStarMatcher) {
-			if (hasSubstitution) {
-				hasSubstitution = applySubstitution(newTeam, rankStarMatcher[1].trim(), rankStarMatcher[0].trim());
 
-				if (!hasSubstitution) {
-					console.log('could not identify rank/star substitution:', oldTeam, description);
+		if (!singleMatcher) {
+			if (rankStarMatcher) {
+				if (hasSubstitution) {
+					hasSubstitution = applySubstitution(newTeam, rankStarMatcher[1].trim(), rankStarMatcher[0].trim());
+
+					if (!hasSubstitution) {
+						console.log('could not identify rank/star substitution:', oldTeam, description);
+					}
 				}
 			}
-		}
-		else {
-			hasSubstitution = false;
+			else {
+				hasSubstitution = false;
+			}
 		}
 	}
 
@@ -306,12 +322,12 @@ function getLabAutoTeams(
 		timingIndex -= parseInt(teamRow.cells[i].getAttribute('colspan') || '1') - 1;
 	}
 
-	var teamId = teamRow.cells[teamIdIndex].textContent;
-	var isFullAuto = (teamRow.cells[timingIndex].textContent || '').toLowerCase() == 'auto';
+	var teamId = teamRow.cells[teamIdIndex].textContent || '';
+	var isFullAuto = teamId.indexOf('FA') != -1;
 
 	var damageTexts = rows.map((it, i) => damageIndices[i] == -1 ? '' : it.cells[damageIndices[i]].textContent || '');
 
-	var damages = damageTexts.filter(it => it.indexOf(' OTK') != -1 || it.indexOf(' OHKO') != -1);
+	var damages = damageTexts.filter(isMaxDamage);
 
 	if (damages.length == 0) {
 		damages = damageTexts.map(it => getDamageMatcher(it)).filter(it => it).map((it: RegExpExecArray) => it[1]).map(it => it.indexOf(',') != -1 ? (it.replace(/,/g, '') + 'k') : it);
@@ -324,7 +340,7 @@ function getLabAutoTeams(
 	var damageString = damages[0];
 	var damage = 0.0;
 
-	if (damageString.indexOf(' OTK') != -1 || damageString.indexOf(' OHKO') != -1) {
+	if (isMaxDamage(damageString)) {
 		damage = getMaxDamage(boss);
 	}
 	else {
@@ -458,7 +474,13 @@ function extractLabAutoTeams(
 		'Tier C': 'C',
 		'Tier I': 'A',
 		'Tier II': 'B',
-		'Tier III': 'C'
+		'Tier III': 'C',
+		'Tier I Auto': 'A',
+		'Tier II Auto': 'B',
+		'Tier III Auto': 'C',
+		'Tier I Semi-Auto': 'A',
+		'Tier II Semi-Auto': 'B',
+		'Tier III Semi-Auto': 'C',
 	};
 
 	var tabs = Array.from(Object.keys(pageNames));
@@ -492,7 +514,13 @@ function extractLabAutoTeamsLocal() : void {
 		'Tier C': 'C',
 		'Tier I': 'A',
 		'Tier II': 'B',
-		'Tier III': 'C'
+		'Tier III': 'C',
+		'Tier I Auto': 'A',
+		'Tier II Auto': 'B',
+		'Tier III Auto': 'C',
+		'Tier I Semi-Auto': 'A',
+		'Tier II Semi-Auto': 'B',
+		'Tier III Semi-Auto': 'C',
 	};
 
 	var teams = <ClanBattleTeam[]> [];

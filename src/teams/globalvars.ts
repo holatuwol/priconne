@@ -28,6 +28,7 @@ var selectedBody = <HTMLTableSectionElement> selectedContainer.tBodies[0];
 
 var simpleRE = /([\-+]?[0-9][0-9\.,\s]*[km±])/i;
 var averageRE = /Avg:? ([0-9\.,]+)/i;
+var otkRE = /((?:\d+%\s)?(?:OTK|OHKO))/i;
 
 var rankStarRE = /(?:r?[0-9]+[\*⭐]? ?)?([^\-=,:±<>]*)/i;
 var singleSubRE = /([^\-=,:±<>]*)\s+to\s+([^\-=,:±<>]*)/i;
