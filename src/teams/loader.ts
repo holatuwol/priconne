@@ -69,6 +69,7 @@ function loadTeams(
 	callback: (teams: ClanBattleTeam[]) => void,
 	requestURLs: string[]
 ) : void {
+
 	++parallelLoadCount;
 
 	var remainingRequestCount = requestURLs.length;
@@ -209,7 +210,7 @@ function checkForExtraTeamsSheet(
 	container: HTMLElement
 ) : boolean {
 
-	var titleElement = container.querySelector('#doc-title .name');
+	var titleElement = container.querySelector('title');
 
 	if (!titleElement) {
 		return false;
