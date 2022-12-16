@@ -61,7 +61,7 @@ function fixUnitName(unitName: string) : string {
 		name = name.charAt(0) + '.' + name.charAt(2).toUpperCase() + name.substring(3);
 	}
 	else if (name.charAt(2) == '.') {
-		name = name.substring(0, 2).toUpperCase + '.' + name.charAt(3).toUpperCase() + name.substring(4);
+		name = name.substring(0, 2).toUpperCase() + '.' + name.charAt(3).toUpperCase() + name.substring(4);
 	}
 	else {
 		name = name.charAt(0) + '.' + name.charAt(1).toUpperCase() + name.substring(2);
