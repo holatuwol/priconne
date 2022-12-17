@@ -27,7 +27,7 @@ function parseLabManualDamage(
 	text: string | null
 ) : number {
 	var damageString = (text || '').replace(/ to /g, '-').replace(/[ ,]/g, '');
-	var damageMatcher = /[0-9\.\~\-]+[kms]?/i.exec(damageString);
+	var damageMatcher = /[0-9\.\~\-/]+[kms]?/i.exec(damageString);
 
 	if (!damageMatcher) {
 		return 0;

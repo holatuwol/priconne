@@ -57,18 +57,23 @@ function fixUnitName(unitName: string) : string {
 		return unitNames[unitIds[name]];
 	}
 
-	if (name.charAt(1) == '.') {
-		name = name.charAt(0) + '.' + name.charAt(2).toUpperCase() + name.substring(3);
-	}
-	else if (name.charAt(2) == '.') {
-		name = name.substring(0, 2).toUpperCase() + '.' + name.charAt(3).toUpperCase() + name.substring(4);
+	var pos = name.indexOf('.');
+
+	if (pos != -1) {
+		var testName = name.substring(0, pos).toUpperCase() + '.' + name.charAt(pos + 1).toUpperCase() + name.substring(pos + 2);
+
+		if (testName in unitIds) {
+			return unitNames[unitIds[testName]];
+		}
 	}
 	else {
-		name = name.charAt(0) + '.' + name.charAt(1).toUpperCase() + name.substring(2);
-	}
+		for (var i = 1; i < name.length && name.charAt(i-1) >= 'A' && name.charAt(i-1) <= 'Z'; i++) {
+			var testName = name.substring(0, i) + '.' + name.charAt(i).toUpperCase() + name.substring(i + 1);
 
-	if (name in unitIds) {
-		return unitNames[unitIds[name]];
+			if (testName in unitIds) {
+				return unitNames[unitIds[testName]];
+			}
+		}
 	}
 
 	if (unitName.indexOf(' ') != -1) {
