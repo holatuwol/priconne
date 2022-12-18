@@ -294,11 +294,3 @@ function processCompletedHits(
 		oldStatus = newStatus;
 	}
 }
-
-var sheetId = document.location.search ? document.location.search.substring(1) : defaultSheetId;
-
-var sheetURL = sheetId.indexOf('/') != -1 ? sheetId : 'https://docs.google.com/spreadsheets/d/e/' + sheetId + '/pubhtml';
-
-console.log(sheetURL);
-
-expandGoogleSheetURLs(sheetURL, null, processHitRecords, () => {});

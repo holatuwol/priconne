@@ -10,6 +10,7 @@
   "include": [
     "src/imports/bosses.d.ts",
     "src/imports/sortable.d.ts",
+    "src/imports/teams.d.ts",
     "src/imports/units.d.ts",
     "src/util.ts",
     "src/sheets.ts",

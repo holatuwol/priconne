@@ -85,7 +85,7 @@ function loadTeams(
 			}
 
 			callback(teams);
-			markUnavailableTeams();
+			fireTeamUpdateListeners();
 		}
 	}
 
@@ -100,7 +100,7 @@ function loadTeams(
 		}
 
 		generateAvailableTeams();
-		markUnavailableTeams();
+		fireTeamUpdateListeners();
 	}
 };
 
@@ -256,7 +256,7 @@ function initializeTeams() : void {
 function getStringAsBuild(str: string) : ClanBattleBuild {
 	var build = <ClanBattleBuild> {};
 
-	var pattern = /([^;]+)⭐/g;
+	var pattern = /([^;]+)⭐;?/g;
 	var matcher = pattern.exec(str);
 
 	if (matcher) {
@@ -264,55 +264,118 @@ function getStringAsBuild(str: string) : ClanBattleBuild {
 		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
 	}
 
-	pattern = /R?([0-9]+-[0-9]+)/ig;
+	pattern = /R?([0-9]+-[0-9]+[^;]*);?/ig;
 	matcher = pattern.exec(str);
 
 	if (matcher) {
-		build.rank = matcher[1];
+		build.rank = matcher[1].trim()
+		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+	}
+	else {
+		var pos = str.indexOf('any rank');
+
+		if (pos != -1) {
+			build.rank = 'any';
+			str = str.substring(0, pos) + str.substring(pos + 8);
+		}
+	}
+
+	pattern = /\(?UE\s*([^;\)]+)\)?;?/ig;
+	matcher = pattern.exec(str);
+
+	if (matcher) {
+		build.unique = matcher[1].trim();
 		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
 	}
 
-	pattern = /UE\s*([^;]+)/ig;
+	pattern = /\(?UB\s*([^\s;\)]+)\)?;?/ig;
 	matcher = pattern.exec(str);
 
 	if (matcher) {
-		build.unique = matcher[1];
+		build.ub = matcher[1].trim();
 		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
 	}
 
-	pattern = /UB\s*([^\s;]+)/ig;
+	pattern = /\(?S1\s*([^\s;\)]+)\)?;?/ig;
 	matcher = pattern.exec(str);
 
 	if (matcher) {
-		build.ub = matcher[1];
+		build.s1 = matcher[1].trim();
 		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
 	}
 
-	pattern = /S1\s*([^\s;]+)/ig;
+	pattern = /\(?S2\s*([^\s;\)]+)\)?;?/ig;
 	matcher = pattern.exec(str);
 
 	if (matcher) {
-		build.s1 = matcher[1];
+		build.s2 = matcher[1].trim();
+		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+	}
+
+	pattern = /\(?EX\s*([^\s;\)]+)\)?;?/ig;
+	matcher = pattern.exec(str);
+
+	if (matcher) {
+		build.ex = matcher[1].trim();
 		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
 	}
 
 	str = str.replace(/^(?:\s*;)+/g, '').trim();
+	str = str.replace(/(?:\s*;)+$/g, '').trim();
 
-	pattern = /^([0-9]+)[\s\*]*;/g;
+	pattern = /^([0-9\-\s]+)[\*\+]?$/g;
 	matcher = pattern.exec(str);
 
 	if (matcher) {
-		build.level = matcher[1];
+		build.level = matcher[1].trim();
 		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
 	}
 
 	str = str.replace(/^(?:\s*;)+/g, '').trim();
+	str = str.replace(/(?:\s*;)+$/g, '').trim();
 
 	if (str) {
 		build.extra = str;
 	}
 
 	return build;
+}
+
+function getBuildValueAsString(
+	str: string | undefined,
+	prefix: string,
+	suffix: string,
+	rawChar: string,
+	anyValue: string
+) : string {
+
+	if (!str) {
+		return '';
+	}
+
+	if (str.toLowerCase() == 'any') {
+		return anyValue;
+	}
+
+	var pos = str.indexOf(rawChar);
+
+	if (pos != -1) {
+		if (rawChar == 'R') {
+			if (str.charAt(pos + rawChar.length) != ' ') {
+				return str;
+			}
+
+			return str.substring(0, pos + rawChar.length) + str.substring(pos + rawChar.length + 1);
+		}
+
+		if (str.charAt(pos + rawChar.length) == ' ') {
+			return str;
+		}
+
+		return str.substring(0, pos + rawChar.length) + ' ' + str.substring(pos + rawChar.length);
+	}
+
+	return prefix + str + suffix;
 }
 
 function getBuildAsString(
@@ -322,11 +385,13 @@ function getBuildAsString(
 
 	var buildArray = [
 		build.level || '',
-		build.star ? (build.star.indexOf('⭐') != -1 ? build.star : (build.star + '⭐')) : '',
-		build.rank ? (build.rank.charAt(0) == 'R' ? build.rank : ('R' + build.rank)) : '',
-		build.unique ? (build.unique.indexOf('UE') == 0 ? build.unique : ('UE ' + build.unique)) : '', 
-		build.ub ? 'UB ' + build.ub : '',
-		build.s1 ? 'S1 ' + build.s1 : '',
+		getBuildValueAsString(build.star, '', '⭐', '⭐', 'any ⭐'),
+		getBuildValueAsString(build.rank, 'R', '', 'R', 'any rank'),
+		getBuildValueAsString(build.unique, 'UE ', '', 'UE', 'UE any'),
+		getBuildValueAsString(build.ub, 'UB ', '', 'UB', 'UB any'),
+		getBuildValueAsString(build.s1, 'S1 ', '', 'S1', 'S1 any'),
+		getBuildValueAsString(build.s2, 'S2 ', '', 'S2', 'S2 any'),
+		getBuildValueAsString(build.ex, 'EX ', '', 'EX', 'EX any'),
 		build.extra || ''
 	].filter(it => it);
 

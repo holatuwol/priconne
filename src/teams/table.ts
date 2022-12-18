@@ -88,6 +88,76 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 	return cell;
 };
 
+function getTimelineTimingElements(
+	boss: string,
+	timeline: string,
+	timing: string,
+	notes: string | undefined
+) : Node[] {
+
+	var timelineElement = document.createTextNode(timeline);
+
+	var timingElement = document.createElement('a');
+	timingElement.textContent = timing;
+
+	var urlPos = timeline.indexOf('https://');
+
+	if (urlPos != -1) {
+		var videoHREF = timeline.substring(urlPos).trim();
+
+		var timeline = timeline.substring(0, urlPos).trim();
+
+		if (!timeline) {
+			if (videoHREF.indexOf('bilibili.com') != -1) {
+				var playlist = videoHREF.substring(videoHREF.lastIndexOf('/') + 1, videoHREF.lastIndexOf('?'));
+				var videoId = videoHREF.substring(videoHREF.lastIndexOf('=') + 1);
+
+				timeline = playlist + ' ' + videoId;
+			}
+			else {
+				timeline = '(none)';
+			}
+		}
+
+		timelineElement = document.createTextNode(timeline);
+
+		timingElement.setAttribute('target', '_blank');
+		timingElement.href = videoHREF;
+
+		if (videoHREF.indexOf('docs.qq.com') != -1) {
+			timingElement.setAttribute('rel', 'noreferrer');
+		}
+	}
+	else if (timeline.indexOf('\n') != -1) {
+		timelineElement = document.createTextNode('N/A');
+
+		timingElement.setAttribute('target', '_blank');
+
+		timingElement.onclick = function() {
+			Swal.fire({
+				title: boss + ' Timeline',
+				html: timeline.replace(/\n/g, '<br>')
+			});
+
+			return false;
+		};
+	}
+	else if (notes) {
+		timingElement.setAttribute('target', '_blank');
+
+		timingElement.onclick = function() {
+			Swal.fire({
+				title: timeline + ' Notes',
+				html: notes
+			});
+
+			return false;
+		};
+	}
+
+	return [timelineElement, timingElement];
+}
+
 function addAvailableTeam(team: ClanBattleTeam) : void {
 	var row = document.createElement('tr');
 
@@ -125,13 +195,11 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 		clonedButton.textContent = 'remove';
 		clonedButton.onclick = function() {
 			selectedBody.removeChild(clonedRow);
-			markUnavailableTeams();
-			updateCountElement();
+			fireTeamUpdateListeners();
 		}
 
 		selectedBody.appendChild(clonedRow);
-		markUnavailableTeams();
-		updateCountElement();
+		fireTeamUpdateListeners();
 	}
 
 	var cell = document.createElement('td');
@@ -142,85 +210,24 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 
 	var damage = getDamage(team.damage);
 
-	var damageCell = createCell(false, team.damage ? (damage.toFixed(2) + 'm') : '', 'damage');
-	damageCell.setAttribute('data-value', '' + damage);
-
-	row.appendChild(damageCell);
+	var cell = createCell(false, team.damage ? (damage.toFixed(2) + 'm') : '', 'damage');
+	cell.setAttribute('data-value', '' + damage);
+	row.appendChild(cell);
 
 	row.appendChild(createCell(false, team.region, 'region'));
 
-	var urlPos = team.timeline.indexOf('https://');
+	var elements = getTimelineTimingElements(team.boss, team.timeline, team.timing, team.notes);
 
-	if (urlPos != -1) {
-		var videoHREF = team.timeline.substring(urlPos).trim();
+	cell = document.createElement('td');
+	cell.classList.add('timeline');
+	cell.appendChild(elements[0]);
+	row.appendChild(cell);
 
-		var timeline = team.timeline.substring(0, urlPos).trim();
 
-		if (!timeline) {
-			if (videoHREF.indexOf('bilibili.com') != -1) {
-				var playlist = videoHREF.substring(videoHREF.lastIndexOf('/') + 1, videoHREF.lastIndexOf('?'));
-				var videoId = videoHREF.substring(videoHREF.lastIndexOf('=') + 1);
-
-				timeline = playlist + ' ' + videoId;
-			}
-			else {
-				timeline = '(none)';
-			}
-		}
-
-		row.appendChild(createCell(false, timeline, 'timeline'));
-
-		var timingLink = document.createElement('a');
-		timingLink.textContent = team.timing;
-		timingLink.setAttribute('target', '_blank');
-		timingLink.href = videoHREF;
-
-		if (videoHREF.indexOf('docs.qq.com') != -1) {
-			timingLink.setAttribute('rel', 'noreferrer');
-		}
-
-		row.appendChild(createCell(false, timingLink, 'timing'));
-	}
-	else if (team.timeline && team.timeline.indexOf('\n') != -1) {
-		row.appendChild(createCell(false, 'N/A', 'timeline'));
-
-		var timingLink = document.createElement('a');
-		timingLink.textContent = team.timing;
-		timingLink.setAttribute('target', '_blank');
-
-		timingLink.onclick = function() {
-			Swal.fire({
-				title: team.boss + ' Timeline',
-				html: team.timeline.replace(/\n/g, '<br>')
-			});
-
-			return false;
-		};
-
-		row.appendChild(createCell(false, timingLink, 'timing'));
-	}
-	else if (team.notes) {
-		row.appendChild(createCell(false, team.timeline, 'timeline'));
-
-		var timingLink = document.createElement('a');
-		timingLink.textContent = team.timing;
-		timingLink.setAttribute('target', '_blank');
-
-		timingLink.onclick = function() {
-			Swal.fire({
-				title: team.timeline + ' Notes',
-				html: team.notes
-			});
-
-			return false;
-		};
-
-		row.appendChild(createCell(false, timingLink, 'timing'));
-	}
-	else {
-		row.appendChild(createCell(false, team.timeline, 'timeline'));
-		row.appendChild(createCell(false, team.timing, 'timing'));
-	}
+	cell = document.createElement('td');
+	cell.classList.add('timing');
+	cell.appendChild(elements[1]);
+	row.appendChild(cell);
 
 	_.sortBy(team.units, it => {
 		var unitId = unitIds[it.name] || '0';

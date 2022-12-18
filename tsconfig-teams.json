@@ -15,6 +15,7 @@
     "src/util.ts",
     "src/sheets.ts",
     "src/calendar.ts",
+    "src/teams/globalvars.ts",
     "src/teams/*.ts",
     "src/teams.ts"
   ]

@@ -74,7 +74,7 @@ function encodeAvailableUnitsHelper() {
 
 	bookmarkElement.value = bookmark;
 
-	markUnavailableTeams();
+	fireTeamUpdateListeners();
 }
 
 var encodeAvailableUnits = _.debounce(encodeAvailableUnitsHelper, 300);

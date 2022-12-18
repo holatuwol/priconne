@@ -87,14 +87,15 @@ function extractLabManualTeamsFromTab(
 			timeline: indices[i] + ' ' + medias[i],
 			damage: damages[i],
 			units: unitNames[i].map((it, j) => {
+				var build = getStringAsBuild(levels[i][j]);
+
+				build.star = stars[i][j];
+				build.rank = ranks[i][j];
+				build.unique = ues[i][j];
+
 				return {
 					'name': it,
-					'build': {
-						level: levels[i][j],
-						star: stars[i][j],
-						ranks: ranks[i][j],
-						unique: ues[i][j]
-					}
+					'build': build
 				}
 			})
 		});

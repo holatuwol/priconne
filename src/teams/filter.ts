@@ -145,6 +145,8 @@ function updateCountElement() : void {
 	}
 }
 
+teamUpdateListeners.push(updateCountElement);
+
 function filterAvailableTeamsHelper() {
 	var availableBosses = getCheckboxValues('#bosses-available input[type="checkbox"]:checked, #bosses-available input[type="hidden"]');
 	var availableRegions = getCheckboxValues('#regions-available input[type="checkbox"]:checked, #regions-available input[type="hidden"]');
@@ -298,7 +300,58 @@ function isMatchingRank(
 		return true;
 	}
 
+	var rankRE = /([0-9]+)-([0-9]+)/;
+
+	var actualMatcher = rankRE.exec(actualBuild.rank);
+	var desiredMatcher = rankRE.exec(desiredBuild.rank);
+
+	if (actualMatcher && desiredMatcher) {
+		if (parseInt(actualMatcher[1]) != parseInt(desiredMatcher[1])) {
+			return parseInt(actualMatcher[1]) < parseInt(desiredMatcher[1]);
+		}
+
+		return parseInt(actualMatcher[2]) <= parseInt(desiredMatcher[2]);
+	}
+
+	rankRE = /[0-9]+/;
+
+	actualMatcher = rankRE.exec(actualBuild.rank);
+	desiredMatcher = rankRE.exec(desiredBuild.rank);
+
+	if (actualMatcher && desiredMatcher) {
+		return parseInt(actualMatcher[0]) <= parseInt(desiredMatcher[0]);
+	}
+
 	return actualBuild.rank <= desiredBuild.rank;
+}
+
+function getBrickDifferences(
+	units: Record<string, ClanBattleBuild>,
+	key: string,
+	desiredBuild?: ClanBattleBuild
+) : ClanBattleBuild {
+
+	var mismatchedBuild = <ClanBattleBuild> {};
+
+	var actualBuild = units[key];
+
+	if (!desiredBuild || !actualBuild) {
+		return mismatchedBuild;
+	}
+
+	if (!isMatchingLevel(desiredBuild, actualBuild)) {
+		mismatchedBuild.level = actualBuild.level;
+	}
+
+	if (!isMatchingStar(desiredBuild, actualBuild)) {
+		mismatchedBuild.star = actualBuild.star;
+	}
+
+	if (!isMatchingRank(desiredBuild, actualBuild)) {
+		mismatchedBuild.rank = actualBuild.rank;
+	}
+
+	return mismatchedBuild;
 }
 
 function hasUnitAvailable(
@@ -309,13 +362,15 @@ function hasUnitAvailable(
 
 	var actualBuild = units[key];
 
-	if (actualBuild == null) {
+	if (!actualBuild) {
 		return false;
 	}
 
-	if (desiredBuild == undefined) {
+	if (!desiredBuild) {
 		return true;
 	}
+
+	var isMismatchedBuild = false;
 
 	if (!isMatchingLevel(desiredBuild, actualBuild) ||
 		!isMatchingStar(desiredBuild, actualBuild) ||
@@ -433,6 +488,8 @@ function markUnavailableTeams() : void {
 	Array.from(availableBody.rows).forEach(markUnavailableTeam.bind(null, borrowStrategy, chosenTeams));
 };
 
+teamUpdateListeners.push(markUnavailableTeams);
+
 function renderUnavailableTeams() : void {
 	var unavailableStyleElement = <HTMLInputElement> document.querySelector('input[name="unavailable-style"]:checked');
 	var unavailableStyle = unavailableStyleElement ? unavailableStyleElement.value : 'hide';
@@ -458,3 +515,9 @@ function toggleBuildVisibility() {
 		selectedContainer.classList.add('show-unit-info');
 	}
 };
+
+function fireTeamUpdateListeners() : void {
+	for (var i = 0; i < teamUpdateListeners.length; i++) {
+		teamUpdateListeners[i]();
+	}
+}

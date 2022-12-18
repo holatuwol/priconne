@@ -32,19 +32,56 @@ function updateRemainingHitsByBoss(
 		listItem.textContent = hit.playerName + ' (' + hit.carryover + ')';
 	}
 	else {
-		var extraInfo = [
-			hit.timeline || '',
-			hit.borrow || ''
-		].filter(it => it);
-
 		listItem.classList.add('remaining');
 
-		if (hit.playerName in status.carryover) {
-			extraInfo.push('locked on ' + status.carryover[hit.playerName]);
-			listItem.classList.add('locked');
+		listItem.appendChild(document.createTextNode(hit.playerName));
+
+		var extraInfo = <Node[]> [];
+
+		if (hit.timeline) {
+			var elements = <Node[]> [];
+
+			if (typeof(getTimelineTimingElements) == 'function') {
+				elements = getTimelineTimingElements(hit.bossName, hit.timeline, 'manual', undefined);
+				elements[1].textContent = elements[0].textContent;
+
+				if (extraInfo.length > 0) {
+					extraInfo.push(document.createTextNode(', '));
+				}
+
+				extraInfo.push(elements[1]);
+			}
+			else {
+				extraInfo.push(document.createTextNode(hit.timeline));
+			}
 		}
 
-		listItem.textContent = hit.playerName + (extraInfo.length ? (' (' + extraInfo.join(', ') + ')') : '');
+		if (hit.borrow) {
+			if (extraInfo.length > 0) {
+				extraInfo.push(document.createTextNode(', '));
+			}
+
+			extraInfo.push(document.createTextNode(hit.borrow));
+		}
+
+		if (hit.playerName in status.carryover) {
+			if (extraInfo.length > 0) {
+				extraInfo.push(document.createTextNode(', '));
+			}
+
+			listItem.classList.add('locked');
+			extraInfo.push(document.createTextNode('locked on ' + status.carryover[hit.playerName]));
+		}
+
+		if (extraInfo.length) {
+			listItem.appendChild(document.createTextNode(' ('));
+
+			for (var i = 0; i < extraInfo.length; i++) {
+				listItem.appendChild(extraInfo[i]);
+			}
+
+			listItem.appendChild(document.createTextNode(')'));
+		}
 	}
 
 	list.appendChild(listItem);

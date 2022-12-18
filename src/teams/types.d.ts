@@ -7,6 +7,8 @@ interface ClanBattleBuild {
 	unique?: string,
 	ub?: string,
 	s1?: string,
+	s2?: string,
+	ex?: string,
 	extra?: string
 }
 

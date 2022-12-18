@@ -1,4 +1,6 @@
-var playerRequirementsElement = <HTMLDivElement> document.querySelector('#player-requirements');
+var bossAllocationStatusElement = <HTMLDivElement> document.querySelector('#boss-allocation-status .allocation-status');
+var playerAllocationStatusElement = <HTMLDivElement> document.querySelector('#player-allocation-status .allocation-status');
+var currentAllocationElement = <HTMLDivElement> document.querySelector('#current-allocation');
 
 function getPlayerRaises(
 	chosenTeams: Record<string, ClanBattleBuild>[],
@@ -47,12 +49,14 @@ function getPlayerBorrows(
 		for (var key in checkTeam) {
 			var desiredBuild = checkTeam[key];
 
-			if (!hasUnitAvailable(usableUnits, key, desiredBuild)) {
-				borrows.push({
-					name: key,
-					build: desiredBuild
-				});
+			if (hasUnitAvailable(usableUnits, key, desiredBuild)) {
+				continue;
 			}
+
+			borrows.push({
+				name: key,
+				build: getBrickDifferences(usableUnits, key, desiredBuild)
+			});
 		}
 	}
 
@@ -97,81 +101,223 @@ function getUnitComparisonItem(
 	return figureElement;
 }
 
-function addPlayerRequirementsRow(
+function getInitialViabilityMarkers(playerNames: string[]) : HTMLDivElement {
+	var matchElement = document.createElement('div');
+
+	matchElement.classList.add('player-matches');
+
+	for (var i = 0; i < playerNames.length; i++) {
+		var playerName = playerNames[i];
+
+		var viableElement = document.createElement('span');
+
+		var viableCheckboxElement = document.createElement('input');
+		viableCheckboxElement.setAttribute('type', 'checkbox');
+		viableCheckboxElement.setAttribute('data-player', playerName);
+
+		viableElement.appendChild(viableCheckboxElement);
+		matchElement.appendChild(viableElement);
+	}
+
+	return matchElement;
+}
+
+function updateAllocationStatus(
+	input: HTMLInputElement,
+	playerNames: string[]
+) : void {
+
+	var row = <HTMLTableRowElement> input.closest('tr');
+
+	var bossName = <string> row.getAttribute('data-boss');
+	var timeline = <string> row.getAttribute('data-timeline');
+	var playerName = <string> input.getAttribute('data-player');
+
+	var hasAllocation = allocatedHits.filter(it => it.playerName == playerName && it.timeline == timeline).length > 0;
+
+	if (input.checked) {
+		if (!hasAllocation) {
+			allocatedHits.push({
+				bossName: bossName,
+				day: '0',
+				playerName: playerName,
+				timeline: timeline
+			})
+		}
+	}
+	else {
+		allocatedHits = allocatedHits.filter(it => !(it.playerName == playerName && it.timeline == timeline));
+	}
+
+	var count = allocatedHits.filter(it => it.bossName == bossName).length;
+	var countElement = <HTMLSpanElement> bossAllocationStatusElement.querySelector('span[title="' + bossName + '"]');
+
+	countElement.textContent = '' + count;
+
+	count = allocatedHits.filter(it => it.playerName == playerName).length;
+	countElement = <HTMLAnchorElement> playerAllocationStatusElement.querySelector('span[title="' + playerName + '"] a');
+
+	countElement.textContent = '' + count;
+
+	if (count == 0) {
+		countElement.removeAttribute('href');
+	}
+	else {
+		countElement.setAttribute('href', '#');
+	}
+
+	var status = <ClanBattleStatus> {
+		allocation: {
+			completed: [],
+			remaining: allocatedHits
+		},
+		carryover: {},
+		day: '0',
+		hitNumber: 0,
+		index: 0,
+		lap: 0,
+		latestHit: null,
+		remainingHP: 0
+	};
+
+	renderRemainingHitsByBoss(status);
+	renderRemainingHitsByPlayer(status);
+}
+
+function updateViabilityMarkersHelper(
 	chosenTeams: Record<string, ClanBattleBuild>[],
 	borrowStrategy: string,
-	playerName: string
+	playerNames: string[],
+	row: HTMLTableRowElement
 ) : void {
 
-	var usableUnits = clanUnits[playerName];
+	var altBossesCell = <HTMLTableCellElement> row.querySelector('td.alt-bosses');
 
-	if (!isViableChoice(usableUnits, borrowStrategy, new Set<string>(), chosenTeams)) {
-		return;
+	var matchElement = altBossesCell.querySelector('.player-matches');
+
+	if (!matchElement) {
+		matchElement = getInitialViabilityMarkers(playerNames);
+
+		altBossesCell.appendChild(matchElement);
 	}
 
-	var playerNameElement = document.createElement('h3');
-	playerNameElement.textContent = playerName;
-	playerRequirementsElement.appendChild(playerNameElement);
+	var newTeam = getMembers(row);
 
-	var raises = getPlayerRaises(chosenTeams, usableUnits);
+	var hasAnyMatch = false;
 
-	var raiseElementHeader = document.createElement('h4');
-	raiseElementHeader.textContent = 'Must Raise';
-	playerRequirementsElement.appendChild(raiseElementHeader);
+	for (var i = 0; i < playerNames.length; i++) {
+		var playerName = playerNames[i];
+		var usableUnits = clanUnits[playerName];
 
-	var raiseElement = raises.reduce((acc, it) => {
-		acc.appendChild(getUnitComparisonItem(it.name, it.build, usableUnits[it.name]));
+		var viableCheckboxElement = <HTMLInputElement> matchElement.querySelector('input[data-player="' + playerName + '"]');
+		var viableElement = <HTMLSpanElement> viableCheckboxElement.closest('span');
 
-		return acc;
-	}, document.createElement('div'));
+		var newChosenTeams = allocatedHits.filter(it => it.playerName == playerName).map(it => getMembers(<HTMLTableRowElement> document.querySelector('tr[data-timeline="' + (it.timeline || '') + '"]')));
 
-	if (raises.length == 0) {
-		raiseElement.appendChild(document.createTextNode('none'));		
+		if (newChosenTeams.filter(it => _.isEqual(it, newTeam)).length == 0) {
+			viableCheckboxElement.checked = false;
+			newChosenTeams.push(newTeam);
+		}
+		else {
+			viableCheckboxElement.checked = true;
+		}
+
+		for (var j = 0; j < chosenTeams.length; j++) {
+			var chosenTeam = chosenTeams[j];
+
+			if (newChosenTeams.filter(it => _.isEqual(it, chosenTeam)).length == 0) {
+				newChosenTeams.push(chosenTeam);
+			}
+		}
+
+		if (isViableChoice(usableUnits, borrowStrategy, new Set<string>(), newChosenTeams)) {
+			viableCheckboxElement.removeAttribute('disabled');
+
+			viableElement.setAttribute('data-viable', 'true');
+			viableElement.setAttribute('title', playerName + ': yes');
+
+			hasAnyMatch = true;
+		}
+		else {
+			viableCheckboxElement.setAttribute('disabled', 'true');
+
+			var borrows = getPlayerBorrows(newChosenTeams, usableUnits);
+			var buildString = borrows.map(it => it.name + ': ' + (it.name in usableUnits ? getBuildAsString(it.build, '; ') : 'missing')).join('\n');
+
+			viableElement.setAttribute('data-viable', 'false');
+			viableElement.setAttribute('title', playerName + ': no\n' + buildString);
+		}
 	}
 
-	playerRequirementsElement.appendChild(raiseElement);
-
-	var borrowElementHeader = document.createElement('h4');
-	borrowElementHeader.textContent = 'Must Borrow (Cannot Raise / Missing Unit)';
-	playerRequirementsElement.appendChild(borrowElementHeader);
-
-	var borrows = getPlayerBorrows(chosenTeams, usableUnits);
-
-	var borrowElement = borrows.reduce((acc, it) => {
-		acc.appendChild(getUnitComparisonItem(it.name, it.build, usableUnits[it.name]));
-
-		return acc;
-	}, document.createElement('div'));
-
-	if (borrows.length == 0) {
-		borrowElement.appendChild(document.createTextNode('none'));		
+	if (!hasAnyMatch) {
+		row.classList.add('unavailable');
 	}
 
-	playerRequirementsElement.appendChild(borrowElement);
+	if (row.closest('tbody') == selectedBody && !row.hasAttribute('data-listener')) {
+		matchElement.querySelectorAll('input[type="checkbox"]').forEach((it: HTMLInputElement) => it.onchange = updateAllocationStatus.bind(null, it, playerNames));
+
+		row.setAttribute('data-listener', 'true');
+	}
 }
 
-function updatePlayerRequirements(
-	chosenTeams: Record<string, ClanBattleBuild>[],
-	borrowStrategy: string
-) : void {
-
-	playerRequirementsElement.innerHTML = '';
-
-	if (chosenTeams.length == 0) {
-		return;
+function filterByPlayerName(playerName: string) : void {
+	for (var i = selectedBody.rows.length - 1; i >= 0; i--) {
+		var buttonElement = <HTMLButtonElement> selectedBody.rows[i].querySelector('button');
+		buttonElement.click();
 	}
 
-	for (var playerName in clanUnits) {
-		addPlayerRequirementsRow(chosenTeams, borrowStrategy, playerName);
+	for (var i = 0; i < availableBody.rows.length; i++) {
+		var timeline = availableBody.rows[i].getAttribute('data-timeline');
+
+		if (allocatedHits.filter(it => it.playerName == playerName && it.timeline == timeline).length == 0) {
+			continue;
+		}
+
+		var buttonElement = <HTMLButtonElement> availableBody.rows[i].querySelector('button');
+		buttonElement.click();
 	}
 }
 
-function markUnavailableTeams() : void {
+function updateViabilityMarkers() : void {
 	var borrowStrategy = 'all';
-
 	var chosenTeams = Array.from(selectedBody.rows).map(getMembers);
 
-	Array.from(availableBody.rows).forEach(markUnavailableTeam.bind(null, borrowStrategy, chosenTeams));
+	var playerNames = Array.from(Object.keys(clanUnits)).sort();
 
-	updatePlayerRequirements(chosenTeams, borrowStrategy);
+	var tierNames = Object.keys(bossStats[currentCBId].bossHP);
+	var bossNames = tierNames.map(it => [it + '1', it + '2', it + '3', it + '4', it + '5']).reduce((acc, it) => acc.concat(it));
+
+	if (bossAllocationStatusElement.childNodes.length < bossNames.length) {
+		for (var i = 0; i < bossNames.length; i++) {
+			var spanElement = document.createElement('span');
+			spanElement.setAttribute('title', bossNames[i]);
+			spanElement.textContent = '0';
+			bossAllocationStatusElement.appendChild(spanElement);
+		}
+	}
+
+	if (playerAllocationStatusElement.childNodes.length < playerNames.length) {
+		for (var i = 0; i < playerNames.length; i++) {
+			var playerName = playerNames[i];
+			var spanElement = document.createElement('span');
+			spanElement.setAttribute('title', playerName);
+
+			var linkElement = document.createElement('a');
+			linkElement.textContent = '0';
+			linkElement.onclick = filterByPlayerName.bind(null, playerName);
+
+			spanElement.appendChild(linkElement);
+			playerAllocationStatusElement.appendChild(spanElement);
+		}
+	}
+
+	for (var i = 0; i < availableBody.rows.length; i++) {
+		updateViabilityMarkersHelper(chosenTeams, borrowStrategy, playerNames, availableBody.rows[i]);
+	}
+
+	for (var i = 0; i < selectedBody.rows.length; i++) {
+		updateViabilityMarkersHelper(chosenTeams, borrowStrategy, playerNames, selectedBody.rows[i]);
+	}
 }
+
+teamUpdateListeners.push(updateViabilityMarkers);

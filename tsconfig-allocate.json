@@ -8,12 +8,14 @@
     "strictNullChecks": true
   },
   "include": [
+    "src/clanhits/types.d.ts"
+    "src/teams/types.d.ts"
+    "src/imports/bosses.d.ts",
+    "src/imports/clanhits.d.ts",
     "src/imports/sortable.d.ts",
     "src/imports/sweetalert2.d.ts",
-    "src/imports/bosses.d.ts",
     "src/imports/teams.d.ts",
     "src/imports/units.d.ts",
-    "src/teams/types.d.ts"
     "src/util.ts",
     "src/sheets.ts",
     "src/allocate/*.ts"

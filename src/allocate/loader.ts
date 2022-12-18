@@ -1,4 +1,7 @@
+document.body.style.opacity = '0.1';
+
 var clanUnits = <Record<string, Record<string, ClanBattleBuild>>> {};
+var allocatedHits = <AllocatedHit[]> [];
 
 function getUnitEquipValues(
 	sliceIndex: number,
@@ -23,7 +26,7 @@ function loadUnitEquip(container: HTMLElement) : void {
 	var stars = <string[][]> unitsRows.map(getUnitEquipValues.bind(null, playersIndex));
 	var levels = <string[][]> unitsRows.map(it => getSiblingRowElement(it, 1)).map(getUnitEquipValues.bind(null, playersIndex - 1));
 	var ranks = <string[][]> unitsRows.map(it => getSiblingRowElement(it, 2)).map(getUnitEquipValues.bind(null, playersIndex - 1));
-	var ues = <string[][]> unitsRows.map(it => getSiblingRowElement(it, 3)).map(getUnitEquipValues.bind(null, playersIndex - 1));
+	var ues = <string[][]> unitsRows.map(it => getSiblingRowElement(it, 3)).map(getUnitEquipValues.bind(null, playersIndex));
 
 	clanUnits = players.reduce((acc1, playerName, j) => {
 		acc1[playerName] = units.map((unitName, i) => {
@@ -37,8 +40,16 @@ function loadUnitEquip(container: HTMLElement) : void {
 				}
 			};
 		}).reduce((acc2, it) => {
-			if (it.build.level || it.build.star || it.build.rank || it.build.unique) {
+			if (it.build.star) {
 				acc2[it.name] = it.build;
+
+				if (!it.build.level) {
+					it.build.level = '1';
+				}
+
+				if (!it.build.rank) {
+					it.build.rank = '1-0';
+				}
 			}
 
 			return acc2;
@@ -72,10 +83,30 @@ function processUnitEquips(
 
 	loadUnitEquip(<HTMLElement> container.querySelector('div[id="' + gids['UnitEquip'] + '"]'));
 
+	processedUnitEquips = true;
+
 	return true;
 }
 
+var processedUnitEquips = false;
 var sheetIds = document.location.search ? document.location.search.substring(1).split('&') : defaultSheetIds;
+var viewedSheetIdCount = 0;
 
-expandGoogleSheetURLs(sheetIds[0], null, processUnitEquips, () => {});
-expandGoogleSheetURLs(sheetIds[1], null, undefined, loadTeams.bind(null, updateDefaultTeams));
+function initializeMatchingPlayers(
+	callback: (responseText: string, href: string, container: HTMLElement) => boolean,
+	responseText: string,
+	href: string,
+	container: HTMLElement
+) : boolean {
+
+	var value = callback(responseText, href, container);
+
+	if (++viewedSheetIdCount == sheetIds.length) {
+		document.body.style.opacity = '1.0';
+	}
+
+	return value;
+}
+
+expandGoogleSheetURLs(sheetIds[0], null, initializeMatchingPlayers.bind(null, processUnitEquips), () => {});
+expandGoogleSheetURLs(sheetIds[1], null, undefined, initializeMatchingPlayers.bind(null, loadTeams.bind(null, updateDefaultTeams)));
