@@ -269,53 +269,65 @@ function processHitRecords(
 	}
 
 	var tabs = container.querySelectorAll('#sheet-menu li');
-	var gids = <Record<string, string>> {};
 
-	for (var j = 0; j < tabs.length; j++) {
-		var listItemId = tabs[j].getAttribute('id');
+	if (tabs.length > 0) {
+		var gids = <Record<string, string>> {};
 
-		if (!listItemId) {
-			continue;
+		for (var j = 0; j < tabs.length; j++) {
+			var listItemId = tabs[j].getAttribute('id');
+
+			if (!listItemId) {
+				continue;
+			}
+
+			var tabId = listItemId.substring('sheet-button-'.length);
+			var tabName = (tabs[j].textContent || '').trim();
+
+			gids[tabName] = tabId;
 		}
 
-		var tabId = listItemId.substring('sheet-button-'.length);
-		var tabName = (tabs[j].textContent || '').trim();
+		var seenDays = new Set();
 
-		gids[tabName] = tabId;
-	}
+		for (var i = 1; i <= 5; i++) {
+			var key = 'Day ' + i + ' Alloc';
 
-	var seenDays = new Set();
-
-	for (var i = 1; i <= 5; i++) {
-		var key = 'Day ' + i + ' Alloc';
-
-		if (key in gids) {
-			seenDays.add(i);
-			processInitialAllocation(container, gids[key], i);
-		}
-	}
-
-	for (var i = 1; i <= 5; i++) {
-		if (seenDays.has(i)) {
-			continue;
-		}
-
-		var seenWildcard = false;
-
-		for (var j = i; j >= 1 && !seenWildcard; j--) {
-			var prefix = 'Day ' + j + '+';
-
-			for (key in gids) {
-				if (key.indexOf(prefix) == 0) {
-					seenWildcard = true;
-					processInitialAllocation(container, gids[key], i);
-				}
+			if (key in gids) {
+				seenDays.add(i);
+				processInitialAllocation(container, gids[key], i);
 			}
 		}
 
-	}
+		for (var i = 1; i <= 5; i++) {
+			if (seenDays.has(i)) {
+				continue;
+			}
 
-	processCompletedHits(cbId, container, gids['DPS Log']);
+			var seenWildcard = false;
+
+			for (var j = i; j >= 1 && !seenWildcard; j--) {
+				var prefix = 'Day ' + j + '+';
+
+				for (key in gids) {
+					if (key.indexOf(prefix) == 0) {
+						seenWildcard = true;
+						processInitialAllocation(container, gids[key], i);
+					}
+				}
+			}
+
+		}
+
+		processCompletedHits(cbId, container, gids['DPS Log']);
+	}
+	else {
+		var tabElement = <HTMLDivElement> container.querySelector('#sheets-viewport > div');
+
+		processInitialAllocation(container, tabElement.getAttribute('id') || '', 1);
+
+		var oldStatus = getInitialClanBattleStatus(cbId);
+
+		statusHistory = [oldStatus];
+	}
 
 	renderStatusHistory();
 	renderClanBattleStatus();
