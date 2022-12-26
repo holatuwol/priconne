@@ -291,10 +291,16 @@ function processHitRecords(
 		for (var i = 1; i <= 5; i++) {
 			var key = 'Day ' + i + ' Alloc';
 
-			if (key in gids) {
-				seenDays.add(i);
-				processInitialAllocation(container, gids[key], i);
+			if (!(key in gids)) {
+				key = 'Day ' + i;
 			}
+
+			if (!(key in gids)) {
+				continue;
+			}
+
+			seenDays.add(i);
+			processInitialAllocation(container, gids[key], i);
 		}
 
 		for (var i = 1; i <= 5; i++) {
