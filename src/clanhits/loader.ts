@@ -156,25 +156,6 @@ function getUpdatedClanBattleStatus(
 	return newStatus;
 }
 
-function updateAllocatedHits(
-	allocatedHits: AllocatedHit[],
-	lapRow: HTMLTableRowElement,
-	day: string
-) : void {
-
-	var lapCell = <HTMLTableCellElement> lapRow.querySelector('td[colspan="25"]');
-	var lap = (lapCell.textContent || 'Lap 0').trim().substring(4);
-
-	var memberIndices = Array.from(getSiblingRowElement(lapRow, 2).cells).map((it, i) => it.textContent == 'Member' ? i : -1).filter(it => it != -1);
-
-	var nextRow = <HTMLTableRowElement | null> getSiblingRowElement(lapRow, 3);
-
-	while (nextRow != null && nextRow.querySelector('td[colspan]') == null) {
-		Array.prototype.push.apply(allocatedHits, getAllocatedHits(nextRow, lap == '0' ? 'flex' : lap, memberIndices, day));
-		nextRow = <HTMLTableRowElement | null> nextRow.nextSibling;
-	}
-}
-
 function getAllocatedHits(
 	tableRow: HTMLTableRowElement,
 	lap: string,
@@ -203,18 +184,88 @@ function getAllocatedHits(
 	}).filter(it => it);
 }
 
-function processInitialAllocation(
+function processInitialAllocationRaw(
 	container: HTMLElement,
 	tabId: string,
 	index: number
-) : void {
+) : AllocatedHit[] {
 
 	var lapRows = <HTMLTableRowElement[]>Array.from(container.querySelectorAll('[id="' + tabId + '"] tr td[colspan="25"]')).map(it => <HTMLTableRowElement> it.closest('tr'));
 
 	var allocatedHits = <AllocatedHit[]> [];
 
 	for (var i = 0; i < lapRows.length; i++) {
-		updateAllocatedHits(allocatedHits, lapRows[i], '' + index);
+		var lapRow = lapRows[i];
+
+		var lapCell = <HTMLTableCellElement> lapRow.querySelector('td[colspan="25"]');
+		var lap = (lapCell.textContent || 'Lap 0').trim().substring(4);
+
+		var memberIndices = Array.from(getSiblingRowElement(lapRow, 2).cells).map((it, i) => it.textContent == 'Member' ? i : -1).filter(it => it != -1);
+
+		var nextRow = <HTMLTableRowElement | null> getSiblingRowElement(lapRow, 3);
+
+		while (nextRow != null && nextRow.querySelector('td[colspan]') == null) {
+			Array.prototype.push.apply(allocatedHits, getAllocatedHits(nextRow, lap == '0' ? 'flex' : lap, memberIndices, '' + index));
+			nextRow = <HTMLTableRowElement | null> nextRow.nextSibling;
+		}
+	}
+
+	return allocatedHits;
+}
+
+function processInitialAllocationSummary(
+	container: HTMLElement,
+	tabId: string,
+	index: number
+) : AllocatedHit[] {
+
+	var headerRow = <HTMLTableRowElement> Array.from(container.querySelectorAll('[id="' + tabId + '"] tr td')).filter(it => it.textContent == 'Member')[0].closest('tr');
+	var memberIndex = -1;
+
+	for (var i = 0; i < headerRow.cells.length && memberIndex == -1; i++) {
+		if (headerRow.cells[i].textContent == 'Member') {
+			memberIndex = i;
+		}
+	}
+
+	var allocatedHits = <AllocatedHit[]> [];
+
+	if (memberIndex == -1) {
+		return allocatedHits;
+	}
+
+	var memberRow = <HTMLTableRowElement | null> headerRow.nextSibling;
+
+	while (memberRow && memberRow.cells[memberIndex].textContent) {
+		var playerName = <string> memberRow.cells[memberIndex].textContent;
+
+		for (var i = 1; i <= 3; i++) {
+			var timeline = memberRow.cells[memberIndex + i].textContent || '';
+
+			allocatedHits.push({
+				bossName: timeline.substring(0, 2),
+				day: '' + index,
+				timeline: timeline,
+				playerName: playerName
+			})
+		}
+
+		memberRow = <HTMLTableRowElement | null> memberRow.nextSibling;
+	}
+
+	return allocatedHits;
+}
+
+function processInitialAllocation(
+	container: HTMLElement,
+	tabId: string,
+	index: number
+) : void {
+
+	var allocatedHits = processInitialAllocationRaw(container, tabId, index);
+
+	if (allocatedHits.length != 90) {
+		allocatedHits = processInitialAllocationSummary(container, tabId, index);
 	}
 
 	var hitCounts = allocatedHits.reduce((acc, next) => {
@@ -232,7 +283,7 @@ function processInitialAllocation(
 		}
 	}
 
-	initialAllocations['' + index] = allocatedHits
+	initialAllocations['' + index] = allocatedHits;
 }
 
 function getNextDayInitialStatus(
