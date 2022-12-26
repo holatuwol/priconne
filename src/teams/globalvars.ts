@@ -27,7 +27,7 @@ var selectedHeader = <HTMLTableSectionElement> selectedContainer.tHead;
 var selectedBody = <HTMLTableSectionElement> selectedContainer.tBodies[0];
 
 var simpleRE = /([\-+]?[0-9][0-9\.,\s]*[km±])/i;
-var averageRE = /Avg:? ([0-9\.,]+)/i;
+var averageRE = /Avg:? ([0-9\.,kmw]+)/i;
 var otkRE = /((?:\d+%\s)?(?:OTK|OHKO))/i;
 
 var teamUpdateListeners = <Function[]> [];

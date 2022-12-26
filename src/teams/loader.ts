@@ -218,12 +218,12 @@ function checkForExtraTeamsSheet(
 
 	var title = titleElement.textContent || '';
 
-	if (title.indexOf('TheLab Sheet') != -1) {
-		extractLabManualTeams(href, container);
+	if (title.indexOf('TheLab Auto') != -1) {
+		extractLabAutoTeams(href, container);
 		return true;
 	}
-	else if (title.indexOf('TheLab Auto') != -1) {
-		extractLabAutoTeams(href, container);
+	else if (title.indexOf('TheLab ') != -1) {
+		extractLabManualTeams(href, container);
 		return true;
 	}
 	else if (title.indexOf('CB TLs') != -1 && responseText.indexOf('Demiurge') != -1) {

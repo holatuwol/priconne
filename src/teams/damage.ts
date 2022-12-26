@@ -33,10 +33,7 @@ function isMaxDamage(it: string) : boolean {
 }
 
 function getMaxDamage(boss: string) : number {
-	return boss == 'A1' ? 6 : boss == 'A2' ? 8 : boss == 'A3' ? 10 : boss == 'A4' ? 12 : boss == 'A5' ? 15 :
-		boss == 'B1' ? 6 : boss == 'B2' ? 8 : boss == 'B3' ? 10 : boss == 'B4' ? 12 : boss == 'B5' ? 15 :
-		boss == 'C1' ? 7 : boss == 'C2' ? 9 : boss == 'C3' ? 12 : boss == 'C4' ? 14 : boss == 'C5' ? 17 :
-		0;
+	return bossStats[currentCBId]['bossHP'][boss.charAt(0)][parseInt(boss.charAt(1)) - 1] / 1000000;
 }
 
 function getDamageMatcher(description: string): RegExpExecArray | null {

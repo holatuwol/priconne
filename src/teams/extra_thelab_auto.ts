@@ -1,12 +1,12 @@
-
-
 function getLabAutoDamage(
 	matcher: RegExpExecArray,
 	oldTeam: ClanBattleTeam
 ) : number {
 
+	var maxDamage = getMaxDamage(oldTeam.boss);
+
 	if (isMaxDamage(matcher[0])) {
-		return getMaxDamage(oldTeam.boss);
+		return maxDamage;
 	}
 
 	var newDamageString = matcher[1].replace(/,/, '.').trim();
@@ -24,7 +24,11 @@ function getLabAutoDamage(
 		newDamage += getDamage(newDamageString.substring(1));
 	}
 
-	return newDamage;
+	if (newDamage > maxDamage) {
+		console.warn(newDamage, '>', maxDamage, matcher[1]);
+	}
+
+	return Math.min(maxDamage, newDamage);
 }
 
 function applyBuild(
@@ -136,7 +140,7 @@ function getRankStarVariations(
 		}
 
 		if (!applySubstitution(newTeam, rankStarMatcher[1], rankStarMatcher[0])) {
-			console.log('could not identify rank/star variation:', oldTeam, description);
+			console.warn('could not identify rank/star variation:', oldTeam, description);
 			return [];
 		}
 	}
@@ -203,15 +207,16 @@ function getSingleSubstitutions(
 		if (singleMatcher) {
 			if (hasSubstitution) {
 				var oldUnit = singleMatcher[1].trim();
+				var newUnit = singleMatcher[2].trim();
 
-				if (oldUnit.indexOf(' due') != -1 || oldUnit.indexOf(' die') != -1) {
+				if (oldUnit.toLowerCase().indexOf(' due') != -1 || oldUnit.toLowerCase().indexOf(' die') != -1 || newUnit.toLowerCase().indexOf('end ') == 0) {
 					singleMatcher = null;
 				}
 				else {
-					hasSubstitution = applySubstitution(newTeam, oldUnit, singleMatcher[2].trim());
+					hasSubstitution = applySubstitution(newTeam, oldUnit, newUnit);
 
 					if (!hasSubstitution) {
-						console.log('could not identify unit substitution:', oldTeam, description);
+						console.warn('could not identify unit substitution:', oldTeam, description);
 					}
 				}
 			}
@@ -223,7 +228,7 @@ function getSingleSubstitutions(
 					hasSubstitution = applySubstitution(newTeam, rankStarMatcher[1].trim(), rankStarMatcher[0].trim());
 
 					if (!hasSubstitution) {
-						console.log('could not identify rank/star substitution:', oldTeam, description);
+						console.warn('could not identify rank/star substitution:', oldTeam, description);
 					}
 				}
 			}
@@ -339,12 +344,17 @@ function getLabAutoTeams(
 
 	var damageString = damages[0];
 	var damage = 0.0;
+	var maxDamage = getMaxDamage(boss);
 
 	if (isMaxDamage(damageString)) {
-		damage = getMaxDamage(boss);
+		damage = maxDamage;
 	}
 	else {
 		damage = getDamage(damageString);
+
+		if (damage > maxDamage) {
+			console.warn(damage, '>', maxDamage, damageString);
+		}
 	}
 
 	var members = Array.from(memberRow.cells).slice(memberIndex, memberIndex + 5).map(it => it.textContent || '');

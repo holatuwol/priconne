@@ -3,29 +3,39 @@ function getLabManualDamage(
 	damage: string
 ) : number {
 
+	var maxDamage = getMaxDamage(boss);
+	var newDamage = 0;
+
 	if (damage.toLowerCase().indexOf('s') != -1) {
-		return getMaxDamage(boss);
+		return maxDamage;
 	}
 
 	if (damage.charAt(0) == '~') {
-		return getDamage(damage.split('~')[1]);
+		newDamage = getDamage(damage.split('~')[1]);
+	}
+	else if (damage.indexOf('~') == -1 && damage.indexOf('-') == -1) {
+		newDamage = getDamage(damage);
 	}
 
-	if (damage.indexOf('~') == -1 && damage.indexOf('-') == -1) {
-		return getDamage(damage);
+	else if (!(damage.charAt(damage.length - 1) >= '0' && damage.charAt(damage.length - 1) <= '9')) {
+		newDamage = getDamage(damage.split(/[~\-]/)[0] + damage.charAt(damage.length - 1));
+	}
+	else {
+		newDamage = getDamage(damage.split(/[~\-]/)[0]);
 	}
 
-	if (!(damage.charAt(damage.length - 1) >= '0' && damage.charAt(damage.length - 1) <= '9')) {
-		return getDamage(damage.split(/[~\-]/)[0] + damage.charAt(damage.length - 1));
+	if (newDamage > maxDamage) {
+		console.warn(newDamage, '>', maxDamage, damage);
 	}
 
-	return getDamage(damage.split(/[~\-]/)[0]);
+	return Math.min(maxDamage, newDamage);
 }
 
 function parseLabManualDamage(
 	boss: string,
 	text: string | null
 ) : number {
+
 	var damageString = (text || '').replace(/ to /g, '-').replace(/[ ,]/g, '');
 	var damageMatcher = /[0-9\.\~\-/]+[kms]?/i.exec(damageString);
 

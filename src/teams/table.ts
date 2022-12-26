@@ -51,7 +51,7 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 	cell.classList.add('unit-info');
 
 	if (!unitIds[unit.name]) {
-		console.log('unknown unit name:', unit.name);
+		console.warn('unknown unit name:', unit.name);
 	}
 
 	var img = document.createElement('img');

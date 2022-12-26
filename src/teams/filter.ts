@@ -262,7 +262,7 @@ function getMaxValidValue(
 		return Math.max.apply(null, str.split(/[\-~]/g).map(it => parseInt(it.trim())));
 	}
 
-	console.log('failed to parse desired build value', str);
+	console.warn('failed to parse desired build value', str);
 
 	return maxValue;
 }
