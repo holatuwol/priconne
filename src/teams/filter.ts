@@ -26,15 +26,21 @@ function isMatchesSearchTerms(
 		else if (searchTerms[i].charAt(0) == '-') {
 			var searchTerm = searchTerms[i].substring(1);
 
+			var unitTerm = fixUnitName(searchTerm);
+			unitTerm = (unitTerm in unitIds) ? unitTerm.toLowerCase() : '';
+
 			for (var j = 0, hasMatch = true; j < rowTerms.length && hasMatch; j++) {
-				hasMatch = rowTerms[j].indexOf(searchTerm) == -1;
+				hasMatch = (unitTerm != '') ? rowTerms[j] != unitTerm : rowTerms[j].indexOf(searchTerm) == -1;
 			}
 		}
 		else {
 			var searchTerm = (searchTerms[i].charAt(0) == '+') ? searchTerms[i].substring(1) : searchTerms[i];
 
+			var unitTerm = fixUnitName(searchTerm);
+			unitTerm = (unitTerm in unitIds) ? unitTerm.toLowerCase() : '';
+
 			for (var j = 0, hasMatch = false; j < rowTerms.length && !hasMatch; j++) {
-				hasMatch = rowTerms[j].indexOf(searchTerm) != -1;
+				hasMatch = (unitTerm != '') ? rowTerms[j] == unitTerm : rowTerms[j].indexOf(searchTerm) != -1;
 			}
 		}
 
