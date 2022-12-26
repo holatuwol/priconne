@@ -295,6 +295,7 @@ function getNextDayInitialStatus(
 	dummyStatus.day = '' + (parseInt(baseStatus.day) + 1);
 	dummyStatus.hitNumber = 0;
 	dummyStatus.allocation = getInitialAllocation(dummyStatus.day);
+	dummyStatus.carryover = <Record<string, string>> {};
 
 	return dummyStatus;
 }
