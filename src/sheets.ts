@@ -1,3 +1,42 @@
+function expandGoogleSheetURL(
+	href: string,
+	gid?: string,
+	csv?: boolean
+) : string {
+
+	if ((href.indexOf('http') != 0) && (href.indexOf('/') == -1)) {
+		href = (href.length > 80) ? ('https://docs.google.com/spreadsheets/d/e/' + href + '/pub') : ('https://docs.google.com/spreadsheets/d/' + href + '/htmlview');
+	}
+
+	if (gid) {
+		if (href.indexOf('?') == -1) {
+			href += '?gid=' + gid;
+		}
+		else {
+			href += '&gid=' + gid;
+		}
+	}
+
+	if (csv) {
+		if (href.indexOf('/pubhtml?') != -1) {
+			href = href.replace('/pubhtml?', '/pub?');
+		}
+
+		if (href.indexOf('?') == -1) {
+			href += '?output=csv';
+		}
+		else if (href.indexOf('&output=csv') == -1) {
+			href += '&output=csv';
+		}
+
+		if (href.indexOf('&single=true') == -1) {
+			href += '&single=true';
+		}
+	}
+
+	return href;
+}
+
 function expandGoogleSheetURLs(
 	href : string | null,
 	gids : string[] | null,
@@ -22,7 +61,7 @@ function expandGoogleSheetURLs(
 	}
 
 	if ((href.indexOf('http') != 0) && (href.indexOf('/') == -1)) {
-		href = 'https://docs.google.com/spreadsheets/d/e/' + href + '/pub';
+		href = expandGoogleSheetURL(href);
 	}
 
 	if (href.indexOf('gid=') != -1) {
@@ -84,26 +123,7 @@ function loadURL(
 		return;
 	}
 
-	if (requestURL.indexOf('https://docs.google.com/spreadsheets/') == 0) {
-		if (requestURL.indexOf('/pub') == -1) {
-			return;
-		}
-
-		if (requestURL.indexOf('/pubhtml?') != -1) {
-			requestURL = requestURL.replace('/pubhtml?', '/pub?');
-		}
-
-		if (requestURL.indexOf('?') == -1) {
-			requestURL += '?output=csv';
-		}
-		else if (requestURL.indexOf('&output=csv') == -1) {
-			requestURL += '&output=csv';
-		}
-
-		if (requestURL.indexOf('&single=true') == -1) {
-			requestURL += '&single=true';
-		}
-	}
+	requestURL = expandGoogleSheetURL(requestURL, undefined, true);
 
 	var request = new XMLHttpRequest();
 

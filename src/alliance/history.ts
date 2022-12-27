@@ -66,7 +66,7 @@ function loadClanStats(
 	}
 	else {
 		var parentElement = <HTMLElement> anchor.parentElement;
-		var requestURL = 'https://docs.google.com/spreadsheets/d/e/' + (parentElement.getAttribute('data-sheet') || '') + '/pub?gid=' + gid + '&output=csv'
+		var requestURL = expandGoogleSheetURL(parentElement.getAttribute('data-sheet') || '', gid, true);
 
 		loadCBStats(requestURL, function(responseText: string) : void {
 			var rows = csv2arr(responseText);

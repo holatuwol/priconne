@@ -110,11 +110,11 @@ function checkUnits() {
 		}
 
 		if (gids.length == 2) {
-			rosterRequestURL = 'https://docs.google.com/spreadsheets/d/e/' + sheetId + '/pub?gid=' + gids[0] + '&output=csv';
-			resourceRequestURL = 'https://docs.google.com/spreadsheets/d/e/' + sheetId + '/pub?gid=' + gids[1] + '&output=csv';
+			rosterRequestURL = expandGoogleSheetURL(sheetId, gids[0], true);
+			resourceRequestURL = expandGoogleSheetURL(sheetId, gids[1], true);
 		}
 		else {
-			rosterRequestURL = 'https://docs.google.com/spreadsheets/d/e/' + sheetId + '/pub?gid=' + gids[0] + '&output=csv';
+			rosterRequestURL = expandGoogleSheetURL(sheetId, gids[0], true);
 		}
 
 		var navElement = <DocumentFragment> navTemplate.cloneNode(true);
