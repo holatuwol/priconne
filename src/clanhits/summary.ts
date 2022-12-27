@@ -261,7 +261,7 @@ function processHitRecords(
 	container: HTMLElement
 ) : boolean {
 
-	var titleElement = <HTMLDivElement> container.querySelector('div#doc-title');
+	var titleElement = <HTMLElement> container.querySelector('title');
 	var titleMatcher = /CB\s*([0-9]+)/.exec(titleElement.textContent || '');
 
 	if (titleMatcher) {
