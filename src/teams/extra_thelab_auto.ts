@@ -386,7 +386,7 @@ function getLabAutoTeams(
 	var team = {
 		'boss': boss,
 		'region': 'global',
-		'timing': isFullAuto ? 'full auto' : 'semi auto',
+		'timing': notes.indexOf('AUTO OFF, only spam Nyaru') != -1 ? 'spam nyaru' : isFullAuto ? 'full auto' : 'semi auto',
 		'timeline': 'TheLab Auto ' + teamId,
 		'damage': damage,
 		'units': units,
