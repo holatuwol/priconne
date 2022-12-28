@@ -51,6 +51,13 @@ function getCompletedHit(
 		else if (columnNames[i] == 'Piloted by') {
 			acc.pilot = it.textContent || '';
 		}
+		else if (columnNames[i].indexOf('Carryover') == 0) {
+			var carryover = it.textContent || '+';
+
+			if (carryover.indexOf('+') == -1) {
+				acc.carryover = carryover;
+			}
+		}
 
 		return acc;
 	}, hit);
@@ -116,7 +123,9 @@ function getUpdatedClanBattleStatus(
 	newStatus.latestHit = completedHit;
 
 	if (!oldStatus.carryover.hasOwnProperty(playerName) && oldStatus.remainingHP <= damage) {
-		completedHit.carryover = Math.min(90, Math.ceil(110-90*oldStatus.remainingHP/damage)) + 's+';
+		if (!completedHit.carryover || completedHit.carryover.indexOf('+') != -1) {
+			completedHit.carryover = Math.min(90, Math.ceil(110-90*oldStatus.remainingHP/damage)) + 's+';
+		}
 	}
 
 	if (oldStatus.day == newStatus.day) {
