@@ -77,6 +77,7 @@ function updateCompletedHitsDetail(
 		var row = document.createElement('tr');
 
 		row.appendChild(createCell(true, 'Lap'));
+		row.appendChild(createCell(true, 'Timeline'));
 		row.appendChild(createCell(true, 'Player Name'));
 		row.appendChild(createCell(true, 'Piloted By'));
 		row.appendChild(createCell(true, 'Damage'));
@@ -95,6 +96,7 @@ function updateCompletedHitsDetail(
 	cell.setAttribute('data-value', hit.lap ? ('' + hit.lap) : '0')
 	row.appendChild(cell);
 
+	row.appendChild(createCell(false, hit.timeline || ''));
 	row.appendChild(createCell(false, hit.playerName || ''));
 	row.appendChild(createCell(false, hit.pilot || hit.playerName));
 

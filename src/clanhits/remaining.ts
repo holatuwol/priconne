@@ -29,7 +29,15 @@ function updateRemainingHitsByBoss(
 
 	if (hit.carryover) {
 		listItem.classList.add('carryover');
-		listItem.textContent = hit.playerName + ' (' + hit.carryover + ')';
+
+		var remainingHits = status.allocation.remaining.filter(it => it.playerName == hit.playerName).filter(it => !it.carryover).map(it => it.bossName)
+
+		if (remainingHits.length > 0) {
+			listItem.textContent = hit.playerName + ' (' + hit.carryover + ', needs to hit ' + remainingHits.join(', ') + ' after)';
+		}
+		else {
+			listItem.textContent = hit.playerName + ' (' + hit.carryover + ')';
+		}
 	}
 	else {
 		listItem.classList.add('remaining');
@@ -102,6 +110,12 @@ function renderRemainingHitsByBoss(status: ClanBattleStatus) : void {
 	for (var i = 0; i < bossNames.length; i++) {
 		container.appendChild(hitsByBoss[bossNames[i]]);
 	}
+
+	var fullHitCountElement = <HTMLSpanElement> document.getElementById('remaining-full-hit-count');
+	fullHitCountElement.textContent = '' + status.allocation.remaining.filter(it => !it.carryover).length;
+
+	var carryoverHitCountElement = <HTMLSpanElement> document.getElementById('remaining-carryover-hit-count')
+	carryoverHitCountElement.textContent = '' + status.allocation.remaining.filter(it => it.carryover).length;
 }
 
 function updateRemainingHitsByPlayer(

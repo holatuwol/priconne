@@ -51,6 +51,9 @@ function getCompletedHit(
 		else if (columnNames[i] == 'Piloted by') {
 			acc.pilot = it.textContent || '';
 		}
+		else if (columnNames[i] == 'TL Used') {
+			acc.timeline = it.textContent || '';
+		}
 		else if (columnNames[i].indexOf('Carryover') == 0) {
 			var carryover = it.textContent || '+';
 
