@@ -1,5 +1,31 @@
 var selectElement = <HTMLSelectElement> document.getElementById('status-history');
 
+function updateSelectedIndex() : void {
+	var selectedIndex = document.location.hash ? parseInt(document.location.hash.substring(1)) - 1 : -1;
+
+	if (selectedIndex < 0 || selectedIndex >= statusHistory.length) {
+		selectedIndex = statusHistory.length - 1;
+
+		while (selectedIndex > 0 && statusHistory[selectedIndex].hitNumber == 0) {
+			--selectedIndex;
+		}
+
+		var currentDate = new Date();
+
+		var elapsed = Math.floor((currentDate.getTime() - cbStartDate.getTime()) / (1000 * 60 * 60 * 24));
+
+		if (selectedIndex + 1 < selectElement.length && parseInt(statusHistory[selectedIndex].day) <= elapsed) {
+			++selectedIndex;
+		}
+	}
+
+	selectElement.selectedIndex = selectedIndex;
+
+	var event = document.createEvent('HTMLEvents');
+	event.initEvent('change', false, true);
+	selectElement.dispatchEvent(event);
+}
+
 function renderStatusHistory() : void {
 	var oldStatus = <ClanBattleStatus | null> null;
 
@@ -15,7 +41,6 @@ function renderStatusHistory() : void {
 			optgroupElement.setAttribute('label', 'Lap ' + newStatus.lap);
 		}
 
-
 		var optionElement = document.createElement('option');
 		optionElement.textContent = '[' + (i+1) + '] Day ' + newStatus.day + ', Hit ' + newStatus.hitNumber;
 
@@ -28,21 +53,9 @@ function renderStatusHistory() : void {
 
 	selectElement.appendChild(optgroupElement);
 
-	var selectedIndex = statusHistory.length - 1;
+	updateSelectedIndex();
 
-	while (selectedIndex > 0 && statusHistory[selectedIndex].hitNumber == 0) {
-		--selectedIndex;
-	}
-
-	var currentDate = new Date();
-
-	var elapsed = Math.floor((currentDate.getTime() - cbStartDate.getTime()) / (1000 * 60 * 60 * 24));
-
-	if (selectedIndex + 1 < selectElement.length && parseInt(statusHistory[selectedIndex].day) <= elapsed) {
-		++selectedIndex;
-	}
-
-	selectElement.selectedIndex = selectedIndex;
+	window.onhashchange = updateSelectedIndex;
 	selectElement.onchange = renderClanBattleStatus;
 }
 
