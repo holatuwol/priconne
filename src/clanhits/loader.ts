@@ -274,11 +274,7 @@ function processInitialAllocation(
 	index: number
 ) : void {
 
-	var allocatedHits = processInitialAllocationRaw(container, tabId, index);
-
-	if (allocatedHits.length != 90) {
-		allocatedHits = processInitialAllocationSummary(container, tabId, index);
-	}
+	var allocatedHits = processInitialAllocationSummary(container, tabId, index);
 
 	var hitCounts = allocatedHits.reduce((acc, next) => {
 		acc[next.playerName] = (acc[next.playerName] || 0) + 1;
