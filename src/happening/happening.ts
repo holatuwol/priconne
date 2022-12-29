@@ -51,6 +51,30 @@ function addEvent(
 	eventPostElement.innerText += eventDetails.join(' ') + '\n';
 }
 
+var sixMonths = 6 * 30 * 24 * 60 * 60;
+
+function fixYear(
+	partialDateString: string,
+	timeString: string
+) : [string, number] {
+
+	var dateString = now.year() + '-' + partialDateString;
+	var dateSeconds = Math.floor(moment(dateString + 'T' + timeString + ':00.000Z').valueOf() / (60 * 1000)) * 60;
+
+	var nowSeconds = now.valueOf() / 1000;
+
+	if (nowSeconds - dateSeconds > sixMonths) {
+		dateString = (now.year() + 1) + '-' + partialDateString;
+		dateSeconds = Math.floor(moment(dateString + 'T' + timeString + ':00.000Z').valueOf() / (60 * 1000)) * 60;
+	}
+	else if (dateSeconds - nowSeconds > sixMonths) {
+		dateString = (now.year() - 1) + '-' + partialDateString;
+		dateSeconds = Math.floor(moment(dateString + 'T' + timeString + ':00.000Z').valueOf() / (60 * 1000)) * 60;
+	}
+
+	return [dateString, dateSeconds];
+}
+
 var eventPattern1 = /(\d+\/\d+)(?:\/\d+)? (\d+:\d+) UTC to (\d+\/\d+)(?:\/\d+)? (\d+:\d+) UTC/;
 var eventPattern2 = /\((\d+\/\d+)(?:\/\d+)? (\d+:\d+) UTC\)/;
 var eventPattern3 = /\(After (\d+\/\d+)(?:\/\d+)? (\d+:\d+) UTC\)/;
@@ -69,16 +93,8 @@ function addExtractedEvent(
 	startTimeString = startTimeString.replace(/^([0-9]):/, '0$1:');
 	endTimeString = endTimeString.replace(/^([0-9]):/, '0$1:');
 
-	var startDate = now.year() + '-' + startDayString;
-	var endDate = now.year() + '-' + endDayString;
-
-	var startTime = Math.floor(moment(startDate + 'T' + startTimeString + ':00.000Z').valueOf() / (60 * 1000)) * 60;
-	var endTime = Math.floor(moment(endDate + 'T' + endTimeString + ':00.000Z').valueOf() / (60 * 1000)) * 60;
-
-	if (startTime > endTime) {
-		endDate = (now.year() + 1) + '-' + endDayString;
-		endTime = Math.floor(moment(endDate + 'T' + endTimeString + ':00.000Z').valueOf() / (60 * 1000)) * 60;
-	}
+	var [startDate, startTime] = fixYear(startDayString, startTimeString);
+	var [endDate, endTime] = fixYear(endDayString, endTimeString);
 
 	addEvent(eventName, startDate, startTime, endDate, endTime);
 }
