@@ -1,7 +1,3 @@
-function getDisplayName(hit: AllocatedHit) : string {
-	return !hit.timeline || hit.timeline.indexOf('-') == -1 ? hit.bossName : hit.timeline;
-}
-
 function updateRemainingHitsByBoss(
 	status: ClanBattleStatus,
 	acc: Record<string, HTMLSpanElement>,
@@ -30,14 +26,31 @@ function updateRemainingHitsByBoss(
 	if (hit.carryover) {
 		listItem.classList.add('carryover');
 
-		var remainingHits = status.allocation.remaining.filter(it => it.playerName == hit.playerName).filter(it => !it.carryover).map(it => it.bossName)
+		var remainingHits = status.allocation.remaining.filter(it => it.playerName == hit.playerName).filter(it => !it.carryover).map(it => it.bossName);
+
+		var carryoverDescription = [];
+
+		if (hit.timeline) {
+			carryoverDescription.push(hit.timeline);
+		}
+
+		carryoverDescription.push(hit.carryover);
 
 		if (remainingHits.length > 0) {
-			listItem.textContent = hit.playerName + ' (' + hit.carryover + ', needs to hit ' + remainingHits.join(', ') + ' after)';
+			var flexHitCount = remainingHits.filter(it => it == 'flex').length;
+
+			if (flexHitCount == 1) {
+				carryoverDescription.push('1 flex hit after');
+			}
+			else if (flexHitCount > 0) {
+				carryoverDescription.push(flexHitCount + ' flex hits after');
+			}
+			else {
+				carryoverDescription.push('needs to hit ' + remainingHits.join(', ') + ' after');
+			}
 		}
-		else {
-			listItem.textContent = hit.playerName + ' (' + hit.carryover + ')';
-		}
+
+		listItem.textContent = hit.playerName + ' (' + carryoverDescription.join(', ') + ')';
 	}
 	else {
 		listItem.classList.add('remaining');
@@ -46,7 +59,7 @@ function updateRemainingHitsByBoss(
 
 		var extraInfo = <Node[]> [];
 
-		if (hit.timeline) {
+		if (hit.bossName != 'flex' && hit.timeline) {
 			var elements = <Node[]> [];
 
 			if (typeof(getTimelineTimingElements) == 'function') {
@@ -116,6 +129,13 @@ function renderRemainingHitsByBoss(status: ClanBattleStatus) : void {
 
 	var carryoverHitCountElement = <HTMLSpanElement> document.getElementById('remaining-carryover-hit-count')
 	carryoverHitCountElement.textContent = '' + status.allocation.remaining.filter(it => it.carryover).length;
+}
+
+function getDisplayName(hit: AllocatedHit) : string {
+	return hit.bossName == 'flex' ? 'flex' :
+		!hit.timeline || hit.timeline == 'unspecified allocation change' ? (hit.bossName + ' (?)') :
+		hit.timeline.indexOf('ambiguous ') == 0 ? hit.timeline.substring('ambiguous '.length) :
+		hit.timeline;
 }
 
 function updateRemainingHitsByPlayer(

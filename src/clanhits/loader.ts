@@ -87,10 +87,10 @@ function getUpdatedAllocation(
 			if (checkHit.carryover) {
 				carryoverMatchIndex = i;
 			}
-			else if (checkHit.timeline == completedHit.timeline) {
+			else if (checkHit.timeline && checkHit.timeline == completedHit.timeline) {
 				timelineMatchIndex = i;
 			}
-			else if (checkHit.bossName == completedHit.bossName) {
+			else if (checkHit.bossName == completedHit.bossName || checkHit.bossName == 'flex') {
 				bossMatchIndex = i;
 			}
 			else {
@@ -99,13 +99,75 @@ function getUpdatedAllocation(
 		}
 	}
 
-	var matchIndex = (carryoverMatchIndex != -1) ? carryoverMatchIndex :
-		(timelineMatchIndex != -1) ? timelineMatchIndex :
-		(bossMatchIndex != -1) ? bossMatchIndex : playerMatchIndex;
+	var newRemaining = <AllocatedHit[]> [];
+
+	if (carryoverMatchIndex != -1) {
+		newRemaining = oldAllocation.remaining.filter((it, i) => i != carryoverMatchIndex);
+
+		var playerHits = oldAllocation.completed.filter(it => it.playerName == completedHit.playerName);
+
+		var lastTimeline = playerHits[playerHits.length - 1].timeline;
+
+		if (lastTimeline) {
+			completedHit.timeline = lastTimeline;
+		}
+	}
+	else if (timelineMatchIndex != -1) {
+		newRemaining = oldAllocation.remaining.filter((it, i) => i != timelineMatchIndex);
+	}
+	else if (bossMatchIndex != -1) {
+		var ambiguousTLs = oldAllocation.remaining.filter(it => it.playerName == completedHit.playerName && it.bossName == completedHit.bossName).map(it => it.timeline);
+
+		if (ambiguousTLs.length > 1) {
+			var ambiguousName = 'ambiguous ' + ambiguousTLs.join('/');
+			var ambiguousHits = <AllocatedHit[]> [];
+
+			completedHit.timeline = ambiguousName;
+
+			for (var i = 1; i < ambiguousTLs.length; i++) {
+				ambiguousHits.push({
+					bossName: completedHit.bossName,
+					timeline: ambiguousName,
+					playerName: completedHit.playerName,
+					day: completedHit.day
+				});
+			}
+
+			newRemaining = oldAllocation.remaining.filter(it => it.playerName != completedHit.playerName || it.bossName != completedHit.bossName).concat(ambiguousHits);
+		}
+		else {
+			if (!completedHit.timeline) {
+				completedHit.timeline = oldAllocation.remaining[bossMatchIndex].timeline;
+			}
+
+			newRemaining = oldAllocation.remaining.filter((it, i) => i != bossMatchIndex);
+		}
+	}
+	else {
+		completedHit.timeline = 'unspecified allocation change';
+
+		var unknownHitCount = oldAllocation.remaining.filter(it => it.playerName == completedHit.playerName).length;
+		var unknownHits = <AllocatedHit[]> [];
+
+		for (var i = 1; i < unknownHitCount; i++) {
+			unknownHits.push({
+				bossName: 'flex',
+				timeline: 'unspecified allocation change',
+				playerName: completedHit.playerName,
+				day: completedHit.day
+			});
+		}
+
+		newRemaining = oldAllocation.remaining.filter(it => it.playerName != completedHit.playerName).concat(unknownHits);
+	}
+
+	if (!completedHit.timeline) {
+		console.log(completedHit);
+	}
 
 	return {
 		completed: oldAllocation.completed.concat([completedHit]),
-		remaining: oldAllocation.remaining.filter((it, i) => i != matchIndex)
+		remaining: newRemaining
 	};
 }
 
