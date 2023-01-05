@@ -88,6 +88,18 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 	return cell;
 };
 
+function getNotesHTML(html: string) : string {
+	if (html.indexOf('<') != -1) {
+		return html;
+	}
+
+	html = html.replace(/</g, 'lt;');
+	html = html.replace(/(https:\/\/[\S]+)/g, '<a href="\$1">\$1</a>');
+	html = html.replace(/\n/g, '<br/>');
+
+	return html;
+}
+
 function getTimelineTimingElements(
 	boss: string,
 	timeline: string,
@@ -148,7 +160,7 @@ function getTimelineTimingElements(
 		timingElement.onclick = function() {
 			Swal.fire({
 				title: timeline + ' Notes',
-				html: notes
+				html: getNotesHTML(notes)
 			});
 
 			return false;

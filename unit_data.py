@@ -7,7 +7,7 @@ units = {unit_id: unit_name for unit_id, unit_name in sorted(zip(df['unitId'], d
 alt_units = {unit_id: unit_name for unit_id, unit_name in sorted(zip(df['unitId'], df['name.short']), key=lambda x: x[1])}
 positions = {unit_id: unit_range for unit_id, unit_range in sorted(zip(df['unitId'], df['range']))}
 
-with open('src/unit_data.ts', 'w') as f:
+with open('src/units/unit_data.ts', 'w') as f:
 	f.write('''var unitNames = <Record<string, string>> %s;
 
 var altNames = <Record<string, string>> %s;
