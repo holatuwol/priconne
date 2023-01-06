@@ -85,7 +85,7 @@ function loadTeams(
 
 		if (--remainingRequestCount == 0) {
 			if (--parallelLoadCount == 0) {
-				document.body.style.removeProperty('opacity');
+				document.body.classList.remove('planner-loading');
 			}
 
 			callback(teams);
@@ -100,7 +100,7 @@ function loadTeams(
 	}
 	else {
 		if (--parallelLoadCount == 0) {
-			document.body.style.removeProperty('opacity');
+			document.body.classList.remove('planner-loading');
 		}
 
 		generateAvailableTeams();
@@ -151,7 +151,7 @@ function updateExtraTeams() : void {
 		return;
 	}
 
-	document.body.style.opacity = '0.1';
+	document.body.classList.add('planner-loading');
 
 	expandURLs(extraTeamValue.split('\n'), [], loadTeams.bind(null, updateExtraTeamsHelper));
 };
@@ -242,7 +242,7 @@ function initializeTeams() : void {
 	var defaultLines = Array.from(document.querySelectorAll('#data-source a')).map((anchor: HTMLAnchorElement) => anchor.href);
 
 	if (defaultLines.length != 0) {
-		document.body.style.opacity = '0.1';
+		document.body.classList.add('planner-loading');
 	}
 
 	expandURLs(defaultLines, defaultURLs, loadTeams.bind(null, updateDefaultTeams));
