@@ -14,6 +14,10 @@
     "src/imports/units.d.ts",
     "src/util.ts",
     "src/sheets.ts",
-    "src/clanhits/*.ts"
+    "src/clanhits/types.d.ts",
+    "src/clanhits/loader.ts",
+    "src/clanhits/allocation_old.ts",
+    "src/clanhits/remaining.ts",
+    "src/clanhits/summary.ts"
   ]
 }

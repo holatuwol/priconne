@@ -1,6 +1,8 @@
 declare var cbId: string;
 declare var cbStartDate: Date;
-declare var defaultSheetId : string;
+
+declare var hitRecordSheetId: string | undefined;
+declare var allocationSheetId: string | undefined;
 
 interface AllocatedHit {
 	borrow?: string
