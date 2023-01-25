@@ -334,7 +334,7 @@ function loadClanBattleHits() : void {
 	if (allocationSheetId) {
 		var allocationLink = <HTMLAnchorElement> document.getElementById('allocation-data-link');
 
-		allocationLink.href = 'https://docs.google.com/spreadsheets/d/' + allocationSheetId + '/edit';
+		allocationLink.href = 'https://docs.google.com/spreadsheets/d/' + allocationSheetId + '/htmlview';
 		allocationLink.textContent = allocationLink.href;
 
 		expandGoogleSheetURLs(allocationSheetId, null, processInitialAllocations);

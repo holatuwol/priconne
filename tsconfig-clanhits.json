@@ -16,7 +16,7 @@
     "src/sheets.ts",
     "src/clanhits/types.d.ts",
     "src/clanhits/loader.ts",
-    "src/clanhits/allocation_old.ts",
+    "src/clanhits/allocation_new.ts",
     "src/clanhits/remaining.ts",
     "src/clanhits/summary.ts"
   ]
