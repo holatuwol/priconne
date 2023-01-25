@@ -50,6 +50,10 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 	var cell = document.createElement('td');
 	cell.classList.add('unit-info');
 
+	if (!unit.name) {
+		return cell;
+	}
+
 	if (!unitIds[unit.name]) {
 		console.warn('unknown unit name:', unit.name);
 	}

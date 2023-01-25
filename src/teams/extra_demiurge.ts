@@ -23,12 +23,12 @@ function extractDemiurgeTeamsFromTab(
 	var ues = buildRows.map(it => Array.from(getSiblingRowElement(it, 4).cells).splice(2, 5).map(it => (it.textContent || '').trim()));
 
 	var extraNotes = unitRows.map(it1 => {
-		while (Array.from(it1.cells).map(it2 => it2.textContent || '').filter(it3 => it3 == 'Extra Notes').length == 0) {
+		while (Array.from(it1.cells).map(it2 => it2.textContent || '').filter(it3 => it3 == 'Extra Notes' || it3.indexOf('https://') != -1).length == 0) {
 			it1 = getSiblingRowElement(it1, 1);
 		}
 
 		return it1;
-	}).map(it4 => getSiblingRowElement(it4, 1).cells[1].textContent || '');
+	}).map(it4 => (it4.textContent == 'Extra Notes' ? getSiblingRowElement(it4, 1).cells[1].textContent : it4.textContent) || '');
 
 	var teams = <ClanBattleTeam[]> [];
 

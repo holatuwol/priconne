@@ -1,3 +1,26 @@
+function getTheLabAutoPageNames() : Record<string, string> {
+	var sheetTypes = ['Auto', 'Semi-Auto', 'Auto OVF'];
+
+	var tierNames = <Record<string, string>> {
+		'I': 'A',
+		'II': 'B',
+		'III': 'C',
+		'IV': 'D',
+	};
+
+	var pageNames = <Record<string, string>> {};
+
+	for (var i = 0; i < sheetTypes.length; i++) {
+		var sheetType = sheetTypes[i];
+
+		for (var tierName in tierNames) {
+			pageNames['Tier ' + tierName + ' ' + sheetType] = tierNames[tierName];
+		}
+	}
+
+	return pageNames;
+}
+
 function getLabAutoDamage(
 	matcher: RegExpExecArray,
 	oldTeam: ClanBattleTeam
@@ -9,13 +32,17 @@ function getLabAutoDamage(
 		return maxDamage;
 	}
 
+	var newDamage = getDamage(oldTeam.damage);
+
+	if (matcher.length == 1) {
+		return newDamage;
+	}
+
 	var newDamageString = matcher[1].replace(/,/, '.').trim();
 
 	if (newDamageString.indexOf('±') == newDamageString.length - 1) {
 		newDamageString = newDamageString.substring(0, newDamageString.length - 1).trim();
 	}
-
-	var newDamage = getDamage(oldTeam.damage);
 
 	if (newDamageString.charAt(0) == '-') {
 		newDamage += getDamage(newDamageString);
@@ -196,7 +223,7 @@ function getSingleSubstitutions(
 	newTeam.damage = getLabAutoDamage(damageMatcher, oldTeam);
 	newTeam.units = oldTeam.units.map(it => it);
 
-	var replacements = description.substring(0, damageMatcher.index).split(/(?: and |\+)/);
+	var replacements = description.substring(0, damageMatcher.index).split(/(?: and |\+)/i);
 
 	var hasSubstitution = true;
 
@@ -209,7 +236,12 @@ function getSingleSubstitutions(
 				var oldUnit = singleMatcher[1].trim();
 				var newUnit = singleMatcher[2].trim();
 
-				if (oldUnit.toLowerCase().indexOf(' due') != -1 || oldUnit.toLowerCase().indexOf(' die') != -1 || newUnit.toLowerCase().indexOf('end ') == 0) {
+				if (oldUnit.toLowerCase().indexOf(' due') != -1 ||
+					oldUnit.toLowerCase().indexOf(' die') != -1 ||
+					oldUnit.toLowerCase().indexOf(' lead') != -1 ||
+					oldUnit.toLowerCase().indexOf(' up') != -1 ||
+					newUnit.toLowerCase().indexOf('end ') == 0) {
+
 					singleMatcher = null;
 				}
 				else {
@@ -375,7 +407,7 @@ function getLabAutoTeams(
 			'name': members[i],
 			'build': {
 				star: stars[i],
-				rank: ranks[i],
+				rank: ranks[i].charAt(0) == 'r' ? ('R' + ranks[i].substring(1)) : ranks[i],
 				unique: ues[i]
 			}
 		});
@@ -397,10 +429,10 @@ function getLabAutoTeams(
 
 	var noteLines = notes.split('<br>');
 
-	var buildVariationsTeams = <ClanBattleTeam[][]> noteLines.filter(it => (it.charAt(0) == 'r' && it.charAt(1) >= '0' && it.charAt(1) <= '9') || it.charAt(1) == '*' || it.charAt(1) == '⭐').map(getBuildVariations.bind(null, team));
+	var buildVariationsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') == -1 && ((it.charAt(0) == 'r' && it.charAt(1) >= '0' && it.charAt(1) <= '9') || (it.toLowerCase().indexOf(' and ') == -1 && (it.charAt(1) == '*' || it.charAt(1) == '⭐')))).map(getBuildVariations.bind(null, team));
 	newTeams = buildVariationsTeams.reduce(collapseClanBattleTeams, newTeams);
 
-	var singleSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') != -1).map(getSingleSubstitutions.bind(null, team));
+	var singleSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') != -1 || (it.toLowerCase().indexOf(' and ') != 1 && (it.indexOf('*') != -1 || it.indexOf('⭐') != -1))).map(getSingleSubstitutions.bind(null, team));
 	newTeams = singleSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
 
 	var multiSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to:') != -1).map(getMultiSubstitutions.bind(null, team));
@@ -478,20 +510,7 @@ function extractLabAutoTeams(
 
 	var teams = <ClanBattleTeam[]> [];
 
-	var pageNames = <Record<string, string>> {
-		'Tier A': 'A',
-		'Tier B': 'B',
-		'Tier C': 'C',
-		'Tier I': 'A',
-		'Tier II': 'B',
-		'Tier III': 'C',
-		'Tier I Auto': 'A',
-		'Tier II Auto': 'B',
-		'Tier III Auto': 'C',
-		'Tier I Semi-Auto': 'A',
-		'Tier II Semi-Auto': 'B',
-		'Tier III Semi-Auto': 'C',
-	};
+	var pageNames = getTheLabAutoPageNames();
 
 	var tabs = Array.from(Object.keys(pageNames));
 
@@ -518,22 +537,9 @@ function extractLabAutoTeamsLocal() : void {
 		return;
 	}
 
-	var pageNames = <Record<string, string>> {
-		'Tier A': 'A',
-		'Tier B': 'B',
-		'Tier C': 'C',
-		'Tier I': 'A',
-		'Tier II': 'B',
-		'Tier III': 'C',
-		'Tier I Auto': 'A',
-		'Tier II Auto': 'B',
-		'Tier III Auto': 'C',
-		'Tier I Semi-Auto': 'A',
-		'Tier II Semi-Auto': 'B',
-		'Tier III Semi-Auto': 'C',
-	};
-
 	var teams = <ClanBattleTeam[]> [];
+
+	var pageNames = getTheLabAutoPageNames();
 
 	var tabs = Object.keys(pageNames);
 

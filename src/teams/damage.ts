@@ -29,7 +29,10 @@ function getDamage(value : string | number | null) : number {
 }
 
 function isMaxDamage(it: string) : boolean {
-	return it.indexOf('OTK') == 0 || it.indexOf(' OTK') != -1 || it.indexOf('OHKO') == 0 || it.indexOf(' OHKO') != -1;
+	it = it.toLowerCase();
+
+	return it.indexOf('otk') == 0 || it.indexOf(' otk') != -1 || it.indexOf('ohko') == 0 || it.indexOf(' ohko') != -1 ||
+		it.indexOf('same ot') == 0 || it.indexOf('s ot') != -1;
 }
 
 function getMaxDamage(boss: string) : number {
@@ -37,7 +40,11 @@ function getMaxDamage(boss: string) : number {
 }
 
 function getDamageMatcher(description: string): RegExpExecArray | null {
-	var damageMatcher = otkRE.exec(description);
+	var damageMatcher = overtimeRE.exec(description);
+
+	if (!damageMatcher) {
+		damageMatcher = otkRE.exec(description);
+	}
 
 	if (!damageMatcher) {
 		damageMatcher = averageRE.exec(description);
