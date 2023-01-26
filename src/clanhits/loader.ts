@@ -43,7 +43,7 @@ function getCompletedHit(
 			acc.damage = parseInt((it.textContent || '0').replace(/[^0-9]/g, ''));
 		}
 		else if (columnNames[i] == 'Day') {
-			acc.day = '' + parseInt(it.textContent || '0');
+			acc.day = '' + parseInt(it.textContent || status.day);
 		}
 		else if (columnNames[i] == 'Name') {
 			acc.playerName = it.textContent || '';

@@ -14,6 +14,8 @@ interface AllocatedHit {
 	playerName: string
 	timeline?: string
 	carryover?: string
+	carryoverBossName?: string
+	carryoverTimeline?: string
 }
 
 interface Allocation {

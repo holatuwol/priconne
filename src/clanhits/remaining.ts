@@ -1,40 +1,28 @@
-function updateRemainingHitsByBoss(
+function getRemainingHitsByBossListItem(
 	status: ClanBattleStatus,
-	acc: Record<string, HTMLSpanElement>,
-	hit: AllocatedHit
-) : Record<string, HTMLSpanElement> {
-
-	var container = acc[hit.bossName];
-
-	if (container == null) {
-		container = acc[hit.bossName] = document.createElement('span');
-
-		var header = document.createElement('h4');
-		header.textContent = hit.bossName;
-		container.appendChild(header);
-
-		var list = document.createElement('ul');
-		container.appendChild(list);
-	}
-
-	var list = container.querySelector('ul');
+	playerName: string,
+	bossName: string,
+	timeline: string | undefined,
+	borrow: string | undefined,
+	carryover: string | undefined,
+) : HTMLLIElement {
 
 	var listItem = document.createElement('li');
 
-	listItem.setAttribute('data-player-name', hit.playerName);
+	listItem.setAttribute('data-player-name', playerName);
 
-	if (hit.carryover) {
+	if (carryover) {
 		listItem.classList.add('carryover');
-
-		var remainingHits = status.allocation.remaining.filter(it => it.playerName == hit.playerName).filter(it => !it.carryover).map(it => it.bossName);
 
 		var carryoverDescription = [];
 
-		if (hit.timeline) {
-			carryoverDescription.push(hit.timeline);
+		if (timeline) {
+			carryoverDescription.push(timeline);
 		}
 
-		carryoverDescription.push(hit.carryover);
+		carryoverDescription.push(carryover);
+
+		var remainingHits = status.allocation.remaining.filter(it => it.playerName == playerName).filter(it => !it.carryover).map(it => it.bossName);
 
 		if (remainingHits.length > 0) {
 			var flexHitCount = remainingHits.filter(it => it == 'flex').length;
@@ -50,20 +38,20 @@ function updateRemainingHitsByBoss(
 			}
 		}
 
-		listItem.textContent = hit.playerName + ' (' + carryoverDescription.join(', ') + ')';
+		listItem.textContent = playerName + ' (' + carryoverDescription.join(', ') + ')';
 	}
 	else {
 		listItem.classList.add('remaining');
 
-		listItem.appendChild(document.createTextNode(hit.playerName));
+		listItem.appendChild(document.createTextNode(playerName));
 
 		var extraInfo = <Node[]> [];
 
-		if (hit.bossName != 'flex' && hit.timeline) {
+		if (bossName != 'flex' && timeline) {
 			var elements = <Node[]> [];
 
 			if (typeof(getTimelineTimingElements) == 'function') {
-				elements = getTimelineTimingElements(hit.bossName, hit.timeline, 'manual', undefined);
+				elements = getTimelineTimingElements(bossName, timeline, 'manual', undefined);
 				elements[1].textContent = elements[0].textContent;
 
 				if (extraInfo.length > 0) {
@@ -73,25 +61,25 @@ function updateRemainingHitsByBoss(
 				extraInfo.push(elements[1]);
 			}
 			else {
-				extraInfo.push(document.createTextNode(hit.timeline));
+				extraInfo.push(document.createTextNode(timeline));
 			}
 		}
 
-		if (hit.borrow) {
+		if (borrow) {
 			if (extraInfo.length > 0) {
 				extraInfo.push(document.createTextNode(', '));
 			}
 
-			extraInfo.push(document.createTextNode(hit.borrow));
+			extraInfo.push(document.createTextNode(borrow));
 		}
 
-		if (hit.playerName in status.carryover) {
+		if (playerName in status.carryover) {
 			if (extraInfo.length > 0) {
 				extraInfo.push(document.createTextNode(', '));
 			}
 
 			listItem.classList.add('locked');
-			extraInfo.push(document.createTextNode('locked on ' + status.carryover[hit.playerName]));
+			extraInfo.push(document.createTextNode('locked on ' + status.carryover[playerName]));
 		}
 
 		if (extraInfo.length) {
@@ -105,7 +93,53 @@ function updateRemainingHitsByBoss(
 		}
 	}
 
-	list.appendChild(listItem);
+	return listItem;
+}
+
+function updateRemainingHitsByBoss(
+	status: ClanBattleStatus,
+	acc: Record<string, HTMLSpanElement>,
+	hit: AllocatedHit
+) : Record<string, HTMLSpanElement> {
+
+	var bossName = hit.carryover ? (hit.carryoverBossName || hit.bossName) : hit.bossName;
+	var timeline = hit.carryover ? (hit.carryoverTimeline || hit.timeline) : hit.timeline;
+
+	var container = acc[bossName];
+
+	if (container == null) {
+		container = acc[bossName] = document.createElement('span');
+
+		var header = document.createElement('h4');
+		header.textContent = bossName;
+		container.appendChild(header);
+
+		var list = document.createElement('ul');
+		container.appendChild(list);
+	}
+
+	var list = container.querySelector('ul');
+
+	list.appendChild(getRemainingHitsByBossListItem(status, hit.playerName, hit.bossName, hit.timeline, hit.borrow, hit.carryover));
+
+	if (!hit.carryover && hit.carryoverBossName) {
+		var container = acc[hit.carryoverBossName];
+
+		if (container == null) {
+			container = acc[hit.carryoverBossName] = document.createElement('span');
+
+			var header = document.createElement('h4');
+			header.textContent = hit.carryoverBossName;
+			container.appendChild(header);
+
+			var list = document.createElement('ul');
+			container.appendChild(list);
+		}
+
+		var list = container.querySelector('ul');
+
+		list.appendChild(getRemainingHitsByBossListItem(status, hit.playerName, hit.carryoverBossName, hit.carryoverTimeline, hit.borrow, hit.carryover));
+	}
 
 	return acc;
 }
@@ -132,10 +166,13 @@ function renderRemainingHitsByBoss(status: ClanBattleStatus) : void {
 }
 
 function getDisplayName(hit: AllocatedHit) : string {
+	var bossName = hit.carryoverBossName ? (hit.bossName + ' \u21FE ' + hit.carryoverBossName) : hit.bossName;
+	var timeline = hit.carryoverTimeline ? (hit.timeline + ' \u21FE ' + hit.carryoverTimeline) : hit.timeline;
+
 	return hit.bossName == 'flex' ? 'flex' :
-		!hit.timeline || hit.timeline == 'unspecified allocation change' ? (hit.bossName + ' (?)') :
-		hit.timeline.indexOf('ambiguous ') == 0 ? hit.timeline.substring('ambiguous '.length) :
-		hit.timeline;
+		!timeline || timeline == 'unspecified allocation change' ? (bossName + ' (?)') :
+		timeline.indexOf('ambiguous ') == 0 ? timeline.substring('ambiguous '.length) :
+		timeline;
 }
 
 function updateRemainingHitsByPlayer(

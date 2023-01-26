@@ -51,15 +51,13 @@ function processAllocationRow(
 	var beforeFreezebarCell = <HTMLTableCellElement> freezebarCell.previousSibling;
 
 	if (beforeFreezebarCell.getAttribute('rowspan') != '2') {
-		var previousRow = <HTMLTableRowElement> row.previousSibling;
-
-		freezebarCell = <HTMLTableCellElement> previousRow.querySelector('.freezebar-cell');
-		beforeFreezebarCell = <HTMLTableCellElement> freezebarCell.previousSibling;
+		return allocatedHits;
 	}
 
 	var playerNameCell = <HTMLTableCellElement> beforeFreezebarCell.previousSibling;
-
 	var playerName = playerNameCell.textContent || '';
+
+	var carryoverRow = <HTMLTableRowElement> row.nextSibling;
 
 	for (var i = 9; i < row.cells.length; i++) {
 		if (!isBossNameCell(row.cells[i])) {
@@ -72,6 +70,8 @@ function processAllocationRow(
 			day: day,
 			playerName: playerName,
 			timeline: row.cells[i+1].textContent || '',
+			carryoverBossName: carryoverRow.cells[i-2].textContent || '',
+			carryoverTimeline: carryoverRow.cells[i-1].textContent || ''
 		});
 	}
 
