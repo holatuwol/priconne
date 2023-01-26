@@ -3,7 +3,7 @@ function parseRawTeam(text: string): ClanBattleTeam[] {
 
 	return [{
 		boss: team[0],
-		damage: getDamage(team[2]),
+		damage: team[2].indexOf('s') != -1 ? getMaxDamage(team[0]) : getDamage(team[2]),
 		region: 'global',
 		timing: team[1],
 		timeline: "extra team",
@@ -35,7 +35,7 @@ function parseCSVTeams(text: string) : ClanBattleTeam[] {
 				result.boss = row[i];
 			}
 			else if (header[i] == 'damage') {
-				result.damage = getDamage(row[i]);
+				result.damage = row[i].indexOf('s') != -1 ? getMaxDamage(result.boss) : getDamage(row[i]);
 			}
 			else if (header[i] == 'notes') {
 				result.notes = row[i];

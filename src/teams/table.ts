@@ -170,6 +170,9 @@ function getTimelineTimingElements(
 			return false;
 		};
 	}
+	else {
+		return [timelineElement, document.createTextNode(timing)];
+	}
 
 	return [timelineElement, timingElement];
 }
@@ -223,8 +226,6 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 	row.appendChild(cell)
 
 	row.appendChild(createCell(false, team.boss, 'boss'));
-
-	var damage = getDamage(team.damage);
 
 	var cell = createCell(false, team.damage ? (damage.toFixed(2) + 'm') : '', 'damage');
 	cell.setAttribute('data-value', '' + damage);
