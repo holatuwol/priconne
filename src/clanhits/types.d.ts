@@ -21,6 +21,7 @@ interface AllocatedHit {
 interface Allocation {
 	completed: AllocatedHit[]
 	remaining: AllocatedHit[]
+	latest?: AllocatedHit
 }
 
 interface ClanBattleStatus {

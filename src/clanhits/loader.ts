@@ -80,6 +80,8 @@ function getUpdatedAllocation(
 	var timelineMatchIndex = -1;
 	var carryoverMatchIndex = -1;
 
+	var latestHit = undefined;
+
 	for (var i = 0; i < oldAllocation.remaining.length && timelineMatchIndex == -1; i++) {
 		var checkHit = oldAllocation.remaining[i];
 
@@ -90,7 +92,13 @@ function getUpdatedAllocation(
 			else if (checkHit.timeline && checkHit.timeline == completedHit.timeline) {
 				timelineMatchIndex = i;
 			}
+			else if (checkHit.carryoverTimeline && checkHit.carryoverTimeline == completedHit.timeline) {
+				timelineMatchIndex = i;
+			}
 			else if (checkHit.bossName == completedHit.bossName || checkHit.bossName == 'flex') {
+				bossMatchIndex = i;
+			}
+			else if (checkHit.carryoverBossName == completedHit.bossName || checkHit.carryoverBossName == 'flex') {
 				bossMatchIndex = i;
 			}
 			else {
@@ -102,6 +110,8 @@ function getUpdatedAllocation(
 	var newRemaining = <AllocatedHit[]> [];
 
 	if (carryoverMatchIndex != -1) {
+		latestHit = oldAllocation.remaining[carryoverMatchIndex];
+
 		newRemaining = oldAllocation.remaining.filter((it, i) => i != carryoverMatchIndex);
 
 		var playerHits = oldAllocation.completed.filter(it => it.playerName == completedHit.playerName);
@@ -113,6 +123,8 @@ function getUpdatedAllocation(
 		}
 	}
 	else if (timelineMatchIndex != -1) {
+		latestHit = oldAllocation.remaining[timelineMatchIndex];
+
 		newRemaining = oldAllocation.remaining.filter((it, i) => i != timelineMatchIndex);
 	}
 	else if (bossMatchIndex != -1) {
@@ -136,6 +148,8 @@ function getUpdatedAllocation(
 			newRemaining = oldAllocation.remaining.filter(it => it.playerName != completedHit.playerName || it.bossName != completedHit.bossName).concat(ambiguousHits);
 		}
 		else {
+			latestHit = oldAllocation.remaining[bossMatchIndex];
+
 			if (!completedHit.timeline) {
 				completedHit.timeline = oldAllocation.remaining[bossMatchIndex].timeline;
 			}
@@ -167,7 +181,8 @@ function getUpdatedAllocation(
 
 	return {
 		completed: oldAllocation.completed.concat([completedHit]),
-		remaining: newRemaining
+		remaining: newRemaining,
+		latest: latestHit
 	};
 }
 
@@ -210,10 +225,30 @@ function getUpdatedClanBattleStatus(
 		delete newStatus.carryover[playerName];
 	}
 	else if (newStatus.remainingHP == 0) {
-		newStatus.carryover[playerName] = completedHit.bossName;
-
 		var carryoverHit = Object.assign({}, completedHit);
+
 		delete carryoverHit['damage'];
+
+		var matchingHit = newStatus.allocation.latest;
+
+		if (matchingHit) {
+			if (matchingHit.bossName == completedHit.bossName) {
+				newStatus.carryover[playerName] = matchingHit.carryoverBossName || matchingHit.bossName;
+
+				carryoverHit.bossName = matchingHit.carryoverBossName || matchingHit.bossName;
+				carryoverHit.timeline = matchingHit.carryoverTimeline || matchingHit.timeline;
+			}
+			else {
+				newStatus.carryover[playerName] = matchingHit.bossName;
+
+				carryoverHit.bossName = matchingHit.bossName;
+				carryoverHit.timeline = matchingHit.timeline;
+			}
+		}
+		else {
+			newStatus.carryover[playerName] = completedHit.bossName;
+		}
+
 		newStatus.allocation.remaining.push(carryoverHit);
 	}
 
