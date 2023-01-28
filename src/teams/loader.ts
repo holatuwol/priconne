@@ -230,6 +230,10 @@ function checkForExtraTeamsSheet(
 		extractLabManualTeams(href, container);
 		return true;
 	}
+	else if (title.indexOf('/pcrg/') != -1) {
+		extractPCRGTeams(href, container);
+		return true;
+	}
 	else if (title.indexOf('CB TLs') != -1 && responseText.indexOf('Demiurge') != -1) {
 		extractDemiurgeTeams(href, container);
 		return true;

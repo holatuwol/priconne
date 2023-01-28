@@ -70,6 +70,10 @@ function extractLabManualTeamsFromTab(
 
 	var boss = tab.split(' ')[0];
 
+	if (boss.length != 2) {
+		return [];
+	}
+
 	var indices = rows.map(it => 'TheLab ' + it.cells[2].textContent);
 	var ids = rows.map(it => it.cells[0].getAttribute('id'));
 	var medias = <string[]> ids.map(getLabManualTimelineURL.bind(null, baseURL, gids[tab]));

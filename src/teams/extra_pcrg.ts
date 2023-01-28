@@ -12,7 +12,7 @@ function getPCRGUnits(
 
 	for (var i = 0; i < 5; i++) {
 		units.push({
-			name: names[i],
+			name: fixUnitName(names[i]),
 			build: {
 				star: stars[i],
 				rank: ranks[i],
@@ -32,7 +32,7 @@ function getPCRGTimelineURL(
 
 	var searchRow = memberRow;
 
-	while (searchRow.querySelectorAll('td[rowspan="5"]').length != 5) {
+	while (!isUnitImagesRow(searchRow)) {
 		if (!searchRow.previousSibling) {
 			return '';
 		}
@@ -44,7 +44,13 @@ function getPCRGTimelineURL(
 
 	var x = id.indexOf('R');
 
-	return baseURL + '#gid=' + gid + '&range=A' + (parseInt(id.substring(x + 1)) + 1);
+	return baseURL + '?gid=' + gid + '#' + id;
+}
+
+function isUnitImagesRow(row: HTMLTableRowElement) : boolean {
+	var matchingColumnCount = row.querySelectorAll('td[rowspan="5"]').length;
+
+	return matchingColumnCount > 0 && matchingColumnCount % 5 == 0;
 }
 
 function getPCRGSemiAutoDamage(
@@ -54,7 +60,7 @@ function getPCRGSemiAutoDamage(
 
 	var searchRow = memberRow;
 
-	while (searchRow.querySelectorAll('td[rowspan="5"]').length != 5) {
+	while (!isUnitImagesRow(searchRow)) {
 		if (!searchRow.previousSibling) {
 			return null;
 		}
@@ -84,7 +90,7 @@ function getPCRGFullAutoDamage(
 
 	var searchRow = memberRow;
 
-	while (searchRow.querySelectorAll('td[rowspan="5"]').length != 5) {
+	while (!isUnitImagesRow(searchRow)) {
 		if (!searchRow.previousSibling) {
 			return null;
 		}
@@ -229,6 +235,55 @@ function updatePCRGTeams(
 	}
 
 	return teams;
+}
+
+function extractPCRGTeams(
+	href: string,
+	container: HTMLElement
+) : void {
+
+	var tabElements = container.querySelectorAll('#sheet-menu li');
+
+	var gids = <Record<string, string>> Array.from(tabElements).reduce((acc, next) => {
+		var listItemId = next.getAttribute('id');
+
+		if (!listItemId) {
+			return acc;
+		}
+
+		var tabId = listItemId.substring('sheet-button-'.length);
+		var tabName = (next.textContent || '').trim();
+
+		acc[tabName] = tabId;
+
+		return acc;
+	}, <Record<string, string>> {});
+
+	var pageNames = Object.keys(gids);
+
+	var teams = <ClanBattleTeam[]> [];
+
+	for (var i = 0; i < pageNames.length; i++) {
+		var boss = pageNames[i];
+
+		if (boss.length != 2) {
+			continue;
+		}
+
+		var tabId = gids[boss];
+
+		var tab = <HTMLDivElement | null> container.querySelector('div[id="' + tabId + '"]');
+
+		if (!tab) {
+			continue;
+		}
+
+		Array.prototype.push.apply(teams, updatePCRGTeams(href, gids, boss, tab));
+	}
+
+	pcrgTeams = teams;
+
+	updateExtraTeamsHelper();
 }
 
 function extractPCRGTeamsLocal(
