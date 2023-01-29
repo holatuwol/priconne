@@ -261,6 +261,11 @@ function renderClanBattleStatusHelper() : void {
 	var selectedIndex = selectElement.selectedIndex;
 	var status = selectedIndex == -1 ? getInitialClanBattleStatus(cbId) : statusHistory[selectedIndex];
 
+	var hitRecordLink = <HTMLAnchorElement> document.getElementById('hit-record-data-link');
+
+	hitRecordLink.href = 'https://docs.google.com/spreadsheets/d/' + hitRecordSheetId + '/edit#gid=' + hitRecordGids['DPS Log'] + '&range=C' + (selectedIndex - parseInt(status.day) + 2);
+	hitRecordLink.textContent = hitRecordLink.href;
+
 	renderLapProgress(status);
 	renderRemainingHitsByBoss(status);
 	renderRemainingHitsByPlayer(status);

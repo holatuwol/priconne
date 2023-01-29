@@ -1,3 +1,5 @@
+var hitRecordGids = <Record<string, string>> {};
+
 var statusHistory = <ClanBattleStatus[]> [];
 var initialAllocations = <Record<string, AllocatedHit[]>> {};
 
@@ -340,8 +342,6 @@ function processHitRecords(
 
 	var tabs = <HTMLLIElement[]> Array.from(container.querySelectorAll('#sheet-menu li'));
 
-	var gids = <Record<string, string>> {};
-
 	for (var j = 0; j < tabs.length; j++) {
 		var listItemId = tabs[j].getAttribute('id');
 
@@ -352,10 +352,10 @@ function processHitRecords(
 		var tabId = listItemId.substring('sheet-button-'.length);
 		var tabName = (tabs[j].textContent || '').trim();
 
-		gids[tabName] = tabId;
+		hitRecordGids[tabName] = tabId;
 	}
 
-	processCompletedHits(cbId, container, gids['DPS Log']);
+	processCompletedHits(cbId, container, hitRecordGids['DPS Log']);
 
 	setTimeout(function() : void {
 		renderStatusHistory();
