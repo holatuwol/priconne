@@ -79,10 +79,11 @@ function updateCompletedHitsDetail(
 		return acc;
 	}
 
-	var container = acc[hit.bossName];
+	var key = 'T' + (hit.bossName.charCodeAt(0) - 64);
+	var container = acc[key];
 
 	if (container == null) {
-		container = acc[hit.bossName] = document.createElement('table');
+		container = acc[key] = document.createElement('table');
 		container.classList.add('table', 'sortable-theme-bootstrap');
 		container.setAttribute('data-sortable', 'true');
 		container.setAttribute('data-sortable-initialized', 'false');
@@ -90,6 +91,7 @@ function updateCompletedHitsDetail(
 		var row = document.createElement('tr');
 
 		row.appendChild(createCell(true, 'Lap'));
+		row.appendChild(createCell(true, 'Boss'));
 		row.appendChild(createCell(true, 'Timeline'));
 		row.appendChild(createCell(true, 'Player Name'));
 		row.appendChild(createCell(true, 'Piloted By'));
@@ -109,9 +111,10 @@ function updateCompletedHitsDetail(
 	cell.setAttribute('data-value', hit.lap ? ('' + hit.lap) : '0')
 	row.appendChild(cell);
 
+	row.appendChild(createCell(false, hit.bossName || ''));
 	row.appendChild(createCell(false, hit.timeline || ''));
-	row.appendChild(createCell(false, hit.playerName || ''));
-	row.appendChild(createCell(false, hit.pilot || hit.playerName));
+	row.appendChild(createCell(false, hit.playerName || '', 'player-name'));
+	row.appendChild(createCell(false, hit.pilot || hit.playerName, 'player-name'));
 
 	cell = createCell(false, hit.damage ? hit.damage.toLocaleString() : '0')
 	cell.setAttribute('data-value', hit.damage ? ('' + hit.damage) : '0')
@@ -263,8 +266,10 @@ function renderClanBattleStatusHelper() : void {
 
 	var hitRecordLink = <HTMLAnchorElement> document.getElementById('hit-record-data-link');
 
-	hitRecordLink.href = 'https://docs.google.com/spreadsheets/d/' + hitRecordSheetId + '/edit#gid=' + hitRecordGids['DPS Log'] + '&range=C' + (selectedIndex - parseInt(status.day) + 2);
-	hitRecordLink.textContent = hitRecordLink.href;
+	if (hitRecordLink) {
+		hitRecordLink.href = 'https://docs.google.com/spreadsheets/d/' + hitRecordSheetId + '/edit#gid=' + hitRecordGids['DPS Log'] + '&range=C' + (selectedIndex - parseInt(status.day) + 2);
+		hitRecordLink.textContent = hitRecordLink.href;
+	}
 
 	renderLapProgress(status);
 	renderRemainingHitsByBoss(status);
@@ -272,5 +277,23 @@ function renderClanBattleStatusHelper() : void {
 	renderCompletedHitsDetail(status);
 	renderCompletedHitsSummary(status);
 }
+
+var searchField = <HTMLInputElement> document.getElementById('player-search-completed');
+
+function filterCompletedHitsHelper() {
+	var searchText = searchField.value;
+
+	var hitRows = <HTMLTableRowElement[]> Array.from(document.querySelectorAll('#completed-hits-detailTabContent table tbody tr'));
+
+	for (var i = 0; i < hitRows.length; i++) {
+		var hasText = Array.from(hitRows[i].querySelectorAll('td.player-name')).filter(it => (it.textContent || '').indexOf(searchText) != -1).length > 0;
+		hitRows[i].style.display = hasText ? 'table-row' : 'none';
+	}
+}
+
+var filterCompletedHits = _.debounce(filterCompletedHitsHelper, 300);
+
+searchField.addEventListener('keydown', filterCompletedHits);
+searchField.addEventListener('keypress', filterCompletedHits);
 
 var renderClanBattleStatus = _.debounce(renderClanBattleStatusHelper, 300);

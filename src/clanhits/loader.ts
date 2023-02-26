@@ -369,8 +369,10 @@ function loadClanBattleHits() : void {
 	if (allocationSheetId) {
 		var allocationLink = <HTMLAnchorElement> document.getElementById('allocation-data-link');
 
-		allocationLink.href = 'https://docs.google.com/spreadsheets/d/' + allocationSheetId + '/htmlview';
-		allocationLink.textContent = allocationLink.href;
+		if (allocationLink) {
+			allocationLink.href = 'https://docs.google.com/spreadsheets/d/' + allocationSheetId + '/htmlview';
+			allocationLink.textContent = allocationLink.href;
+		}
 
 		expandGoogleSheetURLs(allocationSheetId, null, processInitialAllocations);
 	}
@@ -378,8 +380,10 @@ function loadClanBattleHits() : void {
 	if (hitRecordSheetId) {
 		var hitRecordLink = <HTMLAnchorElement> document.getElementById('hit-record-data-link');
 
-		hitRecordLink.href = 'https://docs.google.com/spreadsheets/d/' + hitRecordSheetId + '/edit';
-		hitRecordLink.textContent = hitRecordLink.href;
+		if (hitRecordLink) {
+			hitRecordLink.href = 'https://docs.google.com/spreadsheets/d/' + hitRecordSheetId + '/edit';
+			hitRecordLink.textContent = hitRecordLink.href;
+		}
 
 		expandGoogleSheetURLs(hitRecordSheetId, null, processHitRecords);
 	}

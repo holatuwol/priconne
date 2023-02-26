@@ -145,13 +145,18 @@ function updateRemainingHitsByBoss(
 }
 
 function renderRemainingHitsByBoss(status: ClanBattleStatus) : void {
+	var container = <HTMLDivElement> document.getElementById('remaining-hits-by-boss');
+
+	if (!container) {
+		return;
+	}
+
 	var hitsByBoss = <Record<string, HTMLSpanElement>> {};
 	hitsByBoss = status.allocation.remaining.reduce(updateRemainingHitsByBoss.bind(null, status), hitsByBoss);
 
 	var bossNames = Array.from(Object.keys(hitsByBoss));
 	bossNames.sort(Intl.Collator().compare);
 
-	var container = <HTMLDivElement> document.getElementById('remaining-hits-by-boss');
 	container.innerHTML = '';
 
 	for (var i = 0; i < bossNames.length; i++) {
@@ -214,11 +219,16 @@ function updateRemainingHitsByPlayer(
 }
 
 function renderRemainingHitsByPlayer(status: ClanBattleStatus) : void {
+	var table = <HTMLTableElement | null> document.querySelector('#remaining-hits-by-player table');
+
+	if (!table) {
+		return;
+	}
+
 	var hitsByPlayer = <Record<string, HTMLTableRowElement>> {};
 	hitsByPlayer = status.allocation.completed.reduce(updateRemainingHitsByPlayer, hitsByPlayer);
 	hitsByPlayer = status.allocation.remaining.reduce(updateRemainingHitsByPlayer, hitsByPlayer);
 
-	var table = <HTMLTableElement> document.querySelector('#remaining-hits-by-player table');
 	var tbody = table.tBodies[0];
 	tbody.innerHTML = '';
 
