@@ -1,3 +1,11 @@
+function getBossDamage(
+	boss: string,
+	damage: string
+) : number {
+
+	return (damage.indexOf('s') != -1 || damage.indexOf('초') != -1) ? getMaxDamage(boss) : getDamage(damage);
+}
+
 function getDamage(value : string | number | null) : number {
 	if (!value) {
 		return 0.0;
@@ -13,7 +21,7 @@ function getDamage(value : string | number | null) : number {
 		return parseFloat(value.substring(0, value.length - 1));
 	}
 
-	if (value.indexOf('w') == (value.length - 1)) {
+	if (value.indexOf('w') == (value.length - 1) || value.indexOf('만') == (value.length - 1)) {
 		return parseFloat(value.substring(0, value.length - 1)) / 100;
 	}
 

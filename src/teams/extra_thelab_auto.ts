@@ -50,6 +50,9 @@ function getLabAutoDamage(
 	else if (newDamageString.charAt(0) == '+') {
 		newDamage += getDamage(newDamageString.substring(1));
 	}
+	else {
+		newDamage = getDamage(newDamageString);
+	}
 
 	if (newDamage > maxDamage) {
 		console.warn(newDamage, '>', maxDamage, matcher[1]);
@@ -91,8 +94,20 @@ function applySubstitution(
 	newUnit: string
 ) : boolean {
 
+	if (oldUnit.toLowerCase().indexOf('can ') == 0) {
+		oldUnit = oldUnit.substring(4);
+	}
+
 	if (oldUnit.toLowerCase().indexOf('swap ') == 0) {
 		oldUnit = oldUnit.substring(5);
+	}
+
+	if (oldUnit.toLowerCase().indexOf('change ') == 0) {
+		oldUnit = oldUnit.substring(7);
+	}
+
+	if (oldUnit.toLowerCase().indexOf('switch ') == 0) {
+		oldUnit = oldUnit.substring(7);
 	}
 
 	if (newUnit.indexOf(' or ') != -1) {
@@ -111,6 +126,11 @@ function applySubstitution(
 	}
 	else if (newUnit.charAt(newUnit.length - 1) == '*' || newUnit.charAt(newUnit.length - 1) == '⭐') {
 		newBuild.star = newUnit.charAt(newUnit.length - 2);
+		newUnit = newUnit.substring(0, newUnit.length - 2).trim();
+	}
+
+	if (newUnit.charAt(newUnit.length - 1) >= '0' && newUnit.charAt(newUnit.length - 1) <= '9') {
+		newBuild.star = newUnit.charAt(newUnit.length - 1);
 		newUnit = newUnit.substring(0, newUnit.length - 2).trim();
 	}
 
@@ -429,10 +449,10 @@ function getLabAutoTeams(
 
 	var noteLines = notes.split('<br>');
 
-	var buildVariationsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') == -1 && ((it.charAt(0) == 'r' && it.charAt(1) >= '0' && it.charAt(1) <= '9') || (it.toLowerCase().indexOf(' and ') == -1 && (it.charAt(1) == '*' || it.charAt(1) == '⭐')))).map(getBuildVariations.bind(null, team));
+	var buildVariationsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') == -1 && it.indexOf('->') == -1 && ((it.charAt(0) == 'r' && it.charAt(1) >= '0' && it.charAt(1) <= '9') || (it.toLowerCase().indexOf(' and ') == -1 && (it.charAt(1) == '*' || it.charAt(1) == '⭐')))).map(getBuildVariations.bind(null, team));
 	newTeams = buildVariationsTeams.reduce(collapseClanBattleTeams, newTeams);
 
-	var singleSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') != -1 || (it.toLowerCase().indexOf(' and ') != 1 && (it.indexOf('*') != -1 || it.indexOf('⭐') != -1))).map(getSingleSubstitutions.bind(null, team));
+	var singleSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') != -1 || it.indexOf('->') != -1 || (it.toLowerCase().indexOf(' and ') != 1 && (it.indexOf('*') != -1 || it.indexOf('⭐') != -1))).map(getSingleSubstitutions.bind(null, team));
 	newTeams = singleSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
 
 	var multiSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to:') != -1).map(getMultiSubstitutions.bind(null, team));

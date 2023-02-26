@@ -177,7 +177,7 @@ function extractLabManualTeamsLocal(
 	gids: Record<string, string>
 ) : void {
 
-	if (document.location.host.indexOf('localhost') == -1 || document.location.search) {
+	if (document.location.host.indexOf('localhost') == -1) {
 		return;
 	}
 

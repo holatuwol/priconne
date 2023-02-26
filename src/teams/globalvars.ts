@@ -1,4 +1,4 @@
-var latestCBId = '24';
+var latestCBId = '25';
 
 var noticeElement = document.getElementById('planner-notice');
 var currentCBId = noticeElement ? noticeElement.getAttribute('data-cb-id') || latestCBId : latestCBId;
@@ -34,4 +34,4 @@ var overtimeRE = /(?:[0-9]+s|same) (?:EV|OT)/i;
 var teamUpdateListeners = <Function[]> [];
 
 var rankStarRE = /(?:r?[0-9]+[\*⭐]? ?)?([^\-=,:±<>]+)/i;
-var singleSubRE = /([^\-=,:±<>]*)\s+to\s+([^\-=,:±<>]+)/i;
+var singleSubRE = /([^\-=,:±<>]*)\s+(?:to|->)\s+([^\-=,:±<>]+)/i;
