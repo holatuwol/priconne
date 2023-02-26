@@ -1,7 +1,9 @@
 var aliases = {
 	'Chris': 'Christina',
+	'Djeta': 'Djeeta',
 	'H.Kyoka': 'H.Kyouka',
 	'MG.Shiori': 'M.Shiori',
+	'N.Hiyori': 'NY.Hiyori',
 	'N.Yui': 'NY.Yui',
 	'NNK': 'Neneka',
 	'Nyaru': 'NY.Kyaru',
@@ -12,6 +14,7 @@ var aliases = {
 	'SS.Aoi': 'TS.Aoi',
 	'S.Mako': 'S.Makoto',
 	'S.Tama': 'S.Tamaki',
+	'T.Aoi': 'TS.Aoi',
 	'TSAoi': 'TS.Aoi',
 	'X.Chris': 'X.Christina',
 	'X.Illya': 'X.Ilya'
