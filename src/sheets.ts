@@ -1,3 +1,13 @@
+function convertToCSV(
+	container: HTMLElement,
+	tabId: string
+) : string[][] {
+
+	var rows = <HTMLTableRowElement[]> Array.from(container.querySelectorAll('div[id="' + tabId + '"] table tbody tr'));
+
+	return rows.map(it => Array.from(it.cells).slice(1).map(it => it.textContent || ''));
+}
+
 function expandGoogleSheetURL(
 	href: string,
 	gid?: string,

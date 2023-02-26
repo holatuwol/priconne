@@ -1,38 +1,44 @@
 var responseCache = <Record<string, ClanRanking[]>> {};
 
 function loadCBStats(
-	requestURL: string,
-	callback: Function
-) : void {
+	anchor: HTMLAnchorElement,
+	callback: Function,
+	responseText: string,
+	href: string,
+	container: HTMLElement
+) : boolean {
 
-	document.body.style.opacity = '0.5';
+	document.body.style.opacity = '';
 
-	var request = new XMLHttpRequest();
+	var tabs = Array.from(container.querySelectorAll('#sheet-menu > li'));
 
-	request.onreadystatechange = function() {
-		if (this.readyState != 4) {
-			return;
-		}
+	for (var i = 0; i < tabs.length; i++) {
+		var tabId = (tabs[i].getAttribute('id') || '').substring('sheet-button-'.length)
+		var cbId = (tabs[i].textContent || '').substring(2);
 
-		document.body.style.opacity = '';
+		var rows = convertToCSV(container, tabId);
+		var header = rows[0];
 
-		if (!this.responseText || (this.status != 200)) {
-			callback([]);
-			return;
-		}
+		var results = rows.slice(1).filter(it => it[0]).map(row => {
+			var result = <ClanRanking> {};
 
-		callback(this.responseText);
-	};
+			for (var i = 0; i < header.length; i++) {
+				result[header[i]] = row[i];
+			}
 
-	if (requestURL.indexOf('?') != -1) {
-		requestURL += '&t=' + Date.now();
+			return result;
+		}).sort((a, b) => (b.score || 0) - (a.score || 0));
+
+		responseCache[cbId] = results;
 	}
-	else {
-		requestURL += '?t=' + Date.now();
+
+	var cbId = anchor.getAttribute('data-cb-id') || '0';
+
+	if (cbId in responseCache) {
+		callback(anchor, responseCache[cbId]);
 	}
 
-	request.open('GET', requestURL, true);
-	request.send();
+	return true;
 };
 
 function loadClanStats(
@@ -53,41 +59,11 @@ function loadClanStats(
 
 	var gid = anchor.getAttribute('data-gid') || '0';
 
-	if (gid.indexOf('.json') != -1) {
-		var requestURL = gid;
+	var parentElement = <HTMLElement> anchor.parentElement;
 
-		loadCBStats(requestURL, function(responseText: string) : void {
-			results = <ClanRanking[]> JSON.parse(responseText);
+	document.body.style.opacity = '0.5';
 
-			responseCache[cbId] = results;
-
-			callback(anchor, results);
-		});
-	}
-	else {
-		var parentElement = <HTMLElement> anchor.parentElement;
-		var requestURL = expandGoogleSheetURL(parentElement.getAttribute('data-sheet') || '', gid, true);
-
-		loadCBStats(requestURL, function(responseText: string) : void {
-			var rows = csv2arr(responseText);
-
-			var header = rows[0];
-
-			var results = rows.slice(1).filter(it => it[0]).map(row => {
-				var result = <ClanRanking> {};
-
-				for (var i = 0; i < header.length; i++) {
-					result[header[i]] = row[i];
-				}
-
-				return result;
-			}).sort((a, b) => (b.score || 0) - (a.score || 0));
-
-			responseCache[cbId] = results;
-
-			callback(anchor, results);
-		});
-	}
+	expandGoogleSheetURLs(parentElement.getAttribute('data-sheet') || '', null, loadCBStats.bind(null, anchor, callback));
 };
 
 function createMultiCBTable() : void {

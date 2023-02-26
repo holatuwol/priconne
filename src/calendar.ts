@@ -43,7 +43,10 @@ function getCalendarDateRange(
 		weekContainer.appendChild(span);
 	}
 
-	for (var i = 1; i < 15; i++) {
+	var start = (startTime.getDay() == 0) ? -6 : 1;
+	var end = (startTime.getDay() == 0) ? 8 : 15;
+
+	for (var i = start; i < end; i++) {
 		var displayTime = timeWeekday(startTime, i);
 
 		var span = document.createElement('span');

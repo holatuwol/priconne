@@ -27,46 +27,47 @@ function createRow(
 
 	var rankCell = document.createElement('th');
 	rankCell.setAttribute('scope', 'row');
+
 	rankCell.textContent = '' + clan.rank;
 
 	row.appendChild(rankCell);
 
 	var unitId = unitIds[clan.unitName] || clan.unitName;
 
+	var iconCell = document.createElement('td');
+
 	if (unitId) {
 		var iconElement = document.createElement('img');
 		iconElement.classList.add('card');
 		iconElement.setAttribute('src', getUnitIcon(unitId, clan.unitStars));
 
-		var iconCell = document.createElement('td');
 		iconCell.appendChild(iconElement);
-		row.appendChild(iconCell);
 	}
-	else {
-		row.appendChild(document.createElement('td'));
-	}
+
+	row.appendChild(iconCell);
 
 	var nameCell = document.createElement('td');
 	nameCell.textContent = clan.name;
 	row.appendChild(nameCell);
 
-	if (!clan.score) {
+	if (clan.score) {
+		var scoreCell = document.createElement('td');
+		scoreCell.textContent = new Intl.NumberFormat('en-US').format(clan.score);
+		row.appendChild(scoreCell);
+
+		var boss = getLapBoss(clan.score);
+
+		renderBossData(row, cbId, boss.lap, boss.index, boss.hp);
+
+		return row;
+	}
+	else {
 		row.appendChild(document.createElement('td'));
 		row.appendChild(document.createElement('td'));
 		row.appendChild(document.createElement('td'));
 
 		return row;
 	}
-
-	var scoreCell = document.createElement('td');
-	scoreCell.textContent = new Intl.NumberFormat('en-US').format(clan.score);
-	row.appendChild(scoreCell);
-
-	var boss = getLapBoss(clan.score);
-
-	renderBossData(row, cbId, boss.lap, boss.index, boss.hp);
-
-	return row;
 };
 
 function createSingleCBTable(
@@ -105,37 +106,37 @@ function loadSingleResult(anchor: HTMLAnchorElement | null) : void {
 
 	var cell = document.createElement('th');
 	cell.setAttribute('scope', 'col');
-	cell.classList.add('col-1');
+	cell.classList.add('clan-rank');
 	cell.textContent = 'Rank';
 	row.appendChild(cell);
 
 	cell = document.createElement('th');
 	cell.setAttribute('scope', 'col');
-	cell.classList.add('col-1');
+	cell.classList.add('clan-icon');
 	cell.textContent = 'Icon';
 	row.appendChild(cell);
 
 	cell = document.createElement('th');
 	cell.setAttribute('scope', 'col');
-	cell.classList.add('col-2');
+	cell.classList.add('clan-name');
 	cell.textContent = 'Clan';
 	row.appendChild(cell);
 
 	cell = document.createElement('th');
 	cell.setAttribute('scope', 'col');
-	cell.classList.add('col-2');
+	cell.classList.add('clan-score');
 	cell.textContent = 'Score';
 	row.appendChild(cell);
 
 	cell = document.createElement('th');
 	cell.setAttribute('scope', 'col');
-	cell.classList.add('col-1');
+	cell.classList.add('clan-boss-icon');
 	cell.textContent = 'Position';
 	row.appendChild(cell);
 
 	cell = document.createElement('th');
 	cell.setAttribute('scope', 'col');
-	cell.classList.add('col-5');
+	cell.classList.add('clan-progress');
 	cell.style.textAlign = 'right';
 	row.appendChild(cell);
 
