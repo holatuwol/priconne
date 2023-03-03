@@ -23,11 +23,16 @@ function loadCBStats(
 			var result = <ClanRanking> {};
 
 			for (var i = 0; i < header.length; i++) {
-				result[header[i]] = row[i];
+				if (header[i] == 'score') {
+					result[header[i]] = parseInt(row[i] || '0');
+				}
+				else {
+					result[header[i]] = row[i];
+				}
 			}
 
 			return result;
-		}).sort((a, b) => (b.score || 0) - (a.score || 0));
+		}).sort((a, b) => b.score - a.score);
 
 		responseCache[cbId] = results;
 	}
@@ -89,10 +94,10 @@ function createMultiCBTable() : void {
 	var tbody = <HTMLTableSectionElement> document.querySelector('table tbody');
 
 	var clanNames = Object.values(clans).sort((a, b) => {
-		var aRank = (a[cbIds[0]] || {}).rank || Number.MAX_SAFE_INTEGER;
-		var bRank = (b[cbIds[0]] || {}).rank || Number.MAX_SAFE_INTEGER;
+		var aScore = (a[cbIds[0]] || {}).score;
+		var bScore = (b[cbIds[0]] || {}).score;
 
-		return bRank - aRank;
+		return parseInt(aScore || '0') - parseInt(bScore || '0');
 	}).map(it => it.name);
 
 	for (var i = 0; i < clanNames.length; i++) {
