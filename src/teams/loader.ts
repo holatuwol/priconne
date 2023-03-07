@@ -56,6 +56,7 @@ function parseCSVTeams(text: string) : ClanBattleTeam[] {
 			else if (header[i].indexOf('build') == 0) {
 				var index = parseInt(header[i].substring(5)) - 1;
 				result.units[index].build = getStringAsBuild(row[i]);
+				result.units[index].buildLines = row[i].split(/\s*;\s*/);
 			}
 		}
 
@@ -264,12 +265,20 @@ function initializeTeams() : void {
 function getStringAsBuild(str: string) : ClanBattleBuild {
 	var build = <ClanBattleBuild> {};
 
-	var pattern = /([^;]+)⭐;?/g;
+	var pattern = /^[0-9]+;/g
 	var matcher = pattern.exec(str);
 
 	if (matcher) {
+		build.level = matcher[0];
+		str = str.substring(matcher.index + matcher[0].length).trim();
+	}
+
+	pattern = /([^;]+)⭐;?/g;
+	matcher = pattern.exec(str);
+
+	if (matcher) {
 		build.star = matcher[1].trim();
-		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+		str = (str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length)).trim();
 	}
 
 	pattern = /R?([0-9]+-[0-9]+[^;]*);?/ig;
@@ -277,14 +286,14 @@ function getStringAsBuild(str: string) : ClanBattleBuild {
 
 	if (matcher) {
 		build.rank = matcher[1].trim()
-		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+		str = (str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length)).trim();
 	}
 	else {
 		var pos = str.indexOf('any rank');
 
 		if (pos != -1) {
 			build.rank = 'any';
-			str = str.substring(0, pos) + str.substring(pos + 8);
+			str = (str.substring(0, pos) + str.substring(pos + 8)).trim();
 		}
 	}
 
@@ -293,7 +302,7 @@ function getStringAsBuild(str: string) : ClanBattleBuild {
 
 	if (matcher) {
 		build.unique = matcher[1].trim();
-		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+		str = (str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length)).trim();
 	}
 
 	pattern = /\(?UB\s*([^\s;\)]+)\)?;?/ig;
@@ -301,7 +310,7 @@ function getStringAsBuild(str: string) : ClanBattleBuild {
 
 	if (matcher) {
 		build.ub = matcher[1].trim();
-		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+		str = (str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length)).trim();
 	}
 
 	pattern = /\(?S1\s*([^\s;\)]+)\)?;?/ig;
@@ -309,7 +318,7 @@ function getStringAsBuild(str: string) : ClanBattleBuild {
 
 	if (matcher) {
 		build.s1 = matcher[1].trim();
-		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+		str = (str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length)).trim();
 	}
 
 	pattern = /\(?S2\s*([^\s;\)]+)\)?;?/ig;
@@ -317,7 +326,7 @@ function getStringAsBuild(str: string) : ClanBattleBuild {
 
 	if (matcher) {
 		build.s2 = matcher[1].trim();
-		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+		str = (str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length)).trim();
 	}
 
 	pattern = /\(?EX\s*([^\s;\)]+)\)?;?/ig;
@@ -325,18 +334,7 @@ function getStringAsBuild(str: string) : ClanBattleBuild {
 
 	if (matcher) {
 		build.ex = matcher[1].trim();
-		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
-	}
-
-	str = str.replace(/^(?:\s*;)+/g, '').trim();
-	str = str.replace(/(?:\s*;)+$/g, '').trim();
-
-	pattern = /^([0-9\-\s]+)[\*\+]?$/g;
-	matcher = pattern.exec(str);
-
-	if (matcher) {
-		build.level = matcher[1].trim();
-		str = str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length);
+		str = (str.substring(0, matcher.index) + str.substring(matcher.index + matcher[0].length)).trim();
 	}
 
 	str = str.replace(/^(?:\s*;)+/g, '').trim();

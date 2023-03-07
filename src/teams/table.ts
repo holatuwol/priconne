@@ -85,7 +85,7 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 
 	var buildElement = document.createElement('div');
 	buildElement.classList.add('unit-build');
-	buildElement.innerHTML = getBuildAsString(unit.build, '<br/>');
+	buildElement.innerHTML = unit.buildLines ? unit.buildLines.join('<br/>') : getBuildAsString(unit.build, '<br/>');
 
 	cell.appendChild(buildElement);
 

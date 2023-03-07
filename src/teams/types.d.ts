@@ -14,7 +14,8 @@ interface ClanBattleBuild {
 
 interface ClanBattleUnit {
 	name: string,
-	build: ClanBattleBuild
+	build: ClanBattleBuild,
+	buildLines?: string[]
 }
 
 interface ClanBattleTeam {
