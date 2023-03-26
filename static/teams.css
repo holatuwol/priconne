@@ -1,0 +1,184 @@
+#clan-battle-dates {
+	display: flex;
+	flex-direction: row;
+	gap: 3em;
+	height: 8em;
+}
+
+#clan-battle-dates .panel {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	text-align: center;
+}
+
+#clan-battle-dates .panel .panel-heading {
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	font-weight: 700;
+}
+
+#clan-battle-dates .panel .panel-content {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr)
+}
+
+#clan-battle-dates .day-names {
+	border-bottom: 1px solid #337ab7;
+}
+
+#clan-battle-dates .calendar-day {
+	opacity: 0.2;
+}
+
+#clan-battle-dates .calendar-day.calendar-clan-battle {
+	opacity: 1.0;
+}
+
+.planner-loading .tab-content {
+	opacity: 0.1;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+	transform: scale(1.5);
+}
+
+dt:not(:first-child) {
+	margin-top: 1em;
+}
+
+.panel-heading a {
+	text-decoration: underline;
+}
+
+.checkbox-inline,
+.radio-inline {
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.radio input[type=radio],
+.checkbox input[type=checkbox] {
+	margin-left: 1em;
+}
+
+.radio label,
+.checkbox label {
+	padding-left: 2.5em;
+}
+
+#units-available {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, 15em);
+}
+
+.checkbox+.checkbox,
+.radio+.radio {
+	margin-top: 10px;
+}
+
+#bosses-available {
+	display: flex;
+	flex-direction: row;
+}
+
+#bosses-available img {
+	margin-left: 0.5em;
+	vertical-align: top;
+	height: 4em;
+	width: 4em;
+}
+
+#bosses-available label {
+	margin-left: 0.2em;
+}
+
+#extra-teams {
+	width: 100%;
+	height: 4em;
+}
+
+#teams-available a,
+#teams-selected a {
+	cursor: pointer;
+}
+
+#teams-available button[disabled] {
+	opacity: 0.2;
+}
+
+#teams-available tr td,
+#teams-selected tr td {
+	padding: 0.2em;
+}
+
+#teams-available tr td.timeline,
+#teams-selected tr td.timeline {
+	padding-right: 1.5em;
+}
+
+#swal2-html-container {
+	font-size: 1.5em;
+	text-align: left;
+}
+
+#teams-available.show-unit-info tr td.unit-info,
+#teams-selected.show-unit-info tr td.unit-info {
+	vertical-align: top;
+}
+
+#teams-available th.select-button,
+#teams-selected th.select-button {
+	width: 6em;
+}
+
+#teams-available .boss,
+#teams-selected .boss {
+	font-size: xx-large;
+}
+
+#teams-available .damage,
+#teams-selected .damage {
+	font-size: x-large;
+}
+
+#teams-available .unit-info,
+#teams-selected .unit-info {
+	width: 4em;
+}
+
+#teams-available.show-unit-info .unit-info,
+#teams-selected.show-unit-info .unit-info {
+	width: 6em;
+}
+
+#teams-available .unit-info .unit-build,
+#teams-selected .unit-info .unit-build {
+	display: none;
+}
+
+#teams-available.show-unit-info .unit-info .unit-build,
+#teams-selected.show-unit-info .unit-info .unit-build {
+	display: block;
+}
+
+#teams-available img,
+#teams-selected img {
+	height: 4em;
+	width: 4em;
+}
+
+#teams-available tr.unavailable:not(.special-visible) {
+	opacity: 0.2;
+}
+
+#teams-available td.unit-info,
+#teams-selected td.unit-info {
+	text-align: center;
+}
+
+#teams-available.hide-unavailable tbody tr.unavailable:not(.special-visible),
+#teams-available tbody tr.filtered-out:not(.special-visible) {
+	display: none !important;
+}

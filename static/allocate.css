@@ -1,0 +1,80 @@
+h2 {
+	margin-top: 2em;
+}
+
+.nav-tabs {
+	margin-top: 2em;
+	margin-bottom: 2em;
+}
+
+#allocation-status {
+	display: flex;
+	column-gap: 5em;
+}
+
+#boss-allocation-status .allocation-status {
+	display: grid;
+	grid-template-rows: 3em 3em 3em;
+	grid-template-columns: 3em 3em 3em 3em 3em;
+}
+
+#player-allocation-status .allocation-status {
+	display: grid;
+	grid-template-rows: 3em 3em 3em;
+	grid-template-columns: 3em 3em 3em 3em 3em 3em 3em 3em 3em 3em;
+}
+
+#boss-allocation-status .allocation-status > *,
+#player-allocation-status .allocation-status > * {
+	border: 1px solid #000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#player-allocation-status .allocation-status a[href] {
+	text-decoration: underline;
+}
+
+#matching-players > div {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#matching-players img {
+	height: 4em;
+	width: 4em;
+}
+
+#matching-players figure {
+	margin-right: 2em;
+}
+
+.player-matches {
+	display: grid;
+	grid-template-rows: 2em 2em 2em;
+	grid-template-columns: 2em 2em 2em 2em 2em 2em 2em 2em 2em 2em;
+}
+
+.alt-bosses a {
+	display: none;
+}
+
+#teams-available input[type="checkbox"] {
+	display: none;
+}
+
+#teams-available .alt-bosses .player-matches > * {
+	border: 1px solid #000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#teams-available .alt-bosses span[data-viable="true"] {
+	background-color: #555;
+}
+
+#teams-available .alt-bosses span[data-viable="false"] {
+	background-color: #ccc;
+}

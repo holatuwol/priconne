@@ -1,0 +1,187 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="themes/bootstrap@3.3.7.css">
+<link rel="stylesheet" href="themes/bootstrap-theme@3.3.7.css">
+
+<!-- Sortable -->
+<link rel="stylesheet" href="themes/sortable-theme-bootstrap@0.8.0.css" />
+
+<!-- Sortable -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/css/sortable-theme-bootstrap.css" integrity="sha384-3TVyAJ8zqirV8ruIewGuvagzD0YG8Q5pwQbpbd3RwkCF78Bu7NXgYZPkk7AsjSo5" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/js/sortable.min.js" integrity="sha384-HUqeaL9KoHL76MHoanu1lEu+l8XUHWJlImp9RumjZIj+kc22pNRdXQHkX2SbfPgA" crossorigin="anonymous"></script>
+
+<!-- Custom CSS for this page -->
+<link rel="stylesheet" href="teams.css?t=1674627969" />
+<link rel="stylesheet" href="allocate.css?t=1671635465" />
+</head>
+<body>
+<div class="container" role="main">
+
+<div id="planner-notice" data-cb-id="22" class="hide">
+</div>
+
+<h2>Allocation Status</h2>
+
+<div id="allocation-status">
+	<div id="boss-allocation-status">
+		<h3>Breakdown By Boss</h3>
+		<div class="allocation-status"></div>
+	</div>
+
+	<div id="player-allocation-status">
+		<h3>Breakdown By Player</h3>
+		<div class="allocation-status"></div>
+	</div>
+</div>
+
+<h2>Desired Bosses</h2>
+
+<div id="bosses-available">
+</div>
+
+<div id="regions-available" class="hide">
+	<input name="regions-available" id="server-global" type="hidden" value="global" />
+	<input name="regions-available" id="server-CN" type="hidden" value="CN" />
+	<input name="regions-available" id="server-JP" type="hidden" value="JP" />
+	<input name="regions-available" id="server-KR" type="hidden" value="KR" />
+	<input name="regions-available" id="server-TH" type="hidden" value="TH" />
+	<input name="regions-available" id="server-TW" type="hidden" value="TW" />
+</div>
+
+<h2>Desired Timings</h2>
+
+<div id="timings-available">
+	<span class="checkbox-inline" title="found as a full auto timeline (turn on auto at the start and leave it on, maybe spam Illya UBs)">
+		<input name="timings-available" id="timing-full-auto" type="checkbox" value="full auto" onchange="filterAvailableTeams();" />
+		<label for="timing-full-auto">full auto</label>
+	</span>
+	<span class="checkbox-inline" title="found as a transcribed, public timeline, with low difficulty timings">
+		<input name="timings-available" id="timing-semi-auto" type="checkbox" value="semi auto" onchange="filterAvailableTeams();" />
+		<label for="timing-semi-auto">semi auto</label>
+	</span>
+	<span class="checkbox-inline" title="found as a transcribed, public timeline, with moderate difficulty timings">
+		<input name="timings-available" id="timing-manual" type="checkbox" value="manual" checked onchange="filterAvailableTeams();" />
+		<label for="timing-manual">manual</label>
+	</span>
+	<span class="checkbox-inline" title="found as a video, but no transcribed, public timeline was found">
+		<input name="timings-available" id="timing-video" type="checkbox" value="video" onchange="filterAvailableTeams();" />
+		<label for="timing-video">video</label>
+	</span>
+	<span class="checkbox-inline" title="the team was listed somewhere, but I have no idea what kind of timing is needed for it">
+		<input name="timings-available" id="timing-unspecified" type="checkbox" value="unspecified" onchange="filterAvailableTeams();" />
+		<label for="timing-unspecified">unspecified</label>
+	</span>
+	<span class="checkbox-inline" title="the team has been confirmed to not work at all, but retained in the planner for academic reasons">
+		<input name="timings-available" id="timing-non-functional" type="checkbox" value="non-functional" onchange="filterAvailableTeams();" />
+		<label for="timing-non-functional">non-functional</label>
+	</span>
+</div>
+
+<h2>Chosen Teams</h2>
+
+<table id="teams-selected" class="sortable-theme-bootstrap hide-unavailable show-unit-info" data-sortable>
+	<thead>
+	<tr>
+		<th class="select-button" data-sortable="false">&nbsp;</th>
+		<th>boss</th>
+		<th>damage</th>
+		<th>region</th>
+		<th>team ID</th>
+		<th>timing</th>
+		<th colspan=5 data-sortable="false">&nbsp;</th>
+	</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item active">
+    <a href="#available-teams" data-toggle="tab">Available Teams</a>
+  </li>
+  <li class="nav-item">
+    <a href="#current-allocation" data-toggle="tab">Current Allocation</a>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+<div id="available-teams" class="tab-pane fade in active">
+
+<div class="form-group">
+<input class="form-control" id="team-filter" type="text" onfocus="this.select()" onkeyup="filterAvailableTeams();" placeholder="search for teams by unit name or team ID, exclude teams with suicidal vampires with -Illya" />
+<p style="text-align: right"><span id="visible-teams-count">0</span> team<span id="visible-teams-plural">s</span> match</p>
+</div>
+
+<table id="teams-available" class="sortable-theme-bootstrap hide-unavailable show-unit-info" data-sortable>
+	<thead>
+	<tr>
+		<th class="select-button" data-sortable="false">&nbsp;</th>
+		<th>boss</th>
+		<th>damage</th>
+		<th>region</th>
+		<th>timeline</th>
+		<th>timing</th>
+		<th colspan=5 data-sortable="false">&nbsp;</th>
+	</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+
+</div>
+
+<div id="current-allocation" class="tab-pane fade">
+
+<h2>Hits Grouped By Boss</h2>
+
+<div id="remaining-hits-by-boss">
+</div>
+
+<h2>Hits Grouped By Player</h2>
+
+<div id="remaining-hits-by-player">
+<table class="table">
+	<thead>
+		<th>Player</th>
+		<th>Hit 1</th>
+		<th>Hit 2</th>
+		<th>Hit 3</th>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</body>
+
+<!-- Bootstrap -->
+<script src="themes/jquery@3.2.1.js"></script>
+<script src="themes/bootstrap@3.3.7.js"></script>
+
+<!-- Sortable -->
+<script src="themes/sortable@0.8.0.js"></script>
+
+<!-- Underscore -->
+<script src="themes/underscore@1.8.3.js"></script>
+
+<script src="units.js?t=1677875347"></script>
+<script src="bosses.js?t=1677617365"></script>
+<script>
+var defaultSheetIds = [
+	'2PACX-1vSE97soleZrnnA7SduL2NP41nC1QpgI5fc4sFB6nDrbPzg250yv-IY4EEbzluQjUaGWpll_wapzmaH2',
+	'2PACX-1vSnycNyQN_Ix7J9-834I8Gd3l1_KQE-7SCSz5xBfc4yRPBwtFummYDPLONBeCv434rp_ZD51NjllHY8'
+];
+</script>
+<script src="teams.js?t=1678214226"></script>
+<script src="clanhits.js?t=1675705330"></script>
+<script src="allocate.js?t=1672119736"></script>
+</html>

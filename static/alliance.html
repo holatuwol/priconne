@@ -1,0 +1,80 @@
+<html lang="en">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+<!-- Sortable -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/css/sortable-theme-bootstrap.css" integrity="sha384-3TVyAJ8zqirV8ruIewGuvagzD0YG8Q5pwQbpbd3RwkCF78Bu7NXgYZPkk7AsjSo5" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/js/sortable.min.js" integrity="sha384-HUqeaL9KoHL76MHoanu1lEu+l8XUHWJlImp9RumjZIj+kc22pNRdXQHkX2SbfPgA" crossorigin="anonymous"></script>
+
+<title>Cozy Island Clan Battle Leaderboards</title>
+
+<!-- Custom CSS for this page -->
+<link rel="stylesheet" href="alliance.css?t=1676091195" />
+</head>
+
+<body style="background-color: #212529; color: #fff">
+<div class="container cb">
+<h2 class="page-title">Clan Battle <span id="cb-index">Leaderboard</span>
+<i class="bi bi-info-circle help" onclick="Swal.fire({title:'Feature Unavailable',icon:'error',html:'Sorry, this icon is only present to make the page look like the Clan Battle Leaderboard on mofumofu.live'});"></i>
+<a href="#" class="help" onclick="loadTrendOverTime();"><i class="bi bi-file-bar-graph"></i></a>
+<div id="cb-timestamp"></div>
+<div class="dropdown" style="margin-top: 5px">
+<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+View Previous CBs
+</button>
+
+<div id="cb-selector" class="dropdown-menu" aria-labelledby="dropdownMenuButton" data-sheet="1sTbqx_o9A8lpZsjbxdiMFRqGhfOwSN8ay7dzbvEHACg">
+
+<!--
+<a class="dropdown-item" href="#" data-cb-id="25" data-gid="" data-source="in-game" data-timestamp="1643615400" onclick="loadSingleResult(this)">25</a>
+-->
+
+
+<a class="dropdown-item" href="#" data-cb-id="25" data-gid="1247349886" data-source="in-game" data-timestamp="1677858900" onclick="loadSingleResult(this)">25</a>
+<a class="dropdown-item" href="#" data-cb-id="24" data-gid="2046081563" data-source="in-game" onclick="loadSingleResult(this)">24</a>
+<a class="dropdown-item" href="#" data-cb-id="23" data-gid="245810774" data-source="in-game" onclick="loadSingleResult(this)">23</a>
+<a class="dropdown-item" href="#" data-cb-id="22" data-gid="1869777593" data-source="in-game" onclick="loadSingleResult(this)">22</a>
+<a class="dropdown-item" href="#" data-cb-id="21" data-gid="1432917232" data-source="in-game" onclick="loadSingleResult(this)">21</a>
+<a class="dropdown-item" href="#" data-cb-id="20" data-gid="1463408148" data-source="in-game" onclick="loadSingleResult(this)">20</a>
+<a class="dropdown-item" href="#" data-cb-id="19" data-gid="1013482710" data-source="in-game" onclick="loadSingleResult(this)">19</a>
+<a class="dropdown-item" href="#" data-cb-id="18" data-gid="1271000833" data-source="in-game" onclick="loadSingleResult(this)">18</a>
+<a class="dropdown-item" href="#" data-cb-id="17" data-gid="1706070972" data-source="in-game" onclick="loadSingleResult(this)">17</a>
+<a class="dropdown-item" href="#" data-cb-id="16" data-gid="1675748367" onclick="loadSingleResult(this)">16</a>
+<a class="dropdown-item" href="#" data-cb-id="15" data-gid="1982344349" onclick="loadSingleResult(this)">15</a>
+<a class="dropdown-item" href="#" data-cb-id="14" data-gid="0" onclick="loadSingleResult(this)">14</a>
+<a class="dropdown-item" href="#" data-cb-id="13" data-gid="610397817" data-timestamp="1645603200" data-source="mofumofu" onclick="loadSingleResult(this)">13 (mofumofu)</a>
+<a class="dropdown-item" href="#" data-cb-id="12" data-gid="999446984" data-timestamp="1642492800" data-source="mofumofu" onclick="loadSingleResult(this)">12 (mofumofu)</a>
+<a class="dropdown-item" href="#" data-cb-id="11" data-gid="1099739779" data-timestamp="1639987200" data-source="mofumofu" onclick="loadSingleResult(this)">11 (mofumofu)</a>
+<a class="dropdown-item" href="#" data-cb-id="10" data-gid="939599270" data-timestamp="1637568000" data-source="mofumofu" onclick="loadSingleResult(this)">10 (mofumofu)</a>
+
+</div>
+</div>
+</h2>
+
+<table class="table table-dark">
+<thead>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="bosses.js?t=1677617365"></script>
+<script src="units.js?t=1677875347"></script>
+<script src="alliance.js?t=1677832535"></script>
+
+</body>
+</html>

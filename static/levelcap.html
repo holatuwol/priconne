@@ -1,0 +1,279 @@
+<html>
+<head>
+<title>Priconne - Max Level Planner</title>
+<!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<!-- Date Range Picker https://www.daterangepicker.com/ -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment-with-locales.min.js" integrity="sha512-vFABRuf5oGUaztndx4KoAEUVQnOvAIFs59y4tO0DILGWhQiFnFHiR+ZJfxLDyJlXgeut9Z07Svuvm+1Jv89w5g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js" integrity="sha512-mh+AjlD3nxImTUGisMpHXW03gE6F4WdQyvuFRkjecwuWLwD2yCijw4tKA3NsEFpA1C3neiKhGXPSIGSfCYPMlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.css" integrity="sha512-gp+RQIipEa1X7Sq1vYXnuOW96C4704yI1n0YB9T/KqdvqaEgL6nAuTSrKufUX3VBONq/TPuKiXGLVgBKicZ0KA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+	tbody th {
+		text-align: center;
+	}
+
+	#options {
+		padding: 1.5rem;
+		margin-left: 0;
+		margin-right: 0;
+		border: 1px solid #dee2e6;
+		border-radius: 0.25rem;
+	}
+
+	.not-after-new-area .after-new-area,
+	.not-before-new-area .before-new-area,
+	#schedule:not(.not-after-new-area) .not-after-new-area,
+	#schedule:not(.not-before-new-area) .not-before-new-area {
+		display: none;
+	}
+
+	.tab-pane > *:first-child {
+		margin-top: 1em;
+	}
+
+	.nav-link[disabled] {
+		opacity: 0.2;
+	}
+
+	#quick-select {
+		margin-bottom: 1em;
+	}
+
+	.daily-refresh {
+		background-color: #eec;
+	}
+
+	.level-up {
+		background-color: #cce;
+	}
+</style>
+
+</head>
+<body>
+<div class="container" role="main">
+
+<h1>Max Level Planner for Level <span id="new-max-level" contenteditable="true">151</span></h1>
+
+<p>A simple tool to help you figure out when you will hit the new max level, based on how you prepare before the new area is released and how many times you are willing to refresh until you've hit the new max level.</p>
+
+<div id="options">
+	<div class="form-input mb-3">
+		<label for="initial-level">Current level</label>
+		<input type="text" id="initial-level" class="form-control" name="initial-level" value="148" onblur="updateBreakdown();" />
+	</div>
+
+	<div class="form-input mb-3">
+		<label for="initial-overflow-exp">Current EXP</label>
+		<input type="text" id="initial-overflow-exp" class="form-control" name="initial-overflow-exp" value="4424" onblur="updateBreakdown();" />
+	</div>
+
+	<div class="form-input mb-3">
+		<label for="start-time">Area 30 release date</label>
+		<input type="text" id="start-time" class="form-control" name="start-time" value="released on November 16, 2022 (UTC)" />
+	</div>
+
+	<div class="form-input mb-3">
+		<label for="cb-start-time">Clan Battle 22 start date</label>
+		<input type="text" id="cb-start-time" class="form-control" name="cb-start-time" value="starts on November 26, 2022 (UTC)" />
+	</div>
+
+	<div class="form-input mt-5">
+		<select id="quick-select" class="form-select" onchange="updateQuickSelect();">
+			<option selected value="custom">custom</option>
+			<option data-initial-level="145" data-initial-overflow-exp="0" data-use-after-new-area="true" data-use-before-new-area="true" data-refresh-count="8" data-last-refresh-day="15" data-last-refresh-count="0">preset: start at level 145, level 151 by the end of day 1 (6000+240=6240 jewels)</option>
+			<option data-initial-level="146" data-initial-overflow-exp="0" data-use-after-new-area="true" data-use-before-new-area="true" data-refresh-count="5" data-last-refresh-day="14" data-last-refresh-count="0">preset: start at level 146, level 151 by the start of day 1 (2880+240=3120 jewels)</option>
+			<option data-initial-level="147" data-initial-overflow-exp="0" data-use-after-new-area="false" data-use-before-new-area="false" data-refresh-count="0" data-last-refresh-day="0" data-last-refresh-count="0">preset: start at level 147, level 151 by the end of day 1 (0 jewels)</option>
+			<option data-initial-level="148" data-initial-overflow-exp="4424" data-use-after-new-area="false" data-use-before-new-area="false" data-refresh-count="0" data-last-refresh-day="0" data-last-refresh-count="0" selected>preset: start at old level cap, level 151 by the end of day 1 (0 jewels)</option>
+		</select>
+	</div>
+
+	<div class="form-check form-switch">
+		<input class="form-check-input" type="checkbox" name="use-after-new-area" id="use-after-new-area" checked onchange="updateBreakdown();" />
+		<label class="form-check-label" for="use-after-new-area">save 990+ stamina + 440 guildhouse stamina + 10 clan like stamina to use after new area is released</label>
+	</div>
+	<div class="form-check form-switch">
+		<input class="form-check-input" type="checkbox" name="use-before-new-area" id="use-before-new-area" checked onchange="updateBreakdown();" />
+		<label class="form-check-label" for="use-before-new-area">take advantage of the new level cap releasing 10-20 minutes before the new area is released</label>
+	</div>
+	<div class="form-check form-switch">
+		<input class="form-check-input" type="checkbox" name="discord-timestamps" id="discord-timestamps" onchange="updatePreparationTimes();" />
+		<label class="form-check-label" for="discord-timestamps">show times in discord timestamp format (preparations only)</label>
+	</div>
+
+	<div class="form-input mt-3">
+		<select id="stamina-refresh-count" class="form-select" onchange="updateBreakdown();">
+			<option value=0 selected>0 refreshes (0 jewels) per day</option>
+			<option value=1>1 refresh (40 jewels) per day</option>
+			<option value=2>2 refreshes (80 jewels) per day</option>
+			<option value=3>3 refreshes (120 jewels) per day</option>
+			<option value=4>4 refreshes (180 jewels) per day</option>
+			<option value=5>5 refreshes (240 jewels) per day</option>
+			<option value=6>6 refreshes (300 jewels) per day</option>
+			<option value=7>7 refreshes (400 jewels) per day</option>
+			<option value=8>8 refreshes (500 jewels) per day</option>
+			<option value=9>9 refreshes (600 jewels) per day</option>
+			<option value=10>10 refreshes (700 jewels) per day</option>
+			<option value=11>11 refreshes (800 jewels) per day</option>
+			<option value=12>12 refreshes (900 jewels) per day</option>
+			<option value=13>13 refreshes (1000 jewels) per day</option>
+			<option value=14>14 refreshes (1100 jewels) per day</option>
+			<option value=15>15 refreshes (1250 jewels) per day</option>
+			<option value=16>16 refreshes (1400 jewels) per day</option>
+			<option value=17>17 refreshes (1550 jewels) per day</option>
+			<option value=18>18 refreshes (1700 jewels) per day</option>
+			<option value=19>19 refreshes (1850 jewels) per day</option>
+			<option value=20>20 refreshes (2000 jewels) per day</option>
+			<option value=21>21 refreshes (2150 jewels) per day</option>
+			<option value=22>22 refreshes (2300 jewels) per day</option>
+
+			<option value=23>23 refreshes (2480 jewels) per day</option>
+			<option value=24>24 refreshes (2660 jewels) per day</option>
+			<option value=25>25 refreshes (2840 jewels) per day</option>
+			<option value=26>26 refreshes (3020 jewels) per day</option>
+			<option value=27>27 refreshes (3200 jewels) per day</option>
+			<option value=28>28 refreshes (3380 jewels) per day</option>
+			<option value=29>29 refreshes (3560 jewels) per day</option>
+			<option value=30>30 refreshes (3740 jewels) per day</option>
+			<option value=31>31 refreshes (3940 jewels) per day</option>
+			<option value=32>32 refreshes (4140 jewels) per day</option>
+			<option value=33>33 refreshes (4340 jewels) per day</option>
+			<option value=34>34 refreshes (4540 jewels) per day</option>
+			<option value=35>35 refreshes (4740 jewels) per day</option>
+			<option value=36>36 refreshes (5040 jewels) per day</option>
+			<option value=37>37 refreshes (5340 jewels) per day</option>
+			<option value=38>38 refreshes (5640 jewels) per day</option>
+			<option value=39>39 refreshes (5940 jewels) per day</option>
+			<option value=40>40 refreshes (6240 jewels) per day</option>
+		</select>
+	</div>
+</div>
+
+<p>&nbsp;</p>
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item active">
+    <button class="nav-link active" data-bs-target="#preparations" data-bs-toggle="tab">Preparations</button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-target="#level-ups" data-bs-toggle="tab">Level Ups</button>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+<div id="preparations" class="tab-pane fade show active">
+
+<dl id="schedule">
+<dt><time data-offset="-172800000"></time></dt>
+<dd>Daily reset. <span class="after-new-area before-new-area">Neither refresh nor claim daily missions until close to the next reset.</span></dd>
+<dt class="after-new-area"><time data-offset="-170100000"></time></dt>
+<dd class="after-new-area">Claim guildhouse stamina. After that, use the stamina as you like <span class="before-new-area">until <time data-offset="-158400000"></time>, then stop so that it can regen over the next 20 hours.</span> <span class="not-before-new-area">but make sure that you are at 990+ stamina before the next reset.</span></dd>
+<dt class="after-new-area before-new-area"><time data-offset="-87000000"></time></dt>
+<dd class="after-new-area before-new-area">Stamina must be 190-197. Refresh 5x, then claim daily missions. You will have 990-997 stamina after claiming.</dd>
+<dt class="after-new-area before-new-area"><time data-offset="-86700000"></time></dt>
+<dd class="after-new-area before-new-area">Like a clan member, sending the stamina to your present box.</dd>
+<dt><time data-offset="-86400000"></time></dt>
+<dd>Daily reset. <span class="before-new-area">Do not <span class="after-new-area">use stamina,</span> claim daily missions<span class="after-new-area">,</span> or refresh until close to the next reset.</span></dd>
+<dt class="after-new-area"><time data-offset="-83700000"></time></dt>
+<dd class="after-new-area">Claim guildhouse stamina and like a clan member, sending the stamina to your present box. (45 minutes is an estimate for how long it takes to clear the new area normal nodes, so delay this if you think you'll take longer.) <span class="not-before-new-area">After that, use stamina as you like but make sure that you are at 990+ stamina before the next reset.</span></dd>
+<dt class="before-new-area"><time data-offset="-1200000"></time></dt>
+<dd class="before-new-area">New level cap is expected to release 10-20 minutes before reset (ask on maincord if you can't tell whether it's happened). <span class="after-new-area">Gain as much EXP as you can before reset happens to make early progress towards the new level cap, while also making sure you still have 990-999 stamina to farm the new area's equipment.</span>
+<ul>
+<li class="after-new-area">Use 10 stamina, sending the level up stamina to your present box.</li>
+<li class="after-new-area">Claim 10 stamina from present box (from the claim at <time data-offset="-86700000"></time>) before it expires.</li>
+<li class="after-new-area">Use up another 200 stamina, and claim daily missions to recover it.</li>
+<li class="not-after-new-area">Claim daily missions (you will level up).</li>
+<li class="after-new-area">Use up another <span class="stamina-amount"></span> stamina, and refresh <span class="refresh-amount"></span> time(s) to recover it.</li>
+</ul>
+</dd>
+<dt><time data-offset="0"></time></dt>
+<dd>Daily reset, new world released.
+<ul class="after-new-area">
+<li>Spend 450 stamina.</li>
+<li>Claim 450 stamina from present box (from the claim at <time data-offset="-83700000"></time>) before it expires.</li>
+<li class="before-new-area">Empty your stamina bar and claim level up stamina from present box (from the claim at <time data-offset="-1200000"></time>).</li>
+</ul>
+</dd>
+</dl>
+
+</div>
+
+<div id="level-ups" class="tab-pane fade">
+
+<table id="level-up-breakdown" class="table" data-initial-exp="" data-exp="" data-max-exp="" data-new-cap-exp="">
+	<thead>
+		<tr><th>Day</th><th>Action</th><th>EXP Gained</th><th>New Level</th></tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+
+</div>
+
+</div>
+</body>
+
+<template id="before-after-new-area">
+	<tr><td class="day-number">0</td><td>10 stamina (saved stamina from mailbox)</td><td>10</td><td class="level-exp"></td></tr>
+</template>
+
+<template id="before-new-area">
+	<tr><td class="day-number">0</td><td>mission: Enhance character's skills 1 time</td><td>25</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>mission: Refine an equipment item and increase the &#9733; by 1</td><td>25</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>mission: Clear Grotto 4 times</td><td>30</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>mission: Clear a Dungeon battle 1 time</td><td>40</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>mission: Clear Main or event quests 10 times</td><td>30</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>mission: Clear Main or event quests (HARD) 3 times</td><td>40</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>mission: Draw the normal Gacha 10 times</td><td>20</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>mission: Participate in the Battle Arena 1 time</td><td>40</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>mission: Participate in the Princess Arena 1 time</td><td>50</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">0</td><td>200 stamina (daily mission)</td><td>200</td><td class="level-exp"></td></tr>
+</template>
+
+<template id="after-new-area">
+	<tr><td class="day-number">1</td><td>450 stamina (saved stamina from mailbox)</td><td>450</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number">1</td><td>990 stamina (saved stamina from previous day)</td><td>990</td><td class="level-exp"></td></tr>
+</template>
+
+<template id="daily-missions">
+	<tr><td class="day-number"></td><td>10 stamina (clan like)</td><td>10</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>440 stamina (max guild house)</td><td>440</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Enhance character's skills 1 time</td><td>25</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Refine an equipment item and increase the &#9733; by 1</td><td>25</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Clear Grotto 4 times</td><td>30</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Clear a Dungeon battle 1 time</td><td>40</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Clear Main or event quests 10 times</td><td>30</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Clear Main or event quests (HARD) 3 times</td><td>40</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Draw the normal Gacha 10 times</td><td>20</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Participate in the Battle Arena 1 time</td><td>40</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>mission: Participate in the Princess Arena 1 time</td><td>50</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>70 stamina (natural regen until 20:00 UTC)</td><td>70</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>100 stamina (daily mission at 20:00 UTC)</td><td>100</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>60 stamina (natural regen until 02:00 UTC)</td><td>60</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>100 stamina (daily mission at 02:00 UTC)</td><td>100</td><td class="level-exp"></td></tr>
+	<tr><td class="day-number"></td><td>110 stamina (natural regen until 13:00 UTC)</td><td>110</td><td class="level-exp"></td></tr>
+</template>
+
+<template id="daily-refresh">
+	<tr class="daily-refresh"><td class="day-number"></td><td><span class="stamina-amount"></span> stamina (<span class="refresh-amount"></span>x refresh)</td><td class="stamina-amount"></td><td class="level-exp"></td></tr>
+</template>
+
+<template id="clan-battle">
+	<tr><td class="day-number"></td><td><span class="stamina-amount"></span>mission: Participate in Clan Battle 1 time</td><td>30</td><td class="level-exp"></td></tr>
+</template>
+
+<template id="level-up">
+	<tr class="level-up"><td class="day-number"></td><td><span class="stamina-amount"></span> stamina (level up <span class="old-level"></span> to <span class="new-level"></span>)</td><td class="stamina-amount"></td><td class="level-exp"></td></tr>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" integrity="sha384-FZY+KSLVXVyc1qAlqH9oCx1JEOlQh6iXfw3o2n3Iy32qGjXmUPWT9I0Z9e9wxYe3" crossorigin="anonymous"></script>
+
+<script src="levelcap.js?t=1672119741"></script>
+
+</html>

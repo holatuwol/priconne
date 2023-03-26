@@ -1,0 +1,219 @@
+<html>
+<head>
+<title>Priconne - Stamina Maximizer</title>
+<!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<!-- Date Range Picker https://www.daterangepicker.com/ -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment-with-locales.min.js" integrity="sha512-vFABRuf5oGUaztndx4KoAEUVQnOvAIFs59y4tO0DILGWhQiFnFHiR+ZJfxLDyJlXgeut9Z07Svuvm+1Jv89w5g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js" integrity="sha512-mh+AjlD3nxImTUGisMpHXW03gE6F4WdQyvuFRkjecwuWLwD2yCijw4tKA3NsEFpA1C3neiKhGXPSIGSfCYPMlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.css" integrity="sha512-gp+RQIipEa1X7Sq1vYXnuOW96C4704yI1n0YB9T/KqdvqaEgL6nAuTSrKufUX3VBONq/TPuKiXGLVgBKicZ0KA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+	tbody th {
+		text-align: center;
+	}
+
+	#options {
+		padding: 1.5rem;
+		margin-left: 0;
+		margin-right: 0;
+		border: 1px solid #dee2e6;
+		border-radius: 0.25rem;
+		margin-bottom: 1em;
+	}
+
+	.tab-pane > *:first-child {
+		margin-top: 1em;
+	}
+</style>
+
+</head>
+<body>
+<div class="container" role="main">
+
+<h1>Stamina Maximizer</h1>
+
+<p>Maximizing stamina is concerned with trying to get 336-458 stamina into your mailbox without wasting too many jewels. Usually this is achieved by sacrificing 210-250 stamina from natural regen, and it provides the following benefits over the simpler approach of only bringing 1438-1447 stamina into the event:</p>
+
+<ul>
+<li>By maximizing for drop campaigns, you earn additional items from whatever the additional 458 stamina brings you.</li>
+<li>By maximizing for story events, you earn an extra 2-3 memory pieces, saving 10-15 divine amulets.</li>
+</li>
+</ul>
+
+<p>Not everyone agrees that it's worthwhile to maximize stamina, with some instead preferring the simplier approach mentioned earlier. Both approaches are detailed in this tool.</p>
+</p>
+
+<h2>Please answer the following questions.</h2>
+
+<div id="options">
+	<div class="mb-3">
+		<label for="event-type" class="form-label">What are you maximizing for?</label>
+
+		<select class="form-select" id="event-type" name="event-type" onchange="setEventType(this.selectedIndex);">
+			<option value="drop-campaign" data-upcoming-dates="November 9, 2022 (UTC); November 16, 2022 (UTC)">Drop Campaign OR New World Added (starts at 13:00 UTC)</option>
+			<option value="story-event" data-upcoming-dates="November 2, 2022 (UTC)">Story Event (starts at 23:00 UTC)</option>
+		</select>
+	</div>
+
+	<div class="mb-3">
+		<label for="event-types" class="form-label">When does the event start?</label>
+
+		<input type="text" id="event-times" class="form-control" name="event-times" value="" />
+	</div>
+
+	<div class="form-check form-switch">
+		<input class="form-check-input" type="checkbox" name="discord-timestamps" id="discord-timestamps" onchange="updatePreparationTimes();" />
+		<label class="form-check-label" for="discord-timestamps">show times in discord timestamp format</label>
+	</div>
+</div>
+
+<h2>Here are some detailed steps.</h2>
+
+<div id="drop-campaign" class="schedule">
+
+<p>The following detailed steps assume you are level 132 or higher (190+ max stamina), and that you plan to play immediately after reset. An alternate approach is described by Nyara#6964 (<a href="https://discord.com/channels/413766882277982228/801024264173912064/930697438975651900">permalink</a>).</p>
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item active">
+    <button class="nav-link active" data-bs-target="#campaign-max" data-bs-toggle="tab">990+448+458 stamina</button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-target="#campaign-min" data-bs-toggle="tab">990+448 stamina</button>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+<div id="campaign-max" class="tab-pane fade show active">
+<dl>
+<dt><time data-offset="-172800000"></time></dt>
+<dd>Daily reset, 2 days before drop campaign.</dd>
+<dt><time data-offset="-170100000"></time></dt>
+<dd>Claim guildhouse stamina, then don't touch the guildhouse stamina furniture again for 24 hours.</dd>
+<dt><time data-offset="-158400000"></time></dt>
+<dd>Reduce your stamina to 0 and stop spending stamina so that it can regen over the next 19.5 hours. Do not refresh stamina or collect daily missions stamina until specified.</dd>
+<dt><time data-offset="-88200000"></time></dt>
+<dd>Refresh 5x and claim stamina from daily missions, which will bring your stamina to 990+.</dd>
+<dt><time data-offset="-86400000"></time></dt>
+<dd>Daily reset, 1 day before drop campaign.</dd>
+<dt><time data-offset="-83700000"></time></dt>
+<dd>Claim guildhouse stamina and like a clan member, sending the stamina to your present box. (45 minutes is an estimate for how long it takes to use 460 stamina, factoring in the possibility of a new world update, so delay this if you think you'll take longer.)</dd>
+<dt><time data-offset="-39600000"></time></dt>
+<dd>Second daily mission stamina available. Use 200 stamina to complete missions, then claim stamina from daily missions.</dd>
+<dt><time data-offset="0"></time></dt>
+<dd>Daily reset, drop campaign starts.
+<ul>
+<li>Spend 460 stamina.</li>
+<li>Claim 458 stamina from present box (from the claim at <time data-offset="-83700000"></time>) before it expires.</li>
+<li>Spend all remaining stamina.</li>
+</ul>
+</dd>
+</dl>
+</div>
+
+<div id="campaign-min" class="tab-pane fade show">
+<dl>
+<dt><time data-offset="-86400000"></time></dt>
+<dd>Daily reset, 1 day before drop campaign. Do not claim daily missions until specified.</dd>
+<dt><time data-offset="-83700000"></time></dt>
+<dd>Claim guildhouse stamina, then don't touch the guildhouse stamina furniture again for 24 hours.</dd>
+<dt><time data-offset="-72000000"></time></dt>
+<dd>Reduce your stamina to 0 and stop spending stamina so that it can regen over the next 19.5 hours.</dd>
+<dt><time data-offset="-1800000"></time></dt>
+<dd>Refresh 5x and claim stamina from daily missions, which will bring your stamina to 990+.</dd>
+<dt><time data-offset="0"></time></dt>
+<dd>Daily reset, drop campaign starts.
+<ul>
+<li>Spend all remaining stamina.</li>
+<li>Collect guildhouse stamina, spend all gained stamina.</li>
+</dd>
+</div>
+
+
+</div>
+
+</div>
+
+<div id="story-event" class="schedule">
+
+<p>The following detailed steps assume you are level 132 or higher (190+ max stamina), and that you plan to play immediately after arena cutoff (when the event starts). Also includes an optional step to complete 3 hard quests and 7 normal quests for the extra mission EXP, but it carries an additional cost of 40 jewels. An alternate approach is described by Wazhai#0161 (<a href="https://discord.com/channels/413766882277982228/801024264173912064/992382758028591104">permalink</a>).</p>
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item active">
+    <button class="nav-link active" data-bs-target="#event-max" data-bs-toggle="tab">990+448+458 stamina</button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-target="#event-min" data-bs-toggle="tab">990+448 stamina</button>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+<div id="event-max" class="tab-pane fade show active">
+<dl>
+<dt><time data-offset="-208800000"></time></dt>
+<dd>Daily reset, 2 days before the story event begins. Aside from guildhouse stamina, play the game as normal.</dd>
+<dt><time data-offset="-162000000"></time></dt>
+<dd>Claim guildhouse stamina, then don't touch the guildhouse stamina furniture again for 24 hours, so that we can send the stamina to the presents box in 24 hours.</dd>
+<dt><time data-offset="-145800000"></time></dt>
+<dd>Make sure you claim and use any stamina from missions. Also make sure you use up any stamina from stamina refreshes you need for your priorities (clan battle hits, hard stage farming, etc.). After that, reduce your stamina to 0 and stop spending stamina so that it can regen over the next 19.5 hours.</dd>
+<dt><time data-offset="-122400000"></time></dt>
+<dd>Daily reset, 1 day before the story event begins. Do not use stamina or claim daily missions until specified.</dd>
+<dt><time data-offset="-75600000"></time></dt>
+<dd>Second daily mission stamina available.
+<ul>
+<li>Refresh 5x and claim stamina from daily missions, which will bring your stamina to 990+.</li>
+<li>Claim guildhouse stamina and like a clan member, sending 458 stamina to your present box.</li>
+<li>(optional) Use 130 stamina (3 visits to hard nodes, 7 visits to normal nodes) to complete missions.</li>
+<li>(optional) Refresh 1x, which will bring your stamina back to 980+.</li>
+</ul>
+</dd>
+<dt><time data-offset="-36000000"></time></dt>
+<dd>Daily reset, day the story event begins.</dd>
+<dt><time data-offset="0"></time></dt>
+<dd>Arena cutoff, story event begins.
+<ul>
+<li>Spend 460 stamina on the event.</li>
+<li>Claim 458 stamina from present box (from the claim at <time data-offset="-75600000"></time>) before it expires.</li>
+<li>Spend all remaining stamina on the event.</li>
+</ul>
+</dd>
+</dl>
+</div>
+
+<div id="event-min" class="tab-pane fade show">
+<dl>
+<dt><time data-offset="-122400000"></time></dt>
+<dd>Daily reset, 1 day before the story event begins. Do not claim daily missions or guildhouse stamina until specified.</dd>
+<dt><time data-offset="-82800000"></time></dt>
+<dd>Claim guildhouse stamina, then don't touch the guildhouse stamina furniture again for 24 hours, so that we have 448 stamina available when the story event begins. After that, reduce your stamina to 70-74 so that it can regen over the next 12.5 hours.</dd>
+<dt><time data-offset="-37800000"></time></dt>
+<dd>Refresh 5x and claim stamina from daily missions, which will bring your stamina to 990+.</dd>
+<dt><time data-offset="-36000000"></time></dt>
+<dd>Daily reset, day the story event begins. Do not use stamina until specified.</dd>
+<dt><time data-offset="0"></time></dt>
+<dd>Arena cutoff, story event begins.
+<ul>
+<li>Spend all remaining stamina on the event.</li>
+<li>Collect guildhouse stamina, spend all gained stamina on the event.</li>
+</ul>
+</dd>
+</dl>
+</div>
+
+</div>
+
+</div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" integrity="sha384-FZY+KSLVXVyc1qAlqH9oCx1JEOlQh6iXfw3o2n3Iy32qGjXmUPWT9I0Z9e9wxYe3" crossorigin="anonymous"></script>
+
+<script src="stamina.js?t=1672119743"></script>
+
+</html>

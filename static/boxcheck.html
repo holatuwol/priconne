@@ -1,0 +1,155 @@
+<html>
+<head>
+<title>Princess Connect - Interactive Box Check</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<!-- Sortable -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/css/sortable-theme-bootstrap.css" integrity="sha384-3TVyAJ8zqirV8ruIewGuvagzD0YG8Q5pwQbpbd3RwkCF78Bu7NXgYZPkk7AsjSo5" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/js/sortable.min.js" integrity="sha384-HUqeaL9KoHL76MHoanu1lEu+l8XUHWJlImp9RumjZIj+kc22pNRdXQHkX2SbfPgA" crossorigin="anonymous"></script>
+
+<!-- HTML2Canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- Custom CSS for this page -->
+<link rel="stylesheet" href="boxcheck.css?t=1656877406" />
+
+</head>
+<body>
+
+<div class="container" role="main">
+
+<h1>Princess Connect - Interactive Box Check</h1>
+
+<ul id="nav-container" class="nav nav-tabs">
+</ul>
+
+<div id="tab-container" class="tab-content">
+
+<div class="tab-pane fade in active" id="help-text">
+<p>&nbsp;</p>
+<div class="form-group">
+<label for="roster-url">Roster URL</label>
+<input type="text" class="form-control" name="roster-url" id="roster-url" value="" onpaste="updateBoxCheckURL();" onblur="updateBoxCheckURL();" onfocus="this.select();" />
+<span class="help-block">If you have filled out a <a href="https://docs.google.com/spreadsheets/d/1shZhcLDeDbmhvJVN7UbYL5Gj4Fd7mLdeIKdyAh1xZAs/edit?usp=sharing">Hard Stage Planner</a> and used the Share > Publish to Web option (you only need to share the Roster and Resources tabs), paste the Roster > Web Page URL into the text field above.</span>
+<div class="form-group">
+<label for="box-check-url">Interactive Box Check URL</label>
+<input type="text" class="form-control" name="box-check-url" id="box-check-url" readonly onfocus="this.select();" />
+<span class="help-block">You will then be able to access an interactive version of your box with the URL above.</span>
+</div>
+
+
+</div>
+
+<template id="nav-template">
+  <li class="nav-item">
+    <a class="box-link" href="" data-toggle="tab">Box</a>
+  </li>
+  <li class="nav-item">
+    <a class="list-link" href="" data-toggle="tab">Details</a>
+  </li>
+  <li class="nav-item">
+    <a class="mofumofu-link" href="" target="_blank" tabindex="-1">MofuMofu</a>
+  </li>
+</template>
+
+<template id="tab-template">
+  <div class="tab-pane fade in box-tab">
+    <p>&nbsp;</p>
+    <p class="sort-options">
+      <span class="sort-attribute">
+        <a data-sort-attribute="name" href="#">ABC</a> | 
+        <a data-sort-attribute="range" href="#">Range</a> | 
+        <a data-sort-attribute="level" href="#">Level</a> | 
+        <a data-sort-attribute="rank" href="#">Rank</a> | 
+        <a data-sort-attribute="stars" href="#">Stars</a> | 
+        <a data-sort-attribute="ue" href="#">UE</a> 
+      </span>
+      <span class="sort-direction">
+        <a data-sort-direction="asc">asc</a> | 
+        <a data-sort-direction="desc">desc</a>
+      </span>
+    </p>
+    <p class="other-stats">
+      <span>
+        <img src="item/91001.webp" />
+        <span class="unit-jewels" contenteditable="true">0</span>
+      </span>
+      <span>
+        <img src="item/90005.webp" />
+        <span class="unit-amulets" contenteditable="true">0</span>
+      </span>
+      <span>
+        <img src="item/94000.webp" />
+        <span class="unit-mana" contenteditable="true">0</span>
+      </span>
+      <span>
+        <img src="equipment/140001.webp" />
+        <span class="unit-hearts" contenteditable="true">0</span>
+      </span>
+      <span>
+        <img src="item/25001.webp" />
+        <span class="unit-orbs" contenteditable="true">0</span>
+      </span>
+      <span>
+      	<img src="item/20004.webp" />
+      	<span class="unit-exp-pots" contenteditable="true">0</span>
+      </span>
+      <span>
+      	<img src="item/50003.webp" />
+      	<span class="unit-cakes" contenteditable="true">0</span>
+      </span>
+      <span>
+      	<img src="item/23001.webp" />
+      	<span class="unit-skips" contenteditable="true">0</span>
+      </span>
+    </p>
+
+    <div class="form-group">
+      <input class="form-control unit-filter" type="text" onfocus="this.select()" placeholder="search for a unit by name" />
+    </div>
+
+    <div class="unit-box" data-sort-direction="asc"></div>
+  </div>
+  <div class="tab-pane fade in list-tab">
+    <p>&nbsp;</p>
+    <p class="sort-options">
+      <span class="sort-attribute">
+        <a data-sort-attribute="name" href="#">ABC</a> | 
+        <a data-sort-attribute="range" href="#">Range</a> | 
+        <a data-sort-attribute="level" href="#">Level</a> | 
+        <a data-sort-attribute="rank" href="#">Rank</a> | 
+        <a data-sort-attribute="stars" href="#">Stars</a> | 
+        <a data-sort-attribute="ue" href="#">UE</a> 
+      </span>
+      <span class="sort-direction">
+        <a data-sort-direction="asc">asc</a> | 
+        <a data-sort-direction="desc">desc</a>
+      </span>
+    </p>
+
+    <div class="form-group">
+      <input class="form-control unit-filter" type="text" onfocus="this.select()" placeholder="search for a unit by name" />
+    </div>
+
+    <div class="unit-list" data-sort-attribute="name" data-sort-direction="asc"></div>
+    <p>&nbsp;</p>
+    <p>Download as PCRGuildCalculator <a download="SaveData.json">SaveData.json</a></p>
+  </div>
+</template>
+
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" integrity="sha384-FZY+KSLVXVyc1qAlqH9oCx1JEOlQh6iXfw3o2n3Iy32qGjXmUPWT9I0Z9e9wxYe3" crossorigin="anonymous"></script>
+
+<script>var hasSixStar = new Set(['Pecorine', 'Kokkoro', 'Karyl', 'Rino', 'Lima']);</script>
+<script src="units.js?t=1677875347"></script>
+<script src="boxcheck.js?t=1672119738"></script>
+</html>

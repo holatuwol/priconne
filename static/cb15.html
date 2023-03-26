@@ -1,0 +1,300 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Priconne - CB15 Hits Planner</title>
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="themes/bootstrap@3.3.7.css">
+<link rel="stylesheet" href="themes/bootstrap-theme@3.3.7.css">
+
+<!-- Sortable -->
+<link rel="stylesheet" href="themes/sortable-theme-bootstrap@0.8.0.css" />
+
+<!-- Custom CSS for this page -->
+<link rel="stylesheet" href="teams.css?t=1674627969" />
+
+</head>
+<body>
+<div class="container" role="main">
+
+<h1 contenteditable spellcheck="false">CB15 Hits Planner for Princess Connect</h1>
+
+<div id="clan-battle-dates" data-start-time="2022-04-26T13:00:00.000Z" data-end-time="2022-05-01T07:59:59.999Z">
+</div>
+
+<div id="planner-notice" data-cb-id="15">
+</div>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item active">
+    <a href="#planner" data-toggle="tab">Planner</a>
+  </li>
+  <li class="nav-item">
+    <a href="#options" data-toggle="tab">Options</a>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+<div id="planner" class="tab-pane fade in active">
+
+<h3>Explanation</h3>
+
+<p>This is a database of timelines for Clan Battle 15 (<a href="https://rwiki.jp/priconne_redive/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/015_5%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
+
+<div id="team-prefixes">
+<ul>
+	<li><strong>SAT</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vS8W7NcKY8DpzC8Zm79kbiyPHpikBqR92UQihlgOGUoWc3UHQvd1acrlEenyuj_WKpWfzLDALBybnbL/pubhtml" target="_blank">CB2022-04 Semi-Auto Timelines</a> spreadsheet maintained by holatuwol#3708</li>
+	<li><strong>CN</strong>: found in the <a href="https://docs.qq.com/sheet/DWlhOaWJXYnZwVklT?tab=6uiyc2" target="_blank">Old CN Timeline Compilation</a> spreadsheet posted to maincord</li>
+	<li><strong>VioletForU</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQhvyvPzimw8ZmmXjHEYS0lLA1ZWjuiYQQfksTpY6GPewMhNJ8DtcABmuG_t3AqoY6ecimueC3rpoB3/pubhtml" target="_blank">CB 15 Auto Connect Public</a> spreadsheet shared by VioletForU#1845</li>
+	<li><strong>Demiurge</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/1DMBgq1erOZrOOmf0mPgUNbsX8yhuXh4e/edit#gid=430794649" target="_blank">CB 15 - JP comps</a> spreadsheet shared by Xehanort#6829</li>
+	<li><strong>jwu89</strong>: aggregated into a <a href="https://www.youtube.com/playlist?list=PLJKG4G4o2OQQm9YcP3Ab1YRctKsJLxCdD" target="_blank">CB 15 YouTube Playlist</a> and shared by jwu89#5829</li>
+	<li><strong>The Lab</strong>: found in <a href="https://docs.google.com/spreadsheets/d/1OsvtyD-zOI5ueRI3ahnzGt-MdYzYa9sGBOeE6J8DuAM/edit" target="_blank">The Lab CB15 Public Timelines</a> spreadsheet</li>
+	<li><strong>Cozy</strong>: a full auto team shared by a Cozy Island member clan (name of the clan in parentheses)</li>
+	<li>... and various others provided by friendly YouTubers, with direct links to those videos</li>
+</ul>
+</div>
+
+<p>The Options tab allows you to enter in a set of URLs containing team data. Once those teams are loaded, you can select units you do not have and update various display options, as well as configure where the tool can check to find teams.</p>
+
+<p>The column headers (boss, damage, team ID, timing) are all clickable, and clicking on the header will sort the table by that column. After finding a team you like, click the "choose" button next to a team to choose it, and the teams that conflict with it will disappear. If you decide the team removed too many good teams, click the "remove" button to unchoose it.</p>
+
+<h3>Desired Bosses</h3>
+
+<div id="bosses-available">
+</div>
+
+<h3>Matching Regions</h3>
+
+<div id="regions-available">
+	<span class="checkbox-inline">
+		<input name="regions-available" id="server-global" type="checkbox" value="global" checked onchange="filterAvailableTeams();" />
+		<label for="server-global">Global</label>
+	</span>
+	<span class="checkbox-inline">
+		<input name="regions-available" id="server-CN" type="checkbox" value="CN" checked onchange="filterAvailableTeams();" />
+		<label for="server-CN">China</label>
+	</span>
+	<span class="checkbox-inline">
+		<input name="regions-available" id="server-JP" type="checkbox" value="JP" checked onchange="filterAvailableTeams();" />
+		<label for="server-JP">Japan</label>
+	</span>
+	<span class="checkbox-inline">
+		<input name="regions-available" id="server-KR" type="checkbox" value="KR" checked onchange="filterAvailableTeams();" />
+		<label for="server-KR">Korea</label>
+	</span>
+	<span class="checkbox-inline">
+		<input name="regions-available" id="server-TH" type="checkbox" value="TH" checked onchange="filterAvailableTeams();" />
+		<label for="server-TH">Thailand</label>
+	</span>
+	<span class="checkbox-inline">
+		<input name="regions-available" id="server-TW" type="checkbox" value="TW" checked onchange="filterAvailableTeams();" />
+		<label for="server-TW">Taiwan</label>
+	</span>
+</div>
+
+<h3>Desired Timings</h3>
+
+<div id="timings-available">
+	<span class="checkbox-inline" title="found as a full auto timeline (turn on auto at the start and leave it on, maybe spam Illya UBs)">
+		<input name="timings-available" id="timing-full-auto" type="checkbox" value="full auto" checked onchange="filterAvailableTeams();" />
+		<label for="timing-full-auto">full auto</label>
+	</span>
+	<span class="checkbox-inline" title="found as a transcribed, public timeline, with low difficulty timings">
+		<input name="timings-available" id="timing-semi-auto" type="checkbox" value="semi auto" checked onchange="filterAvailableTeams();" />
+		<label for="timing-semi-auto">semi auto</label>
+	</span>
+	<span class="checkbox-inline" title="found as a transcribed, public timeline, with moderate difficulty timings">
+		<input name="timings-available" id="timing-manual" type="checkbox" value="manual" checked onchange="filterAvailableTeams();" />
+		<label for="timing-manual">manual</label>
+	</span>
+	<span class="checkbox-inline" title="found as a video, but no transcribed, public timeline was found">
+		<input name="timings-available" id="timing-video" type="checkbox" value="video" checked onchange="filterAvailableTeams();" />
+		<label for="timing-video">video</label>
+	</span>
+	<span class="checkbox-inline" title="the team was listed somewhere, but I have no idea what kind of timing is needed for it">
+		<input name="timings-available" id="timing-unspecified" type="checkbox" value="unspecified" onchange="filterAvailableTeams();" />
+		<label for="timing-unspecified">unspecified</label>
+	</span>
+	<span class="checkbox-inline" title="the team has been confirmed to not work at all, but retained in the planner for academic reasons">
+		<input name="timings-available" id="timing-non-functional" type="checkbox" value="non-functional" onchange="filterAvailableTeams();" />
+		<label for="timing-non-functional">non-functional</label>
+	</span>
+</div>
+
+<h3>Chosen Teams</h3>
+
+<div>
+	<p>
+		<button class="btn btn-default" onclick="allocateVisibleTeams('data-damage')">damage pad</button>
+		<button class="btn btn-default" onclick="allocateVisibleTeams('data-score')">score pad</button>
+	</p>
+
+	<p id="allocation-in-progress"></p>
+</div>
+
+<table id="teams-selected" class="sortable-theme-bootstrap hide-unavailable" data-sortable>
+	<thead>
+	<tr>
+		<th class="select-button" data-sortable="false">&nbsp;</th>
+		<th>boss</th>
+		<th>damage</th>
+		<th>region</th>
+		<th>team ID</th>
+		<th>timing</th>
+		<th colspan=5 data-sortable="false">&nbsp;</th>
+		<th>alt bosses</th>
+	</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+
+<h3>Available Teams</h3>
+
+<div class="form-group">
+<input class="form-control" id="team-filter" type="text" onfocus="this.select()" onkeyup="filterAvailableTeams();" placeholder="search for teams by unit name or team ID, exclude teams with suicidal vampires with -Illya" />
+<p style="text-align: right"><span id="visible-teams-count">0</span> team<span id="visible-teams-plural">s</span> match</p>
+</div>
+
+<table id="teams-available" class="sortable-theme-bootstrap hide-unavailable" data-sortable>
+	<thead>
+	<tr>
+		<th class="select-button" data-sortable="false">&nbsp;</th>
+		<th>boss</th>
+		<th>damage</th>
+		<th>region</th>
+		<th>timeline</th>
+		<th>timing</th>
+		<th colspan=5 data-sortable="false">&nbsp;</th>
+		<th>alt bosses</th>
+	</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+
+</div>
+
+<div id="options" class="tab-pane fade">
+
+<h3>Data Sources</h3>
+
+<div id="data-source">
+	<ul>
+		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSglmd6Hr26-Ol_va16t1_wHPWcKsEreO-w1V83IgQ2BWJEE2bCwGRPscbXFNByDVoKlGCMGI04t1AY/pub" target="_blank">CB15 Team Reference</a>, maintained by holatuwol#3708</li>
+	</ul>
+</div>
+
+<h3>Display Settings</h3>
+
+<p>Choose how the planner should handle support units.</p>
+
+<div class="display-settings">
+	<div class="radio">
+		<input type="radio" name="borrow-strategy" value="all" id="borrow-all" checked onchange="renderAvailableTeams();" />
+		<label for="borrow-all">always borrow, assume my clan has all units</label>
+	</div>
+
+	<div class="radio">
+		<input type="radio" name="borrow-strategy" value="same" id="borrow-same" onchange="renderAvailableTeams();" />
+		<label for="borrow-same">always borrow, assume my clan members are missing the same units I am</label>
+	</div>
+
+	<div class="radio">
+		<input type="radio" name="borrow-strategy" value="none" id="borrow-none" onchange="renderAvailableTeams();" />
+		<label for="borrow-none">never borrow, because I do not want to spend mana on clan battle</label>
+	</div>
+</div>
+
+<p>Choose how to render teams that are disabled due to unavailable units and/or any potential conflicts with teams you have already chosen.</p>
+
+<div class="display-settings">
+	<div class="radio">
+		<input type="radio" name="unavailable-style" value="hide" id="hide-unavailable" checked onchange="renderUnavailableTeams();" />
+		<label for="hide-unavailable">hide disabled teams</label>
+	</div>
+
+	<div class="radio">
+		<input type="radio" name="unavailable-style" value="disable" id="disable-unavailable" onchange="renderUnavailableTeams();" />
+		<label for="disable-unavailable">gray out disabled teams</label>
+	</div>
+</div>
+
+<p>Choose whether to show build information with the list of teams.</p>
+
+<div class="display-settings">
+	<div class="radio">
+		<input type="radio" name="build-visibility" value="hide" id="hide-build-info" checked onchange="toggleBuildVisibility();" />
+		<label for="hide-build-info">hide build information</label>
+	</div>
+
+	<div class="radio">
+		<input type="radio" name="build-visibility" value="show" id="show-build-info" onchange="toggleBuildVisibility();" />
+		<label for="show-build-info">show build information</label>
+	</div>
+</div>
+
+<h3>Available Units</h3>
+
+<p>Select the units that you have available in your box. The input field below provides a URL you can use to reload your selections. Note that if you use this URL and new teams get added using new units, they will start off unchecked.</p>
+
+<div class="form-group">
+<input class="form-control" id="units-available-bookmark" type="text" readonly onfocus="this.select()" />
+</div>
+
+<div id="units-available" class="display-settings">
+</div>
+
+<h3>Extra Teams</h3>
+
+<p>Use the text box below for any additional teams you want to consider when planning. Entries in the text box can be:</p>
+
+<ul>
+<li>data sources published as Google Sheets, with columns matching the ones used in the data sources linked above (one line per URL)</li>
+<script src="units.js?t=1677498252"></script>
+<li>CSV-like lines (one line per entry)<pre>A1,semi auto,1.23,Nanaka,Mitsuki,Anna,Eriko,Ruka</pre></li>
+</ul>
+
+<textarea id="extra-teams"></textarea>
+
+<p style="text-align: right"><span id="default-teams-count">0</span> default team<span id="default-teams-plural">s</span>, <span id="extra-teams-count">0</span> extra team<span id="extra-teams-plural">s</span> loaded</p>
+
+<button onclick="updateExtraTeams();">load extra teams</button>
+
+<h3>Acknowledgements</h3>
+
+<dl>
+	<dt>Maintained by:</dt>
+	<dd>holatuwol#3708</dd>
+	<dt>Images taken from:</dt>
+	<dd><a href="https://pricalc.ooo/units">PriCalc Unit Viewer</a> and <a href="https://redive.estertion.win/">https://redive.estertion.win/</a></dt>
+</dl>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+
+<!-- Bootstrap -->
+<script src="themes/jquery@3.2.1.js"></script>
+<script src="themes/bootstrap@3.3.7.js"></script>
+
+<!-- Sortable -->
+<script src="themes/sortable@0.8.0.js"></script>
+
+<!-- Underscore -->
+<script src="themes/underscore@1.8.3.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="themes/sweetalert2@11.js"></script>
+
+<script>var hasSixStar = new Set();</script>
+<script src="bosses.js?t=1674468544"></script>
+<script src="units.js?t=1677498252"></script>
+<script src="teams.js?t=1677390743"></script>
+
+</html>

@@ -1,0 +1,77 @@
+h2.page-title {
+    text-align: center;
+    margin: 0.5em 0;
+}
+tr {
+    transition: 0.3s;
+}
+
+tr:hover {
+    background-color: #475059;
+}
+
+.help:hover {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.card {
+    width: 50px;
+    height: auto;
+}
+
+.cb .progress {
+    background: var(--gray-dark);
+    text-shadow: 1px 1px 0 rgba(0,0,0,.3),1px 1px 2px rgba(0,0,0,.6);
+}
+
+.cb .progress-bar {
+    text-indent: 2.5em;
+}
+
+.cb .progress-bar:before {
+    content: "HP:";
+    position: absolute;
+    text-indent: .5em;
+}
+
+.cb p.big-number {
+    font-size: 200%;
+    margin: 0;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+.table[data-sortable] thead th {
+    vertical-align: top;
+}
+
+#cb-timestamp {
+    font-size: 40%;
+}
+
+.hide {
+	display: none
+}
+
+table.featured tbody tr:not(.featured) {
+    display: none;
+}
+
+table tr > .clan-name,
+table tr > .clan-score {
+	width: 16%;
+}
+
+table tr > .clan-rank,
+table tr > .clan-icon,
+table tr > .clan-boss-icon {
+	width: 8%;
+}
+
+table tr > .clan-progress {
+	width: 44%;
+}

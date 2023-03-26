@@ -1,0 +1,154 @@
+<html>
+<head>
+<title>Priconne - Clan Hits Status</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="themes/bootstrap@4.1.3.css">
+
+<!-- Sortable -->
+<link rel="stylesheet" href="themes/sortable-theme-bootstrap@0.8.0.css" />
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+<!-- Sortable -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/css/sortable-theme-bootstrap.css" integrity="sha384-3TVyAJ8zqirV8ruIewGuvagzD0YG8Q5pwQbpbd3RwkCF78Bu7NXgYZPkk7AsjSo5" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/js/sortable.min.js" integrity="sha384-HUqeaL9KoHL76MHoanu1lEu+l8XUHWJlImp9RumjZIj+kc22pNRdXQHkX2SbfPgA" crossorigin="anonymous"></script>
+
+<!-- Custom CSS for this page -->
+<link rel="stylesheet" href="clanhits.css?t=1672207511" />
+</head>
+<body>
+<div class="container" role="main">
+
+<h2>Helpful Links</h2>
+
+<ul>
+<!--
+	<li><a id="hit-record-data-link" href="" target="_blank"></a></li>
+	<li><a id="allocation-data-link" href="" target="_blank"></a></li>
+-->
+	<li><a href="https://mofumofu.live/cb/current" target="_blank">https://mofumofu.live/cb/current</a></li>
+</ul>
+
+<!-- renderStatusHistory -->
+
+<!-- renderLapProgress -->
+
+<h2>Lap Progress</h2>
+
+<table class="table" id="lap-progress" style="background-color: #212529; color: #fff">
+<tbody>
+	<tr>
+		<td>
+			<select id="status-history"></select>
+		</td>
+		<td>&nbsp;</td>
+		<td style="font-size: 30px">Currently loading...</td>
+	</tr>
+</tbody>
+</table>
+
+<!-- renderRemainingHitsByBoss -->
+
+<h2>
+<a data-toggle="collapse" href="#remaining-hits-by-boss">
+Remaining Hits: Grouped by Boss
+</a>
+</h2>
+
+<p><span id="remaining-full-hit-count">0</span> full hits, <span id="remaining-carryover-hit-count">0</span> carryover hits remaining.<br/>
+For hits that say 'unspecified allocation change' or 'ambiguous', fill in TL Used on the earlier hit to fix.</p>
+
+<div id="remaining-hits-by-boss" class="collapse">
+</div>
+
+<!-- renderRemainingHitsByPlayer -->
+
+<h2>
+<a data-toggle="collapse" href="#remaining-hits-by-player">
+Remaining Hits: Grouped by Player
+</a>
+</h2>
+
+<div id="remaining-hits-by-player" class="collapse">
+<table class="table">
+	<thead>
+		<th>Player</th>
+		<th>Hit 1</th>
+		<th>Hit 2</th>
+		<th>Hit 3</th>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+</div>
+
+<!-- renderCompletedHitsDetail -->
+
+<h2>
+<a data-toggle="collapse" href="#completed-hits-detail">
+Completed Hits: Detailed Breakdown
+</a>
+</h2>
+
+<div id="completed-hits-detail" class="collapse show">
+
+<input id="player-search-completed" name="player-search-completed" class="form-control" placeholder="Search for a hits completed by or for a specific player..." />
+
+<ul id="completed-hits-detailTab" class="nav nav-pills" role="tablist">
+</ul>
+
+<div id="completed-hits-detailTabContent" class="tab-content">
+</div>
+
+</div>
+
+<!-- renderCompletedHitsSummary -->
+
+<h2>
+<a data-toggle="collapse" href="#completed-hits-summary">
+Completed Hits: Pilot Hit Count Summary
+</a>
+</h2>
+
+<div id="completed-hits-summary" class="collapse">
+
+<table class="table sortable-theme-bootstrap" data-sortable>
+	<thead></thead>
+	<tbody></tbody>
+</table>
+
+</div>
+
+</div>
+</body>
+
+<!-- Bootstrap -->
+<script src="themes/jquery@3.3.1.js"></script>
+<script src="themes/popper@1.14.3.js"></script>
+<script src="themes/bootstrap@4.1.3.js"></script>
+
+<!-- Sortable -->
+<script src="themes/sortable@0.8.0.js"></script>
+
+<!-- Underscore -->
+<script src="themes/underscore@1.8.3.js"></script>
+
+<script src="units.js?t=1677875347"></script>
+<script src="bosses.js?t=1677617365"></script>
+<script>
+
+var cbId = '24';
+var cbStartDate = new Date('2023-01-26T13:00:00.000Z');
+
+// var hitRecordSheetId = '10aIyq64VPLaCnnmdkaAibO27Eu9VTSeGKQYEt3D3m40';  // CB23
+// var allocationSheetId = hitRecordSheetId;                               // CB23
+
+var hitRecordSheetId = '1Ob4QGT50r0n2mucfK1_PcP_dTsp7WVghUWtSKNa-As4';  // CB24
+var allocationSheetId = '1lDOB6L-x7qJwe4jSq0CO8LRtqTzpbZi0oTaIqj7VSk8'; // CB24
+
+</script>
+<script src="clanhits.js?t=1675705330"></script>
+</html>

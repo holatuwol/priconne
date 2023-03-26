@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>Priconne - Things Happening Generator</title>
+<!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<!-- Date Range Picker https://www.daterangepicker.com/ -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment-with-locales.min.js" integrity="sha512-vFABRuf5oGUaztndx4KoAEUVQnOvAIFs59y4tO0DILGWhQiFnFHiR+ZJfxLDyJlXgeut9Z07Svuvm+1Jv89w5g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js" integrity="sha512-mh+AjlD3nxImTUGisMpHXW03gE6F4WdQyvuFRkjecwuWLwD2yCijw4tKA3NsEFpA1C3neiKhGXPSIGSfCYPMlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.css" integrity="sha512-gp+RQIipEa1X7Sq1vYXnuOW96C4704yI1n0YB9T/KqdvqaEgL6nAuTSrKufUX3VBONq/TPuKiXGLVgBKicZ0KA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+	#event-post {
+		white-space: pre-wrap;
+	}
+</style>
+
+</head>
+<body>
+<div class="container" role="main">
+
+<h2>Extract Events</h2>
+
+<p>Copy the text from the bulleted list at the end of the latest Crunchyroll announcement and paste it into the text box below. When you click out of the box, it will populate the "Updated Event Post" section below.</p>
+
+<textarea class="form-control" id="crunchyroll-events" onfocus="this.select();" onblur="extractEvents();">
+Kasumi (Magical) Focus Banner (1/4 23:00 UTC to 1/14 22:59 UTC)
+Boosted rate-up for Kasumi (Magical), also available for redemption via character exchange points.
+Shizuru (Valentine) Prize Gacha (1/14 23:00 UTC to 1/19 22:59 UTC)
+Boosted rate-up for Shizuru (Valentine), also available for redemption via character exchange points.
+Shizuru (Valentine) is a limited unit and will only be available during the Prize Gacha period.
+Obtain special prizes including Divine Amulets and Memory Shards when drawing this Prize Gacha.
+Story Event - The Magical Girl Duo: We are Misty & Purely (1/4 23:00 UTC to 1/17 22:59 UTC)
+Event-exclusive Shiori (Magical) can be obtained.
+Event missions give 1.5x experience.
+Unique Equipment (After 1/4 9:00 UTC)
+Unique Equipment added for Eriko (Valentine) and Shizuru (Valentine).
+6★ Characters Release (After 1/4 9:00 UTC)
+Maho can now have their 6★ character unlocked. 
+*Note* Once a character is upgraded to 6★, you can not reverse the process.
+New and returning limited-time furniture added to the Guildhouse Shop (After 12/31 23:00 UTC)
+Normal Quest Double Drop Campaign (12/31 13:00 UTC to 1/6 12:59 UTC)
+Grotto Quest Double Drop Campaign (1/6 13:00 UTC to 1/18 12:59 UTC)
+</textarea>
+
+<p>&nbsp;</p>
+
+<h2>Add a Custom Event</h2>
+
+<p>If there is another data source with additional dates (from a data mine, for example), use the options below to select an event type, type in an event name, and select its start and end date. When you select "Apply" in the date select, it will be added to the "Updated Event Post" section below.</p>
+
+<div class="row g-3">
+	<div class="col">
+		<label class="form-label" for="event-type">event type</label>
+
+		<select class="form-select" id="event-type">
+			<option value="banner">Banner (starts 23:00 UTC, ends 22:59 UTC)</option>
+			<option value="clan-battle">Clan Battle (starts 13:00 UTC, ends 07:59 UTC)</option>
+			<option value="drop-campaign">Drop Campaign (starts 13:00 UTC, ends 12:59 UTC)</option>
+			<option value="luna-tower">Luna Tower (starts 13:00 UTC, ends 15:59 UTC)</option>
+			<option value="story-event">Story Event (starts 23:00 UTC, ends 22:59 UTC)</option>
+		</select>
+	</div>
+	<div class="col">
+		<label class="form-label" for="event-type">event name</label>
+		<input type="text" id="event-name" class="form-control" name="event-name" />
+	</div>
+	<div class="col">
+		<label class="form-label" for="event-type">event date range</label>
+		<input type="text" id="event-times" class="form-control" name="event-times" />
+	</div>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>Updated Event Post</h2>
+
+<p contenteditable="false" class="form-control form-control-plaintext" id="event-post" readonly>__**Things Happening in Priconne**__
+Times are displayed using the time zone of your device. Interact with the timer for the exact date & time.
+
+</p>
+
+</div>
+</body>
+<script src="happening.js?t=1672332887"></script>
+</html>

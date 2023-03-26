@@ -22,16 +22,15 @@ function getUnitIcon(
 	unitStars?: number
 ) : string {
 
-	var estertionPath = 'unit/' + unitId + (unitStars ? ('' + unitStars + '1') : '') + '.webp';
+	var estertionPath = 'unit/' + unitId + (unitStars ? ('' + unitStars + '1') : '');
 
 	if (document.location.host.indexOf('localhost') != -1) {
-		return estertionPath;
+		return estertionPath + '.webp';
 	}
 
-	// return estertionPath;
-	// return 'https://s3-us-west-2.amazonaws.com/holatuwol/priconne/' + estertionPath;
-	// return '//redive.estertion.win/icon/' + estertionPath;
-	return '//pricalc.b-cdn.net/jp/unit/extract/latest/icon_' + estertionPath.replace(/\//, '_').replace(/\.webp$/, '.png');
+	// return estertionPath + '.png';
+	// return '//redive.estertion.win/icon/' + estertionPath + '.webp';
+	return '//pricalc.b-cdn.net/jp/unit/extract/latest/icon_' + estertionPath.replace(/\//, '_') + '.png';
 }
 
 function fixUnitName(unitName: string) : string {

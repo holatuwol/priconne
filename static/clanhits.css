@@ -1,0 +1,65 @@
+#lap-progress tr {
+	height: 5em;
+	transition: 0.3s;
+}
+
+#lap-progress tr td {
+	padding: 0.5em;
+	vertical-align: middle;
+}
+
+#lap-progress tr td:nth-child(1) {
+	width: 10em;
+}
+
+#lap-progress tr td:nth-child(2) {
+	width: 5em;
+}
+
+#lap-progress tr:hover {
+	background-color: #475059;
+}
+
+#lap-progress .progress {
+	background: var(--gray-dark);
+	text-shadow: 1px 1px 0 rgba(0,0,0,.3),1px 1px 2px rgba(0,0,0,.6);
+}
+
+#lap-progress .progress-bar {
+	text-indent: 2.5em;
+}
+
+#lap-progress .progress-bar:before {
+	content: "HP:";
+	position: absolute;
+	text-indent: .5em;
+}
+
+#remaining-hits-by-boss.show {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#remaining-hits-by-boss span {
+	margin-right: 2em;
+}
+
+#remaining-hits-by-boss span li {
+	white-space: nowrap;
+}
+
+#remaining-hits-by-boss span li.locked {
+	opacity: 0.2;
+}
+
+#remaining-hits-by-boss span li.carryover {
+	color: crimson;
+}
+
+#remaining-hits-by-boss span li.locked {
+	opacity: 0.2;
+}
+
+#remaining-hits-by-player td.completed {
+	opacity: 0.2;
+}
