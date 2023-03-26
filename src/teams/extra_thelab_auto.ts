@@ -1,20 +1,12 @@
 function getTheLabAutoPageNames() : Record<string, string> {
-	var sheetTypes = ['Auto', 'Semi-Auto', 'Auto OVF'];
-
-	var tierNames = <Record<string, string>> {
-		'I': 'A',
-		'II': 'B',
-		'III': 'C',
-		'IV': 'D',
-	};
-
+	var sheetTypes = ['A', 'B', 'C', 'D'];
 	var pageNames = <Record<string, string>> {};
 
 	for (var i = 0; i < sheetTypes.length; i++) {
 		var sheetType = sheetTypes[i];
 
-		for (var tierName in tierNames) {
-			pageNames['Tier ' + tierName + ' ' + sheetType] = tierNames[tierName];
+		for (var j = 1; j <= 5; j++) {
+			pageNames[sheetType + j] = sheetType;
 		}
 	}
 
@@ -61,6 +53,21 @@ function getLabAutoDamage(
 	return Math.min(maxDamage, newDamage);
 }
 
+function getLabAutoTimelineURL(
+	baseURL: string,
+	gid: string,
+	id: string
+) : string {
+
+	if (baseURL.indexOf('edit') == -1) {
+		return baseURL + '?gid=' + gid + '#' + id;
+	}
+
+	var x = id.indexOf('R');
+
+	return baseURL + '#gid=' + gid + '&range=A' + (parseInt(id.substring(x + 1)) + 1);
+}
+
 function applyBuild(
 	newTeam: ClanBattleTeam,
 	description: string
@@ -88,6 +95,20 @@ function applyBuild(
 	return hasSubstitution;
 }
 
+function hasWord(
+	phrase: string,
+	word: string
+) : boolean {
+
+	return phrase == word || phrase.startsWith(word + ' ') || phrase.endsWith(' ' + word) || phrase.indexOf(' ' + word + ' ') != -1;
+}
+
+function isFalseSubstitution(phrase: string) : boolean {
+	return hasWord(phrase, 'chance') || hasWord(phrase, 'die') || hasWord(phrase, 'due') || hasWord(phrase, 'end') || hasWord(phrase, 'is') ||
+		hasWord(phrase, 'lead') || hasWord(phrase, 'need') || hasWord(phrase, 'needs') || hasWord(phrase, 'or') || hasWord(phrase, 'seems') ||
+		hasWord(phrase, 'survive') || hasWord(phrase, 'up');
+}
+
 function applySubstitution(
 	newTeam: ClanBattleTeam,
 	oldUnit: string,
@@ -110,13 +131,9 @@ function applySubstitution(
 		oldUnit = oldUnit.substring(7);
 	}
 
-	if (newUnit.indexOf(' or ') != -1) {
-		return false;
-	}
-
 	var newBuild = <ClanBattleBuild> {};
 
-	if (newUnit.charAt(0) == 'r') {
+	if ((newUnit.toLowerCase().charAt(0) == 'r') && (newUnit.toLowerCase().charAt(1) >= '0') && (newUnit.toLowerCase().charAt(1) <= '9')) {
 		newBuild.rank = newUnit.substring(1, newUnit.indexOf(' '));
 		newUnit = newUnit.substring(newUnit.indexOf(' ')).trim();
 	}
@@ -153,80 +170,6 @@ function applySubstitution(
 	return false;
 }
 
-function getRankStarVariations(
-	oldTeam: ClanBattleTeam,
-	description: string
-) : ClanBattleTeam[] {
-
-	var damageMatcher = getDamageMatcher(description);
-
-	if (!damageMatcher) {
-		return [];
-	}
-
-	var newDescription = description.substring(0, damageMatcher.index);
-
-	var rankStarMatcher = rankStarRE.exec(newDescription);
-
-	if (!rankStarMatcher) {
-		return [];
-	}
-
-	var newTeam = Object.assign({}, oldTeam);
-
-	var matchResults = rankStarMatcher[0].split('/').map(it => it.trim()).filter(it => it);
-
-	for (var i = 0; i < matchResults.length; i++) {
-		newTeam.damage = getLabAutoDamage(damageMatcher, oldTeam);
-		newTeam.units = oldTeam.units.map(it => it);
-
-		rankStarMatcher = rankStarRE.exec(matchResults[i]);
-
-		if (!rankStarMatcher) {
-			continue;
-		}
-
-		if (!applySubstitution(newTeam, rankStarMatcher[1], rankStarMatcher[0])) {
-			console.warn('could not identify rank/star variation:', oldTeam, description);
-			return [];
-		}
-	}
-
-	return [newTeam];
-}
-
-function getBuildVariations(
-	oldTeam: ClanBattleTeam,
-	description: string
-) : ClanBattleTeam[] {
-
-	var damageMatcher = getDamageMatcher(description);
-
-	if (!damageMatcher) {
-		return [];
-	}
-
-	var newTeams = getRankStarVariations(oldTeam, description);
-
-	var x = description.indexOf(',');
-
-	if (x == -1) {
-		return newTeams;
-	}
-
-	var y = description.indexOf(' ') + 1;
-
-	var oldUnit = description.substring(y, description.indexOf(' ', y));
-
-	var newDescription = description.substring(x + 1).trim();
-
-	y = newDescription.indexOf(' ');
-
-	newDescription = newDescription.substring(0, y) + ' ' + oldUnit + newDescription.substring(y);
-
-	return newTeams.concat(getBuildVariations(oldTeam, newDescription));
-}
-
 function getSingleSubstitutions(
 	oldTeam: ClanBattleTeam,
 	description: string
@@ -234,35 +177,35 @@ function getSingleSubstitutions(
 
 	var damageMatcher = getDamageMatcher(description);
 
-	if (!damageMatcher) {
+	if (!damageMatcher && description.toLowerCase().indexOf('same') == -1) {
 		return [];
 	}
 
 	var newTeam = Object.assign({}, oldTeam);
+	var replacements;
 
-	newTeam.damage = getLabAutoDamage(damageMatcher, oldTeam);
+	if (damageMatcher) {
+		newTeam.damage = getLabAutoDamage(damageMatcher, oldTeam);
+		replacements = description.substring(0, damageMatcher.index).split(/(?: and |\+)/i);
+	}
+	else {
+		replacements = description.substring(0, description.toLowerCase().indexOf('same')).split(/(?: and |\+)/i);
+	}
+
 	newTeam.units = oldTeam.units.map(it => it);
-
-	var replacements = description.substring(0, damageMatcher.index).split(/(?: and |\+)/i);
 
 	var hasSubstitution = true;
 
 	for (var i = 0; i < replacements.length; i++) {
 		var singleMatcher = singleSubRE.exec(replacements[i]);
-		var rankStarMatcher = rankStarRE.exec(replacements[i]);
 
 		if (singleMatcher) {
 			if (hasSubstitution) {
 				var oldUnit = singleMatcher[1].trim();
 				var newUnit = singleMatcher[2].trim();
 
-				if (oldUnit.toLowerCase().indexOf(' due') != -1 ||
-					oldUnit.toLowerCase().indexOf(' die') != -1 ||
-					oldUnit.toLowerCase().indexOf(' lead') != -1 ||
-					oldUnit.toLowerCase().indexOf(' up') != -1 ||
-					newUnit.toLowerCase().indexOf('end ') == 0) {
-
-					singleMatcher = null;
+				if (isFalseSubstitution(oldUnit) || isFalseSubstitution(newUnit)) {
+					hasSubstitution = false;
 				}
 				else {
 					hasSubstitution = applySubstitution(newTeam, oldUnit, newUnit);
@@ -273,20 +216,8 @@ function getSingleSubstitutions(
 				}
 			}
 		}
-
-		if (!singleMatcher) {
-			if (rankStarMatcher) {
-				if (hasSubstitution) {
-					hasSubstitution = applySubstitution(newTeam, rankStarMatcher[1].trim(), rankStarMatcher[0].trim());
-
-					if (!hasSubstitution) {
-						console.warn('could not identify rank/star substitution:', oldTeam, description);
-					}
-				}
-			}
-			else {
-				hasSubstitution = false;
-			}
+		else {
+			hasSubstitution = false;
 		}
 	}
 
@@ -298,47 +229,63 @@ function getSingleSubstitutions(
 	}
 }
 
-function getMultiSubstitutions(
+function getSingleFlippedSubstitutions(
 	oldTeam: ClanBattleTeam,
 	description: string
 ) : ClanBattleTeam[] {
 
-	var x = description.indexOf(' to:')
+	var damageMatcher = getDamageMatcher(description);
 
-	var oldUnit = description.substring(description.lastIndexOf(' ', x - 1) + 1, x);
+	if (!damageMatcher && description.toLowerCase().indexOf('same') == -1) {
+		return [];
+	}
 
-	var substitutions = description.substring(x + 4).split(', ');
+	var newTeam = Object.assign({}, oldTeam);
+	var replacements;
 
-	var newTeams = [];
-
-	for (var i = 0; i < substitutions.length; i++) {
-		var substitution = substitutions[i];
-
-		var damageMatcher = getDamageMatcher(substitution);
-
-		if (!damageMatcher) {
-			continue;
-		}
-
-		var newUnit = substitution.substring(0, substitution.lastIndexOf(' ', damageMatcher.index)).trim();
-
-		var x = newUnit.indexOf(' ');
-
-		if (x != -1) {
-			newUnit = newUnit.substring(0, x);
-		}
-
-		var newTeam = Object.assign({}, oldTeam);
-
+	if (damageMatcher) {
 		newTeam.damage = getLabAutoDamage(damageMatcher, oldTeam);
-		newTeam.units = oldTeam.units.map(it => it);
+		replacements = description.substring(0, damageMatcher.index).split(/(?: and |\+)/i);
+	}
+	else {
+		replacements = description.substring(0, description.toLowerCase().indexOf('same')).split(/(?: and |\+)/i);
+	}
 
-		if (applySubstitution(newTeam, oldUnit, newUnit)) {
-			newTeams.push(newTeam);
+	newTeam.units = oldTeam.units.map(it => it);
+
+	var hasSubstitution = true;
+
+	for (var i = 0; i < replacements.length; i++) {
+		var singleFlippedMatcher = singleFlippedRE.exec(replacements[i]);
+
+		if (singleFlippedMatcher) {
+			if (hasSubstitution) {
+				var oldUnit = singleFlippedMatcher[2].trim();
+				var newUnit = singleFlippedMatcher[1].trim();
+
+				if (isFalseSubstitution(oldUnit) || isFalseSubstitution(newUnit)) {
+					hasSubstitution = false;
+				}
+				else {
+					hasSubstitution = applySubstitution(newTeam, oldUnit, newUnit);
+
+					if (!hasSubstitution) {
+						console.warn('could not identify unit substitution:', oldTeam, description);
+					}
+				}
+			}
+		}
+		else {
+			hasSubstitution = false;
 		}
 	}
 
-	return newTeams;
+	if (hasSubstitution) {
+		return [newTeam];
+	}
+	else {
+		return [];
+	}
 }
 
 function collapseClanBattleTeams(
@@ -354,35 +301,31 @@ function collapseClanBattleTeams(
 }
 
 function getLabAutoTeams(
-	boss: string,
-	rows: HTMLTableRowElement[],
-	memberIndex: number,
-	damageIndices: number[]
+	baseURL: string,
+	gids: Record<string, string>,
+	tab: string,
+	rows: HTMLTableRowElement[]
 ) : ClanBattleTeam[] {
+
+	var boss = tab.split(' ')[0];
+
+	if (boss.length != 2 || (!(boss.charAt(0) in bossStats[currentCBId]['bossHP'])) || boss.charAt(1) <= '0' || boss.charAt(1) >= '6') {
+		return [];
+	}
 
 	var teamRow = rows[0];
 	var memberRow = rows[1];
-	var rankRow = rows[5];
-	var starRow = rows[6];
-	var ueRow = rows[7];
+	var levelRow = rows[5]
+	var rankRow = rows[6];
+	var starRow = rows[8];
+	var ueRow = rows[9];
 
-	var teamIdIndex = memberIndex;
-	var timingIndex = memberIndex + 6;
+	var teamId = teamRow.cells[2].textContent || '';
 
-	for (var i = 0; i < teamIdIndex; i++) {
-		var adjust = parseInt(teamRow.cells[i].getAttribute('colspan') || '1') - 1;
-		teamIdIndex -= adjust;
-		timingIndex -= adjust;
-	}
+	var fullAutoCheckbox = <SVGUseElement> memberRow.cells[9].querySelector('use');
+	var isFullAuto = fullAutoCheckbox ? fullAutoCheckbox.href.baseVal.indexOf('#checked') != -1 : false;
 
-	for (var i = teamIdIndex; i < timingIndex; i++) {
-		timingIndex -= parseInt(teamRow.cells[i].getAttribute('colspan') || '1') - 1;
-	}
-
-	var teamId = teamRow.cells[teamIdIndex].textContent || '';
-	var isFullAuto = teamId.indexOf('FA') != -1;
-
-	var damageTexts = rows.map((it, i) => damageIndices[i] == -1 ? '' : it.cells[damageIndices[i]].textContent || '');
+	var damageTexts = [rows[2].cells[8].textContent || '', rows[2].cells[9].textContent || ''];
 
 	var damages = damageTexts.filter(isMaxDamage);
 
@@ -405,20 +348,15 @@ function getLabAutoTeams(
 		damage = getDamage(damageString);
 
 		if (damage > maxDamage) {
-			console.warn(damage, '>', maxDamage, damageString);
+			console.warn(teamId, damage, '>', maxDamage, damageString);
 		}
 	}
 
-	var members = Array.from(memberRow.cells).slice(memberIndex, memberIndex + 5).map(it => it.textContent || '');
-
-	var rankIndex = damageIndices[5] - 5;
-	var ranks = Array.from(rankRow.cells).slice(rankIndex, rankIndex + 5).map(it => it.textContent || '');
-
-	var starsIndex = damageIndices[6] - 5;
-	var stars = Array.from(starRow.cells).slice(starsIndex, starsIndex + 5).map(it => it.textContent || '');
-
-	var ueIndex = damageIndices[7] - 5;
-	var ues = Array.from(ueRow.cells).slice(ueIndex, ueIndex + 5).map(it => it.textContent).map(it => !it ? '' : (it != '-' && it.indexOf('UE') == -1 && it.indexOf('BRICK') == -1) ? ('UE' + it) : it);
+	var members = Array.from(memberRow.cells).slice(3, 8).map(it => it.textContent || '');
+	var levels = Array.from(levelRow.cells).slice(3, 8).map(it => it.textContent || '');
+	var ranks = Array.from(rankRow.cells).slice(3, 8).map(it => it.textContent || '');
+	var stars = Array.from(starRow.cells).slice(3, 8).map(it => it.textContent || '');
+	var ues = Array.from(ueRow.cells).slice(3, 8).map(it => it.textContent).map(it => !it ? '' : (it != '-' && it.indexOf('UE') == -1 && it.indexOf('BRICK') == -1) ? ('UE' + it) : it);
 
 	var units = <ClanBattleUnit[]> [];
 
@@ -426,6 +364,7 @@ function getLabAutoTeams(
 		units.push({
 			'name': members[i],
 			'build': {
+				level: levels[i],
 				star: stars[i],
 				rank: ranks[i].charAt(0) == 'r' ? ('R' + ranks[i].substring(1)) : ranks[i],
 				unique: ues[i]
@@ -433,36 +372,40 @@ function getLabAutoTeams(
 		});
 	}
 
-	var notes = rows[2].cells[damageIndices[2]+1].innerHTML;
+	var notes = memberRow.cells[15].innerHTML;
+	var index = 'TheLab Auto ' + teamId;
+	var media = getLabAutoTimelineURL(baseURL, gids[tab], teamRow.cells[0].getAttribute('id') || '');
 
 	var team = {
-		'boss': boss,
-		'region': 'global',
-		'timing': notes.indexOf('AUTO OFF, only spam Nyaru') != -1 ? 'spam nyaru' : isFullAuto ? 'full auto' : 'semi auto',
-		'timeline': 'TheLab Auto ' + teamId,
-		'damage': damage,
-		'units': units,
-		'notes': notes.replace(/[\r\n]/g, '')
+		boss: boss,
+		region: 'global',
+		timing: isFullAuto ? 'full auto' : 'semi auto',
+		index: index,
+		id: teamId,
+		media: media,
+		timeline: index + ' ' + media,
+		damage: damage,
+		units: units,
+		notes: notes.replace(/[\r\n]/g, '')
 	}
 
 	var newTeams = <ClanBattleTeam[]> [team];
 
 	var noteLines = notes.split('<br>');
 
-	var buildVariationsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') == -1 && it.indexOf('->') == -1 && ((it.charAt(0) == 'r' && it.charAt(1) >= '0' && it.charAt(1) <= '9') || (it.toLowerCase().indexOf(' and ') == -1 && (it.charAt(1) == '*' || it.charAt(1) == '⭐')))).map(getBuildVariations.bind(null, team));
-	newTeams = buildVariationsTeams.reduce(collapseClanBattleTeams, newTeams);
-
 	var singleSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') != -1 || it.indexOf('->') != -1 || (it.toLowerCase().indexOf(' and ') != 1 && (it.indexOf('*') != -1 || it.indexOf('⭐') != -1))).map(getSingleSubstitutions.bind(null, team));
 	newTeams = singleSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
 
-	var multiSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to:') != -1).map(getMultiSubstitutions.bind(null, team));
-	newTeams = multiSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
+	var singleFlippedSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' X ') != -1 || it.indexOf(' x ') != -1).map(getSingleFlippedSubstitutions.bind(null, team));
+	newTeams = singleFlippedSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
 
 	return newTeams;
 }
 
 function updateLabAutoTeams(
-	tier: string,
+	baseURL: string,
+	gids: Record<string, string>,
+	tab: string,
 	container: HTMLElement,
 	teams: ClanBattleTeam[]
 ) : void {
@@ -470,35 +413,18 @@ function updateLabAutoTeams(
 	var rows = Array.from(container.querySelectorAll('tr'));
 	var grid = getGoogleSheetsGrid(rows);
 
-	// columns: 7, 16, 25, 34, 43
+	for (var i = 6; i < rows.length - 1; i += 12) {
+		var newTeams = getLabAutoTeams(baseURL, gids, tab, rows.slice(i, i + 10));
 
-	for (var j = 1; j <= 5; j++) {
-		var desiredX = -2 + (j * 9);
-
-		for (var i = 7; i < rows.length - 1; i += 8) {
-			var damageIndices = [-1, -1];
-
-			for (var y = 2; y < 8; y++) {
-				var k = 0;
-
-				for (var x = 0; x < desiredX; k++) {
-					x += grid[i+y][k];
-				}
-
-				damageIndices.push(k);
-			}
-
-			var newTeams = getLabAutoTeams(tier + j, rows.slice(i, i+8), -7 + (9*j), damageIndices);
-
-			Array.prototype.push.apply(teams, newTeams);
-		}
+		Array.prototype.push.apply(teams, newTeams);
 	}
 }
 
 function retrieveLabAutoTeams(
+	baseURL: string,
+	gids: Record<string, string>,
 	container: HTMLElement,
 	tabName: string,
-	tier: string,
 	teams: ClanBattleTeam[]
 ) : void {
 
@@ -519,7 +445,7 @@ function retrieveLabAutoTeams(
 	var tab = <HTMLDivElement |  null> container.querySelector('div[id="' + tabId + '"]');
 
 	if (tab) {
-		updateLabAutoTeams(tier, tab, teams);
+		updateLabAutoTeams(baseURL, gids, tabName, tab, teams);
 	}
 }
 
@@ -528,17 +454,31 @@ function extractLabAutoTeams(
 	container: HTMLElement
 ) : void {
 
+	var tabElements = container.querySelectorAll('#sheet-menu li');
+
+	var gids = <Record<string, string>> Array.from(tabElements).reduce((acc, next) => {
+		var listItemId = next.getAttribute('id');
+
+		if (!listItemId) {
+			return acc;
+		}
+
+		var tabId = listItemId.substring('sheet-button-'.length);
+		var tabName = (next.textContent || '').trim();
+
+		acc[tabName] = tabId;
+
+		return acc;
+	}, <Record<string, string>> {});
+
+	var pageNames = Object.keys(gids);
+
 	var teams = <ClanBattleTeam[]> [];
 
-	var pageNames = getTheLabAutoPageNames();
+	for (var i = 0; i < pageNames.length; i++) {
+		var pageName = pageNames[i]
 
-	var tabs = Array.from(Object.keys(pageNames));
-
-	for (var i = 0; i < tabs.length; i++) {
-		var tab = tabs[i];
-		var tier = pageNames[tab];
-
-		retrieveLabAutoTeams(container, tab, tier, teams);
+		retrieveLabAutoTeams(href, gids, container, pageName, teams);
 	}
 
 	teams.forEach(team => {
@@ -552,20 +492,21 @@ function extractLabAutoTeams(
 	updateExtraTeamsHelper();
 }
 
-function extractLabAutoTeamsLocal() : void {
-	if (document.location.host.indexOf('localhost') == -1 || document.location.search) {
+function extractLabAutoTeamsLocal(
+	baseURL: string,
+	gids: Record<string, string>
+) : void {
+
+	if (document.location.host.indexOf('localhost') == -1) {
 		return;
 	}
 
 	var teams = <ClanBattleTeam[]> [];
 
-	var pageNames = getTheLabAutoPageNames();
-
-	var tabs = Object.keys(pageNames);
+	var tabs = Object.keys(gids);
 
 	for (var i = 0; i < tabs.length; i++) {
 		var tab = tabs[i];
-		var tier = pageNames[tab];
 
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', '/test/thelab_auto/' + encodeURIComponent(tab) + '.html', false)
@@ -578,7 +519,7 @@ function extractLabAutoTeamsLocal() : void {
 			var container = document.implementation.createHTMLDocument().documentElement;
 			container.innerHTML = xhr.responseText;
 
-			updateLabAutoTeams(tier, container, teams);
+			updateLabAutoTeams(baseURL, gids, tab, container, teams);
 		}
 
 		xhr.send(null);

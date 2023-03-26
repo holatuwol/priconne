@@ -3,6 +3,7 @@ var aliases = {
 	'Djeta': 'Djeeta',
 	'Gorda': 'Yui',
 	'H.Kyoka': 'H.Kyouka',
+	'MG.Kasumi': 'M.Kasumi',
 	'MG.Shiori': 'M.Shiori',
 	'N.Hiyori': 'NY.Hiyori',
 	'N.Yui': 'NY.Yui',

@@ -28,9 +28,9 @@ function getUnitIcon(
 		return estertionPath + '.webp';
 	}
 
-	// return estertionPath + '.png';
+	return estertionPath + '.png';
 	// return '//redive.estertion.win/icon/' + estertionPath + '.webp';
-	return '//pricalc.b-cdn.net/jp/unit/extract/latest/icon_' + estertionPath.replace(/\//, '_') + '.png';
+	// return '//pricalc.b-cdn.net/jp/unit/extract/latest/icon_' + estertionPath.replace(/\//, '_') + '.png';
 }
 
 function fixUnitName(unitName: string) : string {

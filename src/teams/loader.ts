@@ -223,11 +223,11 @@ function checkForExtraTeamsSheet(
 
 	var title = titleElement.textContent || '';
 
-	if (title.indexOf('TheLab Auto') != -1) {
+	if (title.indexOf('Lab ') != -1 && title.indexOf('Auto ') != -1) {
 		extractLabAutoTeams(href, container);
 		return true;
 	}
-	else if (title.indexOf('TheLab ') != -1) {
+	else if (title.indexOf('Lab ') != -1) {
 		extractLabManualTeams(href, container);
 		return true;
 	}

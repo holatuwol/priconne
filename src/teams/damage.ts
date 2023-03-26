@@ -40,7 +40,7 @@ function isMaxDamage(it: string) : boolean {
 	it = it.toLowerCase();
 
 	return it.indexOf('otk') == 0 || it.indexOf(' otk') != -1 || it.indexOf('ohko') == 0 || it.indexOf(' ohko') != -1 ||
-		it.indexOf('same ot') == 0 || it.indexOf('s ot') != -1;
+		it.indexOf('same ot') == 0 || it.indexOf('s ot') != -1 || it.charAt(it.length - 1) == 's';
 }
 
 function getMaxDamage(boss: string) : number {

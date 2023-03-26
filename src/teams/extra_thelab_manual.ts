@@ -52,7 +52,7 @@ function getLabManualTimelineURL(
 	id: string
 ) : string {
 
-	if (baseURL.indexOf('htmlview') != -1 || baseURL.indexOf('pubhtml') != -1) {
+	if (baseURL.indexOf('edit') == -1) {
 		return baseURL + '?gid=' + gid + '#' + id;
 	}
 
@@ -70,7 +70,7 @@ function extractLabManualTeamsFromTab(
 
 	var boss = tab.split(' ')[0];
 
-	if (boss.length != 2) {
+	if (boss.length != 2 || (!(boss.charAt(0) in bossStats[currentCBId]['bossHP'])) || boss.charAt(1) <= '0' || boss.charAt(1) >= '6') {
 		return [];
 	}
 
