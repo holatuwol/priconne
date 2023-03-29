@@ -300,6 +300,66 @@ function collapseClanBattleTeams(
 	return acc.concat(next);
 }
 
+function getLabAutoDamageTableValues(
+	row: HTMLTableRowElement,
+	maxDamage: number,
+	teamId: string
+) : number[] {
+
+	var [fullAutoDamageString, semiAutoDamageString] = [row.cells[8].textContent || '', row.cells[9].textContent || ''];
+
+	if (fullAutoDamageString && !isMaxDamage(fullAutoDamageString)) {
+		var damageMatcher = getDamageMatcher(fullAutoDamageString);
+
+		if (damageMatcher) {
+			fullAutoDamageString = damageMatcher[1];
+
+			if (fullAutoDamageString.indexOf(',') != -1) {
+				fullAutoDamageString = fullAutoDamageString.replace(/,/g, '') + 'k';
+			}
+		}
+	}
+
+	if (semiAutoDamageString && !isMaxDamage(semiAutoDamageString)) {
+		var damageMatcher = getDamageMatcher(semiAutoDamageString);
+
+		if (damageMatcher) {
+			semiAutoDamageString = damageMatcher[1];
+
+			if (semiAutoDamageString.indexOf(',') != -1) {
+				semiAutoDamageString = semiAutoDamageString.replace(/,/g, '') + 'k';
+			}
+		}
+	}
+
+	var fullAutoDamage = 0.0;
+	var semiAutoDamage = 0.0;
+
+	if (isMaxDamage(fullAutoDamageString)) {
+		fullAutoDamage = maxDamage;
+	}
+	else if (fullAutoDamageString) {
+		fullAutoDamage = getDamage(fullAutoDamageString);
+
+		if (fullAutoDamage > maxDamage) {
+			console.warn(teamId, fullAutoDamage, '>', maxDamage, fullAutoDamageString);
+		}
+	}
+
+	if (isMaxDamage(semiAutoDamageString)) {
+		semiAutoDamage = maxDamage;
+	}
+	else if (semiAutoDamageString) {
+		semiAutoDamage = getDamage(semiAutoDamageString);
+
+		if (semiAutoDamage > maxDamage) {
+			console.warn(teamId, semiAutoDamage, '>', maxDamage, semiAutoDamageString);
+		}
+	}
+
+	return [fullAutoDamage, semiAutoDamage];
+}
+
 function getLabAutoTeams(
 	baseURL: string,
 	gids: Record<string, string>,
@@ -313,6 +373,8 @@ function getLabAutoTeams(
 		return [];
 	}
 
+	var maxDamage = getMaxDamage(boss);
+
 	var teamRow = rows[0];
 	var memberRow = rows[1];
 	var levelRow = rows[5]
@@ -322,35 +384,9 @@ function getLabAutoTeams(
 
 	var teamId = teamRow.cells[2].textContent || '';
 
-	var fullAutoCheckbox = <SVGUseElement> memberRow.cells[9].querySelector('use');
-	var isFullAuto = fullAutoCheckbox ? fullAutoCheckbox.href.baseVal.indexOf('#checked') != -1 : false;
-
-	var damageTexts = [rows[2].cells[8].textContent || '', rows[2].cells[9].textContent || ''];
-
-	var damages = damageTexts.filter(isMaxDamage);
-
-	if (damages.length == 0) {
-		damages = damageTexts.map(it => getDamageMatcher(it)).filter(it => it).map((it: RegExpExecArray) => it[1]).map(it => it.indexOf(',') != -1 ? (it.replace(/,/g, '') + 'k') : it);
-	}
-
-	if (damages.length == 0) {
-		return [];
-	}
-
-	var damageString = damages[0];
-	var damage = 0.0;
-	var maxDamage = getMaxDamage(boss);
-
-	if (isMaxDamage(damageString)) {
-		damage = maxDamage;
-	}
-	else {
-		damage = getDamage(damageString);
-
-		if (damage > maxDamage) {
-			console.warn(teamId, damage, '>', maxDamage, damageString);
-		}
-	}
+	var checkboxes = <SVGUseElement []> [memberRow.cells[9].querySelector('use'), memberRow.cells[10].querySelector('use')];
+	var [hasFullAuto, hasSemiAuto] = checkboxes.map(it => it && it.href.baseVal.indexOf('#checked') != -1);
+	var [fullAutoDamage, semiAutoDamage] = getLabAutoDamageTableValues(rows[2], maxDamage, teamId);
 
 	var members = Array.from(memberRow.cells).slice(3, 8).map(it => it.textContent || '');
 	var levels = Array.from(levelRow.cells).slice(3, 8).map(it => it.textContent || '');
@@ -376,28 +412,40 @@ function getLabAutoTeams(
 	var index = 'TheLab Auto ' + teamId;
 	var media = getLabAutoTimelineURL(baseURL, gids[tab], teamRow.cells[0].getAttribute('id') || '');
 
-	var team = {
+	var baseTeam = <ClanBattleTeam> {
 		boss: boss,
 		region: 'global',
-		timing: isFullAuto ? 'full auto' : 'semi auto',
 		index: index,
 		id: teamId,
 		media: media,
 		timeline: index + ' ' + media,
-		damage: damage,
 		units: units,
 		notes: notes.replace(/[\r\n]/g, '')
 	}
 
-	var newTeams = <ClanBattleTeam[]> [team];
+	var newTeams = <ClanBattleTeam[]> [];
 
-	var noteLines = notes.split('<br>');
+	if (fullAutoDamage > 0) {
+		var team = Object.assign({}, baseTeam);
+		team.timing = 'full auto';
+		team.damage = fullAutoDamage;
+		newTeams.push(team);
 
-	var singleSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') != -1 || it.indexOf('->') != -1 || (it.toLowerCase().indexOf(' and ') != 1 && (it.indexOf('*') != -1 || it.indexOf('⭐') != -1))).map(getSingleSubstitutions.bind(null, team));
-	newTeams = singleSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
+		var noteLines = notes.split('<br>');
 
-	var singleFlippedSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' X ') != -1 || it.indexOf(' x ') != -1).map(getSingleFlippedSubstitutions.bind(null, team));
-	newTeams = singleFlippedSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
+		var singleSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' to ') != -1 || it.indexOf('->') != -1 || (it.toLowerCase().indexOf(' and ') != 1 && (it.indexOf('*') != -1 || it.indexOf('⭐') != -1))).map(getSingleSubstitutions.bind(null, team));
+		newTeams = singleSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
+
+		var singleFlippedSubstitutionsTeams = <ClanBattleTeam[][]> noteLines.filter(it => it.indexOf(' X ') != -1 || it.indexOf(' x ') != -1).map(getSingleFlippedSubstitutions.bind(null, team));
+		newTeams = singleFlippedSubstitutionsTeams.reduce(collapseClanBattleTeams, newTeams);
+	}
+
+	if (semiAutoDamage > 0) {
+		var team = Object.assign({}, baseTeam);
+		team.timing = 'semi auto';
+		team.damage = semiAutoDamage;
+		newTeams.push(team);
+	}
 
 	return newTeams;
 }
