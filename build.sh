@@ -21,6 +21,4 @@ docker run --name temp-web-server --rm -p 9080:80 \
 	-v /var/www/html/priconne/equipment:/usr/share/nginx/html/equipment \
 	-v /var/www/html/priconne/item:/usr/share/nginx/html/item \
 	-v /var/www/html/priconne/unit:/usr/share/nginx/html/unit \
-	-v /var/www/html/test/thelab_auto:/usr/share/nginx/html/test/thelab_auto \
-	-v /var/www/html/test/thelab_manual:/usr/share/nginx/html/test/thelab_manual \
 	nginx:latest

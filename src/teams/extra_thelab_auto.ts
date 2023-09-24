@@ -1,18 +1,3 @@
-function getTheLabAutoPageNames() : Record<string, string> {
-	var sheetTypes = ['A', 'B', 'C', 'D'];
-	var pageNames = <Record<string, string>> {};
-
-	for (var i = 0; i < sheetTypes.length; i++) {
-		var sheetType = sheetTypes[i];
-
-		for (var j = 1; j <= 5; j++) {
-			pageNames[sheetType + j] = sheetType;
-		}
-	}
-
-	return pageNames;
-}
-
 function getLabAutoDamage(
 	matcher: RegExpExecArray,
 	oldTeam: ClanBattleTeam
@@ -538,50 +523,4 @@ function extractLabAutoTeams(
 	labAutoTeams = teams;
 
 	updateExtraTeamsHelper();
-}
-
-function extractLabAutoTeamsLocal(
-	baseURL: string,
-	gids: Record<string, string>
-) : void {
-
-	if (document.location.host.indexOf('localhost') == -1) {
-		return;
-	}
-
-	var teams = <ClanBattleTeam[]> [];
-
-	var tabs = Object.keys(gids);
-
-	for (var i = 0; i < tabs.length; i++) {
-		var tab = tabs[i];
-
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', '/test/thelab_auto/' + encodeURIComponent(tab) + '.html', false)
-
-		xhr.onload = function() {
-			if (xhr.status != 200) {
-				return;
-			}
-
-			var container = document.implementation.createHTMLDocument().documentElement;
-			container.innerHTML = xhr.responseText;
-
-			updateLabAutoTeams(baseURL, gids, tab, container, teams);
-		}
-
-		xhr.send(null);
-	}
-
-	teams.forEach(team => {
-		team.units.forEach(unit => {
-			unit.name = fixUnitName(unit.name);
-		})
-	});
-
-	labAutoTeams = teams;
-
-	updateExtraTeamsHelper();
-
-	console.log(teams.map(getTeamAsCSVRow).join('\n'));
 }
