@@ -1,2 +1,6 @@
 **/build
 **/node_modules
+
+/static/equipment
+/static/item
+/static/unit
