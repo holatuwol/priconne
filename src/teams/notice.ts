@@ -8,10 +8,8 @@ function updatePlannerNotice() {
 		noticeElement.innerHTML = `
 <div class="panel-heading">
 <strong>Note</strong>:
-Different regions may have different boss stats, so teams sourced from other
-regions may not work on global. Firefox is randomly unable to load Google Sheets
-exports, so if you run into any problems when using Firefox, please try a
-different browser.
+Firefox is randomly unable to load Google Sheets exports, so if you run into
+any problems when using Firefox, please try a different browser.
 </div>
 		`;
 	}

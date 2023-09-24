@@ -444,7 +444,6 @@ function updateLabAutoTeams(
 ) : void {
 
 	var rows = Array.from(container.querySelectorAll('tr'));
-	var grid = getGoogleSheetsGrid(rows);
 
 	for (var i = 6; i < rows.length - 1; i += 12) {
 		var newTeams = getLabAutoTeams(baseURL, gids, tab, rows.slice(i, i + 10));

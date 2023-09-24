@@ -31,6 +31,10 @@ function getSiblingRowElement(
     count: number
 ) : HTMLTableRowElement {
 
+	for (var i = count; i < 0; i++) {
+		element = <HTMLTableRowElement> element.previousSibling;
+	}
+
     for (var i = 0; i < count; i++) {
         element = <HTMLTableRowElement> element.nextSibling;
     }

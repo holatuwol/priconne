@@ -158,7 +158,7 @@ function updateExtraTeamsHelper(teams?: ClanBattleTeam[]) : void {
 		extraTeams = teams;
 	}
 
-	var totalExtraTeams = extraTeams.length + labAutoTeams.length + labManualTeams.length + pcrgTeams.length + demiurgeTeams.length;
+	var totalExtraTeams = extraTeams.length + labAutoTeams.length + labManualTeams.length + pcrgTeams.length + demiurgeTeams.length + worryChefTeams.length;
 
 	setTeamCount('extra', totalExtraTeams);
 
@@ -219,7 +219,11 @@ function checkForExtraTeamsSheet(
 
 	var title = titleElement.textContent || '';
 
-	if (title.indexOf('Lab ') != -1 && title.indexOf('Auto ') != -1) {
+	if (title.indexOf('WorryChefs') != -1) {
+		extractWorryChefsTeams(href, container);
+		return true;
+	}
+	else if (title.indexOf('Lab ') != -1 && title.indexOf('Auto ') != -1) {
 		extractLabAutoTeams(href, container);
 		return true;
 	}

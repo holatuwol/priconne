@@ -32,15 +32,17 @@ function expandGoogleSheetURL(
 			href = href.replace('/pubhtml?', '/pub?');
 		}
 
-		if (href.indexOf('?') == -1) {
-			href += '?output=csv';
-		}
-		else if (href.indexOf('&output=csv') == -1) {
-			href += '&output=csv';
-		}
+		if (href.indexOf('/pub') != -1) {
+			if (href.indexOf('?') == -1) {
+				href += '?output=csv';
+			}
+			else if (href.indexOf('&output=csv') == -1) {
+				href += '&output=csv';
+			}
 
-		if (href.indexOf('&single=true') == -1) {
-			href += '&single=true';
+			if (href.indexOf('&single=true') == -1) {
+				href += '&single=true';
+			}
 		}
 	}
 
@@ -112,7 +114,7 @@ function expandGoogleSheetURLs(
 		}
 	};
 
-	xhr.open('GET', href + '?output=html');
+	xhr.open('GET', href.indexOf('pub') != -1 ? href + '?output=html' : href);
 
 	xhr.setRequestHeader("Cache-Control", "no-cache, no-store, max-age=0");
 	xhr.setRequestHeader("Pragma", "no-cache");
@@ -195,30 +197,42 @@ function mergeVertically(
 	}
 }
 
-function getGoogleSheetsGrid(rows : HTMLTableRowElement[]) : number[][] {
-	var grid = <number[][]> [];
+function getGoogleSheetsGrid(rows : HTMLTableRowElement[]) : HTMLTableCellElement[][] {
+	var grid = <Array<Array<HTMLTableCellElement | undefined>>> [];
 
 	for (var i = 0; i < rows.length; i++) {
-		grid.push(<number[]> []);
-		for (var j = 0; j < rows[i].cells.length; j++) {
-			var colspan = parseInt(rows[i].cells[j].getAttribute('colspan') || '1') || 1;
-			grid[i].push(colspan);
-		}
-	}
+		var x = 0;
 
-	for (var j = 0; j < 46; j++) {
-		for (var i = 0; i < rows.length; i++) {
-			if (j >= rows[i].cells.length) {
-				continue;
+		if (grid[i] == undefined) {
+			grid.push(<Array<HTMLTableCellElement | undefined>> []);
+		}
+
+		for (var j = 0; j < rows[i].cells.length; j++) {
+			while (grid[i][x] != undefined) {
+				x++;
 			}
 
+			var colspan = parseInt(rows[i].cells[j].getAttribute('colspan') || '1') || 1;
 			var rowspan = parseInt(rows[i].cells[j].getAttribute('rowspan') || '1') || 1;
-			mergeVertically(grid, i, j, rowspan);
+
+			for (var k = 0; k < rowspan; k++) {
+				if (grid[i+k] == undefined) {
+					grid.push(<Array<HTMLTableCellElement | undefined>> []);
+				}
+
+				for (var l = 0; l < colspan; l++) {
+					grid[i+k][x+l] = rows[i].cells[j];
+				}
+			}
+
+			x += colspan;
 		}
 	}
 
-	return grid;
+	return <HTMLTableCellElement[][]> grid;
 }
+
+
 // https://stackoverflow.com/a/58181757
 
 function csv2arr(str : string) : string[][] {

@@ -282,7 +282,7 @@ function generateAvailableTeams() {
 	availableHeader.innerHTML = availableHeader.innerHTML;
 	availableBody.innerHTML = '';
 
-	var allTeams = defaultTeams.concat(extraTeams).concat(labAutoTeams).concat(labManualTeams).concat(pcrgTeams).concat(demiurgeTeams);
+	var allTeams = defaultTeams.concat(extraTeams).concat(labAutoTeams).concat(labManualTeams).concat(pcrgTeams).concat(demiurgeTeams).concat(worryChefTeams);
 
 	addUnits(allTeams);
 

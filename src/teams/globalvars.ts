@@ -1,4 +1,4 @@
-var latestCBId = '26';
+var latestCBId = '67';
 
 var noticeElement = document.getElementById('planner-notice');
 var currentCBId = noticeElement ? noticeElement.getAttribute('data-cb-id') || latestCBId : latestCBId;
@@ -12,6 +12,7 @@ var labAutoTeams = <ClanBattleTeam[]> [];
 var labManualTeams = <ClanBattleTeam[]> [];
 var pcrgTeams = <ClanBattleTeam[]> [];
 var demiurgeTeams = <ClanBattleTeam[]> [];
+var worryChefTeams = <ClanBattleTeam[]> [];
 
 var availableUnits = <Record<string, ClanBattleBuild>> {};
 
