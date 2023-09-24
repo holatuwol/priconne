@@ -60,10 +60,6 @@ function parseCSVTeams(text: string) : ClanBattleTeam[] {
 			}
 		}
 
-		if (result.notes && result.notes.indexOf('AUTO OFF, only spam Nyaru') != -1) {
-			result.timing = 'spam nyaru';
-		}
-
 		return result;
 	});
 
