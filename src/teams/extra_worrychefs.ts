@@ -206,6 +206,75 @@ function extractWorryChefsManualTeamsFromTab(
 	return teams;
 }
 
+function getWorryChefsCopeTeams(
+	baseURL: string,
+	gid: string,
+	id: string,
+	boss: string,
+	grid: HTMLTableCellElement[][]
+) : ClanBattleTeam[] {
+
+	var teams = <ClanBattleTeam[]> [];
+
+	var damages = grid[1].filter((it, i) => i % 7 == 2).map(it => (it.textContent || '').trim());
+	var valid = damages.map(it => !!it);
+
+	for (var i = 0; i < damages.length; i++) {
+		if (!valid[i]) {
+			continue;
+		}
+
+		var buildGrid = <string[][]> grid.slice(3, 5).map(it => Array.from(it.slice(7*i+3, 7*i+8)).map(it => it.textContent || ''));
+
+		var unitNames = buildGrid[0];
+		var stars = buildGrid[1];
+
+		teams.push({
+			boss: boss,
+			region: 'JP',
+			timing: 'full auto',
+			id: id,
+			timeline: 'WorryChefs Cope Finder ' + getWorryChefsTimelineURL(baseURL, gid, id),
+			damage: parseWorryChefsDamage(boss, damages[i]),
+			units: unitNames.map((it, j) => {
+				return {
+					'name': it,
+					'build': {
+						'star': stars[j]
+					}
+				}
+			})
+		});
+	}
+
+	return teams;
+}
+
+function extractWorryChefsCopeTeamsFromTab(
+	baseURL: string,
+	gids: Record<string, string>,
+	tabName: string,
+	tab: HTMLDivElement
+) : ClanBattleTeam[] {
+
+	var rows = Array.from(tab.querySelectorAll('tr'));
+	var grid = getGoogleSheetsGrid(rows);
+
+	var teams = <ClanBattleTeam[]> [];
+
+	for (var i = 6; i < rows.length - 1; i += 7) {
+		var boss = tabName.split(' ')[0];
+
+        var idHolder = rows[i].querySelector('th');
+        var id = idHolder ? idHolder.getAttribute('id') || '' : '';
+		var newTeams = getWorryChefsCopeTeams(baseURL, gids[tabName], id, boss, grid.slice(i, i + 6));
+
+		Array.prototype.push.apply(teams, newTeams);
+	}
+
+	return teams;
+}
+
 function extractWorryChefsTeams(
 	href: string,
 	container: HTMLElement
@@ -249,6 +318,9 @@ function extractWorryChefsTeams(
 
 		if (pageName.indexOf('Manual') != -1) {
 			teams = teams.concat(extractWorryChefsManualTeamsFromTab(href, gids, pageNames[i], tab));
+		}
+		else if (pageName.indexOf('Cope Finder') != -1) {
+			teams = teams.concat(extractWorryChefsCopeTeamsFromTab(href, gids, pageNames[i], tab));
 		}
 		else {
 			teams = teams.concat(extractWorryChefsSimpleTeamsFromTab(href, gids, pageNames[i], tab));
