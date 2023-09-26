@@ -1,6 +1,7 @@
 **/build
 **/node_modules
 
+/aikurumi
 /static/equipment
 /static/item
 /static/unit
