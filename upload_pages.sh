@@ -43,6 +43,7 @@ elif [ "" != "${1}" ]; then
 					continue
 				fi
 
+				test -f static/${prefix}.html && echo static/${prefix}.html
 				grep -Fl "${prefix}.js" static/*.html
 				grep -Fl "${prefix}.css" static/*.html
 			done
@@ -50,6 +51,7 @@ elif [ "" != "${1}" ]; then
 	); do
 		s3upload ${htmlfile} $(basename ${htmlfile})
 	done
+
 fi
 
 aws --profile=administrator s3 ls s3://holatuwol/priconne/unit/ > s3_bucket.txt

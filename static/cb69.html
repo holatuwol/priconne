@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Priconne - CB12 Hits Planner</title>
+<title>Priconne - CB69 Hits Planner</title>
 
 <!-- Bootstrap -->
 <link rel="stylesheet" href="themes/bootstrap@3.3.7.css">
@@ -17,12 +17,12 @@
 <body>
 <div class="container" role="main">
 
-<h1 contenteditable spellcheck="false">CB12 Hits Planner for Princess Connect</h1>
+<h1 contenteditable spellcheck="false">CB69 Hits Planner for Princess Connect</h1>
 
-<div id="clan-battle-dates" data-start-time="2022-01-13T13:00:00.000Z" data-end-time="2022-01-18T07:59:59.999Z">
+<div id="clan-battle-dates" data-start-time="2023-11-24T20:00:00.000Z" data-end-time="2023-11-29T14:59:59.999Z">
 </div>
 
-<div id="planner-notice" data-cb-id="12">
+<div id="planner-notice" data-cb-id="69">
 </div>
 
 <ul class="nav nav-tabs">
@@ -40,16 +40,16 @@
 
 <h3>Explanation</h3>
 
-<p>This is a database of timelines for Clan Battle 12 (<a href="https://rwiki.jp/priconne_redive/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/012_2%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
+<p>This is a database of timelines for Clan Battle 69 (<a href="https://rwiki.jp/priconne_redive/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/069_11%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
 
 <div id="team-prefixes">
 <ul>
-	<li><strong>SAT</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTk0Z4RClMb4hahOTcpmi_FmZAMUKinLOHoetIs3qgDdZ6u6ArXnKTTnftT1CE_m_r9jwyaLq4XrY0c/pubhtml" target="_blank">CB2022-01 "Hit the Same Boss 3 Times" Teams</a> spreadsheet maintained by holatuwol#3708</li>
-	<li><strong>The Lab</strong>: found in <a href="https://docs.google.com/spreadsheets/d/1wFqCGyGNUEFW1jNOGS2fD9lJtyn5ajoJSPAvdtBsF2s/edit" target="_blank">The Lab CB12 Public Timelines</a> spreadsheet</li>
+	<li><strong>aikurumi</strong>: found in the <a href="https://aikurumi.cn/gvg;serverType=jp" target="_blank">aikurumi</a> tool posted to maincord (manually updated around 09:00 JST)</li>
+	<li><strong>WorryChefs</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRC36QSNhbz_ay6R90OPbb3FSlI4zLC17mEfkuDUjOSZhoCFsox5gtP2VQh3VWZnhvG1gfZYJTkm971/pubhtml" target="_blank">WorryChefs CB69</a> sheet maintained by the Holy Church of Jun discord</li>
 </ul>
 </div>
 
-<p>The Options tab allows you to select units you do not have and update various display options, as well as configure where the tool can check to find teams.</p>
+<p>The Options tab allows you to enter in a set of URLs containing team data. Once those teams are loaded, you can select units you do not have and update various display options, as well as configure where the tool can check to find teams.</p>
 
 <p>The column headers (boss, damage, team ID, timing) are all clickable, and clicking on the header will sort the table by that column. After finding a team you like, click the "choose" button next to a team to choose it, and the teams that conflict with it will disappear. If you decide the team removed too many good teams, click the "remove" button to unchoose it.</p>
 
@@ -62,28 +62,8 @@
 
 <div id="regions-available">
 	<span class="checkbox-inline">
-		<input name="regions-available" id="server-global" type="checkbox" value="global" checked onchange="filterAvailableTeams();" />
-		<label for="server-global">Global</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-CN" type="checkbox" value="CN" checked onchange="filterAvailableTeams();" />
-		<label for="server-CN">China</label>
-	</span>
-	<span class="checkbox-inline">
 		<input name="regions-available" id="server-JP" type="checkbox" value="JP" checked onchange="filterAvailableTeams();" />
 		<label for="server-JP">Japan</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-KR" type="checkbox" value="KR" checked onchange="filterAvailableTeams();" />
-		<label for="server-KR">Korea</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-TH" type="checkbox" value="TH" checked onchange="filterAvailableTeams();" />
-		<label for="server-TH">Thailand</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-TW" type="checkbox" value="TW" checked onchange="filterAvailableTeams();" />
-		<label for="server-TW">Taiwan</label>
 	</span>
 </div>
 
@@ -110,10 +90,6 @@
 		<input name="timings-available" id="timing-unspecified" type="checkbox" value="unspecified" onchange="filterAvailableTeams();" />
 		<label for="timing-unspecified">unspecified</label>
 	</span>
-	<span class="checkbox-inline" title="the team has been confirmed to not work at all, but retained in the planner for academic reasons">
-		<input name="timings-available" id="timing-non-functional" type="checkbox" value="non-functional" onchange="filterAvailableTeams();" />
-		<label for="timing-non-functional">non-functional</label>
-	</span>
 </div>
 
 <h3>Chosen Teams</h3>
@@ -127,7 +103,7 @@
 	<p id="allocation-in-progress"></p>
 </div>
 
-<table id="teams-selected" class="sortable-theme-bootstrap hide-unavailable" data-sortable>
+<table id="teams-selected" class="sortable-theme-bootstrap hide-unavailable show-unit-info" data-sortable>
 	<thead>
 	<tr>
 		<th class="select-button" data-sortable="false">&nbsp;</th>
@@ -137,7 +113,6 @@
 		<th>team ID</th>
 		<th>timing</th>
 		<th colspan=5 data-sortable="false">&nbsp;</th>
-		<th>alt bosses</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -151,7 +126,7 @@
 <p style="text-align: right"><span id="visible-teams-count">0</span> team<span id="visible-teams-plural">s</span> match</p>
 </div>
 
-<table id="teams-available" class="sortable-theme-bootstrap hide-unavailable" data-sortable>
+<table id="teams-available" class="sortable-theme-bootstrap hide-unavailable show-unit-info" data-sortable>
 	<thead>
 	<tr>
 		<th class="select-button" data-sortable="false">&nbsp;</th>
@@ -161,7 +136,6 @@
 		<th>timeline</th>
 		<th>timing</th>
 		<th colspan=5 data-sortable="false">&nbsp;</th>
-		<th>alt bosses</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -176,7 +150,8 @@
 
 <div id="data-source">
 	<ul>
-		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRHhlj-e6OZznVW5sX2eGYpoeeCPK9b0J8KcZWNGHhj6M4vpzHdRO6ds7dxiIbNI32hzrPxzeu_Y6NQ/pubhtml" target="_blank">CB12 Team Reference</a>, maintained by holatuwol#3708</li>
+		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSiuuDUwByeh9HsIWLrESNbD3NfXfWOnXFAuAybnwlC0nNtRDm5hIvBrd6BRhIEJwIrSw8FbdKuZtdW/pub" target="_blank">Clan Battle 69 Team Reference</a>, maintained by holatuwol</li>
+		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRC36QSNhbz_ay6R90OPbb3FSlI4zLC17mEfkuDUjOSZhoCFsox5gtP2VQh3VWZnhvG1gfZYJTkm971/pub" target="_blank">WorryChefs CB69</a>, maintained by the Holy Church of Jun discord</li>
 	</ul>
 </div>
 
@@ -219,12 +194,12 @@
 
 <div class="display-settings">
 	<div class="radio">
-		<input type="radio" name="build-visibility" value="hide" id="hide-build-info" checked onchange="toggleBuildVisibility();" />
+		<input type="radio" name="build-visibility" value="hide" id="hide-build-info" onchange="toggleBuildVisibility();" />
 		<label for="hide-build-info">hide build information</label>
 	</div>
 
 	<div class="radio">
-		<input type="radio" name="build-visibility" value="show" id="show-build-info" onchange="toggleBuildVisibility();" />
+		<input type="radio" name="build-visibility" value="show" id="show-build-info" checked onchange="toggleBuildVisibility();" />
 		<label for="show-build-info">show build information</label>
 	</div>
 </div>
@@ -286,7 +261,7 @@
 <!-- SweetAlert2 -->
 <script src="themes/sweetalert2@11.js"></script>
 
-<script>var hasSixStar = new Set();</script>
+<script>var hasSixStar = new Set(['Pecorine', 'Kokkoro', 'Kyaru', 'Rino', 'Lima', 'Io', 'Yukari', 'Maho', 'Yui', 'Rei', 'Hiyori', 'Hatsune', 'Tamaki', 'Mifuyu', 'Shizuru', 'Ayane', 'Saren', 'Akino', 'Ninon', 'Mahiru', 'Suzuna', 'Akari', 'Yori', 'Misogi', 'Mimi', 'Kyouka', 'Nozomi', 'Suzume', 'Kurumi', 'Kaori', 'Aoi', 'Djeeta', 'Nanaka', 'Arisa', 'Monika', 'Misaki', 'Chika', 'S.Pecorine', 'S.Kokkoro', 'S.Kyaru', 'Kuuka', 'Rin', 'Miyako', 'Misato', 'Eriko', 'Shinobu', 'Ilya', 'Tomo', 'Sheffy', 'Mitsuki', 'Jun', 'Ayumi', 'Christina', 'Anna', 'Muimi', 'Yuki', 'Tsumugi', 'Matsuri', 'Makoto', 'Kasumi', 'Shiori']);</script>
 <script src="bosses.js?t=1700897438"></script>
 <script src="units.js?t=1700899269"></script>
 <script src="teams.js?t=1700922930"></script>

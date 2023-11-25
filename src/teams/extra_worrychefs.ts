@@ -90,6 +90,10 @@ function getWorryChefsSimpleTeams(
 		var stars = buildGrid[8];
 		var ues = buildGrid[9];
 
+		if (unitNames.filter(it => it).length == 0) {
+			continue;
+		}
+
 		teams.push({
 			boss: boss,
 			region: 'JP',
