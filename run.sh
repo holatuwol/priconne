@@ -1,9 +1,6 @@
 #!/bin/bash
 
 docker run --name temp-web-server --rm -p 9080:80 \
-	-v ${PWD}/build:/usr/share/nginx/html \
-	-v ${PWD}/static/equipment:/usr/share/nginx/html/equipment \
-	-v ${PWD}/static/item:/usr/share/nginx/html/item \
-	-v ${PWD}/static/themes:/usr/share/nginx/html/themes \
-	-v ${PWD}/static/unit:/usr/share/nginx/html/unit \
+	$(for file in $(find build -maxdepth 1); do echo "-v ./${file}:/usr/share/nginx/html/$(basename ${file})"; done) \
+	$(for file in $(find static -maxdepth 1); do echo "-v ./${file}:/usr/share/nginx/html/$(basename ${file})"; done) \
 	nginx:latest
