@@ -16,7 +16,7 @@ def extract_team(team, full_boss_id, damage_type):
 	team_data = {
 		'boss': full_boss_id,
 		'region': 'JP',
-		'timing': 'full auto' if damage_type == 'autoDamage' else 'semi auto' if damage_type == 'halfAutoDamage' else 'video' if len(team['links']) != 0 else 'unspecified',
+		'timing': 'full auto' if damage_type == 'autoDamage' else 'semi auto' if damage_type == 'halfAutoDamage' else 'video' if len([link for link in team['links'] if len(link['link']) > 0]) != 0 else 'unspecified',
 		'timeline': 'aikurumi %s %s' % (team['id'], '' if len(team['links']) != 1 else team['links'][0]['link']),
 		'damage': '%sw' % team[damage_type]
 	}
@@ -46,27 +46,30 @@ def extract_teams(boss, team):
 	missing_unit = False
 
 	new_teams = []
+	max_damage = 0
 
 	if 'autoDamage' in team and team['autoDamage'] is not None:
 		new_team = extract_team(team, full_boss_id, 'autoDamage')
 		if new_team is not None:
+			max_damage = max(team['autoDamage'], max_damage)
 			new_teams.append(new_team)
 
-	if 'halfAutoDamage' in team and team['halfAutoDamage'] is not None and team['halfAutoDamage'] != team['autoDamage']:
+	if 'halfAutoDamage' in team and team['halfAutoDamage'] is not None and team['halfAutoDamage'] > max_damage:
 		new_team = extract_team(team, full_boss_id, 'halfAutoDamage')
 		if new_team is not None:
+			max_damage = max(team['halfAutoDamage'], max_damage)
 			new_teams.append(new_team)
 
-	if 'easyManualDamage' in team and team['easyManualDamage'] is not None and team['easyManualDamage'] != team['halfAutoDamage']:
+	if 'easyManualDamage' in team and team['easyManualDamage'] is not None and team['easyManualDamage'] > max_damage:
 		new_team = extract_team(team, full_boss_id, 'easyManualDamage')
 		if new_team is not None:
+			max_damage = max(team['easyManualDamage'], max_damage)
 			new_teams.append(new_team)
 
-	has_damage = sum([1 if team[damage_type] == team['damage'] else 0 for damage_type in ['easyManualDamage', 'halfAutoDamage', 'autoDamage']]) > 0
-
-	if not has_damage:
+	if 'damage' in team and team['damage'] is not None and team['damage'] > max_damage:
 		new_team = extract_team(team, full_boss_id, 'damage')
 		if new_team is not None:
+			max_damage = max(team['damage'], max_damage)
 			new_teams.append(new_team)
 
 	return new_teams
