@@ -99,7 +99,7 @@ function expandGoogleSheetURLs(
 		container.innerHTML = xhr.responseText;
 
 		if (xhrCallback && xhrCallback(xhr.responseText, href, container)) {
-			gids = [''];
+			gids = [];
 		}
 		else {
 			gids = Array.from(container.querySelectorAll('#sheet-menu li')).map(it => it.id.substring('sheet-button-'.length));

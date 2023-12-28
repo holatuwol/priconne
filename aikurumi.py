@@ -2,12 +2,17 @@ import json
 import os
 import pandas as pd
 
-units_df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vQNZv9nmkVrGAaih2c4NyYfSiwmB3CC5mmicG_NOvb1kuXrdVUyCmW1q1DWIcCqXgtwPlYK_inNO3VV/pub?output=csv')
+units_df = pd.read_csv('unit_data.csv')
 
 units = {unit_id: unit_name for unit_id, unit_name in sorted(zip(units_df['unitId'], units_df['name']), key=lambda x: x[1])}
 
 def get_link(video):
 	return '%s - %s' % (video['name'], video['link'])
+
+def get_notes(team):
+	ex_remarks = team['exRemarks'].strip()
+	link_videos = [get_link(video) + '\n' + video['remarks'] for video in team['links']]
+	return ('%s %s' % (ex_remarks, '\n'.join(link_videos).strip())).strip()
 
 def extract_team(team, full_boss_id, damage_type):
 	if damage_type not in team or team[damage_type] is None:
@@ -25,7 +30,7 @@ def extract_team(team, full_boss_id, damage_type):
 		team_data['slot%d' % (5 - i)] = units[int(unit['prefabId'] / 100)]
 		team_data['build%d' % (5 - i)] = '%d⭐; R%d' % (unit['rarity'], unit['rank'])
 
-	team_data['notes'] = ('%s %s' % (team['exRemarks'].strip(), '\n'.join([get_link(video) for video in team['links']]).strip())).strip()
+	team_data['notes'] = get_notes(team)
 
 	return team_data
 

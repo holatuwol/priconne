@@ -127,21 +127,26 @@ function extractWorryChefsSimpleTeamsFromTab(
 	tab: HTMLDivElement
 ) : ClanBattleTeam[] {
 
+	var tier = tabName.split(' ')[0];
+
 	var rows = Array.from(tab.querySelectorAll('tr'));
 	var grid = getGoogleSheetsGrid(rows);
 
 	var teams = <ClanBattleTeam[]> [];
 
-	for (var i = 6; i < rows.length - 1; i += 11) {
-		var tier = tabName.split(' ')[0];
+	if (tier.length != 1 || (!(tier in bossStats[currentCBId]['bossHP']))) {
+		return teams;
+	}
 
-		if (tier.length != 1 || (!(tier in bossStats[currentCBId]['bossHP']))) {
+	for (var i = 6; i < rows.length - 1; i += 11) {
+		var idHolder = rows[i].querySelector('th');
+		var id = idHolder ? idHolder.getAttribute('id') || '' : '';
+		var newTeams = getWorryChefsSimpleTeams(baseURL, gids[tabName], id, tier, grid.slice(i, i + 10));
+
+		if (newTeams.length == 0) {
+			i++;
 			continue;
 		}
-
-        var idHolder = rows[i].querySelector('th');
-        var id = idHolder ? idHolder.getAttribute('id') || '' : '';
-		var newTeams = getWorryChefsSimpleTeams(baseURL, gids[tabName], id, tier, grid.slice(i, i + 10));
 
 		Array.prototype.push.apply(teams, newTeams);
 	}
@@ -269,15 +274,91 @@ function extractWorryChefsCopeTeamsFromTab(
 	for (var i = 6; i < rows.length - 1; i += 7) {
 		var boss = tabName.split(' ')[0];
 
-        var idHolder = rows[i].querySelector('th');
-        var id = idHolder ? idHolder.getAttribute('id') || '' : '';
-		var newTeams = getWorryChefsCopeTeams(baseURL, gids[tabName], id, boss, grid.slice(i, i + 6));
+		var idHolder = rows[i].querySelector('th');
+		var id = idHolder ? idHolder.getAttribute('id') || '' : '';
+		var newTeams = getWorryChefsSimpleTeams(baseURL, gids[tabName], id, boss, grid.slice(i, i + 7));
 
 		Array.prototype.push.apply(teams, newTeams);
 	}
 
 	return teams;
 }
+
+function getWorryChefsBruteForceTeams(
+	baseURL: string,
+	gid: string,
+	id: string,
+	tier: string,
+	grid: HTMLTableCellElement[][]
+) : ClanBattleTeam[] {
+
+	var teams = <ClanBattleTeam[]> [];
+
+	var indices = grid[0].filter((it, i) => i % 7 == 2).map(it => 'WorryChefs ' + (it.textContent || ''));
+	var damages = grid[2].filter((it, i) => i % 7 == 2).map(it => (it.textContent || '').trim());
+	var valid = damages.map(it => !!it);
+
+	var teams = <ClanBattleTeam[]> [];
+
+	for (var i = 0; i < 5; i++) {
+		if (!valid[i]) {
+			continue;
+		}
+
+		var boss = tier + (i+1);
+
+		var buildGrid = <string[][]> grid.map(it => Array.from(it.slice(7*i+3, 7*i+8)).map(it => it.textContent || ''));
+
+		var unitNames = buildGrid[3];
+		var stars = buildGrid[4];
+		var timeline = buildGrid[5].map(it => it == 'SET' ? 'O' : 'X').join('');
+
+		teams.push({
+			boss: boss,
+			region: 'JP',
+			timing: 'full auto',
+			id: id,
+			index: indices[i],
+			timeline: indices[i] + ' ' + timeline + ' ' + getWorryChefsTimelineURL(baseURL, gid, id),
+			damage: parseWorryChefsDamage(boss, damages[i]),
+			units: unitNames.map((it, j) => {
+				return {
+					'name': it,
+					'build': {
+						'star': stars[j]
+					}
+				}
+			})
+		});
+	}
+
+	return teams;
+}
+
+function extractWorryChefsBruteForceTeamsFromTab(
+	baseURL: string,
+	gids: Record<string, string>,
+	tabName: string,
+	tab: HTMLDivElement
+) : ClanBattleTeam[] {
+
+	var rows = Array.from(tab.querySelectorAll('tr'));
+	var grid = getGoogleSheetsGrid(rows);
+
+	var teams = <ClanBattleTeam[]> [];
+
+	for (var i = 6; i < rows.length - 1; i += 7) {
+		var idHolder = rows[i].querySelector('th');
+		var id = idHolder ? idHolder.getAttribute('id') || '' : '';
+
+		var newTeams = getWorryChefsBruteForceTeams(baseURL, gids[tabName], id, 'D', grid.slice(i, i + 6));
+
+		Array.prototype.push.apply(teams, newTeams);
+	}
+
+	return teams;
+}
+
 
 function extractWorryChefsTeams(
 	href: string,
@@ -308,10 +389,6 @@ function extractWorryChefsTeams(
 	for (var i = 0; i < pageNames.length; i++) {
 		var pageName = pageNames[i];
 
-		if (pageName.indexOf('Overtime') != -1) {
-			continue;
-		}
-
 		var tabId = gids[pageName];
 
 		var tab = <HTMLDivElement | null> container.querySelector('div[id="' + tabId + '"]');
@@ -325,6 +402,9 @@ function extractWorryChefsTeams(
 		}
 		else if (pageName.indexOf('Cope Finder') != -1) {
 			teams = teams.concat(extractWorryChefsCopeTeamsFromTab(href, gids, pageNames[i], tab));
+		}
+		else if (pageName.indexOf('Brute Force') != -1) {
+			teams = teams.concat(extractWorryChefsBruteForceTeamsFromTab(href, gids, pageNames[i], tab));
 		}
 		else {
 			teams = teams.concat(extractWorryChefsSimpleTeamsFromTab(href, gids, pageNames[i], tab));
