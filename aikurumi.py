@@ -81,7 +81,7 @@ def extract_teams(boss, team):
 
 teams = []
 
-for file in os.listdir('aikurumi'):
+for file in sorted(os.listdir('aikurumi')):
 	if file[-5:] != '.json':
 		continue
 

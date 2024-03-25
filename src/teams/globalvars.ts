@@ -1,4 +1,4 @@
-var latestCBId = '72';
+var latestCBId = '73';
 
 var noticeElement = document.getElementById('planner-notice');
 var currentCBId = noticeElement ? noticeElement.getAttribute('data-cb-id') || latestCBId : latestCBId;

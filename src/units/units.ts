@@ -17,6 +17,10 @@ Object.entries(aliases).reduce((acc, next) => {
 	return unitIds;
 }, unitIds);
 
+Object.entries(unitIds).forEach(([key, value]) => {
+	unitIds[key.toLowerCase()] = value;
+});
+
 function getUnitIcon(
 	unitId: string,
 	unitStars?: number
@@ -42,6 +46,10 @@ function fixUnitName(unitName: string) : string {
 
 	if (unitName in unitIds) {
 		return unitNames[unitIds[unitName]];
+	}
+
+	if (unitName.toLowerCase() in unitIds) {
+		return unitNames[unitIds[unitName.toLowerCase()]];
 	}
 
 	var name = unitName;

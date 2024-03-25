@@ -6,7 +6,9 @@ function getWorryChefsDamage(
 	var maxDamage = getMaxDamage(boss);
 	var newDamage = 0;
 
-	if (damage.toLowerCase().indexOf('s') != -1) {
+	if ((damage.toLowerCase().indexOf('s') != -1) ||
+		((boss.charAt(0) == 'B') && (damage == '90'))) {
+
 		return maxDamage;
 	}
 
@@ -25,7 +27,7 @@ function getWorryChefsDamage(
 	}
 
 	if (newDamage > maxDamage) {
-		console.warn(newDamage, '>', maxDamage, damage);
+		console.warn(boss, newDamage, '>', maxDamage, damage);
 	}
 
 	return Math.min(maxDamage, newDamage);
@@ -138,7 +140,9 @@ function extractWorryChefsSimpleTeamsFromTab(
 		return teams;
 	}
 
-	for (var i = 6; i < rows.length - 1; i += 11) {
+	var rowsPerTeam = parseInt(currentCBId) <= 72 ? 11 : 13;
+
+	for (var i = 6; i < rows.length - 1; i += rowsPerTeam) {
 		var idHolder = rows[i].querySelector('th');
 		var id = idHolder ? idHolder.getAttribute('id') || '' : '';
 		var newTeams = getWorryChefsSimpleTeams(baseURL, gids[tabName], id, tier, grid.slice(i, i + 10));

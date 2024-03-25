@@ -1,3 +1,5 @@
+var hasSixStarIds = hasSixStar == undefined ? new Set() : new Set(Array.from(hasSixStar).map(it => unitIds[it]));
+
 function addUnit(text: string | null) : void {
 	if (!text) {
 		return;
@@ -64,7 +66,7 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 	img.setAttribute('data-unit-name', unit.name);
 
 	if (unitIds[unit.name]) {
-		img.setAttribute('src', getUnitIcon(unitIds[unit.name], typeof hasSixStar !== 'undefined' && hasSixStar.has(unitNames[unitIds[unit.name]]) ? 6 : 3));
+		img.setAttribute('src', getUnitIcon(unitIds[unit.name], hasSixStarIds.has(unitIds[unit.name]) ? 6 : 3));
 
 		img.setAttribute('data-unit-alt-name', altNames[unitIds[unit.name]])
 	}
