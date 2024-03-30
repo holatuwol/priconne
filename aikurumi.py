@@ -81,15 +81,15 @@ def extract_teams(boss, team):
 
 teams = []
 
-for file in sorted(os.listdir('aikurumi')):
-	if file[-5:] != '.json':
+for file in sorted(os.listdir('.')):
+	if file[:4] != 'raw_' or file[-5:] != '.json':
 		continue
 
-	with open('aikurumi/%s' % file, 'r') as f:
+	with open(file, 'r') as f:
 		data = json.load(f)
 
 	for boss in data['data']:
 		for team in boss['tasks']:
 			teams = teams + list(extract_teams(boss, team))
 
-pd.DataFrame([team for team in teams if team is not None]).to_csv('aikurumi/aikurumi.csv', sep='\t', index=False)
+pd.DataFrame([team for team in teams if team is not None]).to_csv('aikurumi.csv', sep='\t', index=False)

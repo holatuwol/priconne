@@ -1,7 +1,10 @@
 **/build
 **/node_modules
 
-/aikurumi
+aikurumi.csv
+raw_*.json
+unit_data.csv
+
 /static/equipment
 /static/item
 /static/unit
