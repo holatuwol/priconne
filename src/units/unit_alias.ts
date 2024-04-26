@@ -1,6 +1,7 @@
 var aliases = {
 	'AkiSaren': 'AkinoSaren',
 	'Chris': 'Christina',
+	'CAoi': 'CA.Aoi',
 	'CIllya': 'C.Ilya',
 	'CYukari': 'CA.Yukari',
 	'Djeta': 'Djeeta',

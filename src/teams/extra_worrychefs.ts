@@ -410,6 +410,10 @@ function extractWorryChefsTeams(
 		else if (pageName.indexOf('Brute Force') != -1) {
 			teams = teams.concat(extractWorryChefsBruteForceTeamsFromTab(href, gids, pageNames[i], tab));
 		}
+		else if (pageName.indexOf('Set and Forget') != -1) {
+			console.log('hi');
+			teams = teams.concat(extractWorryChefsBruteForceTeamsFromTab(href, gids, pageNames[i], tab));
+		}
 		else {
 			teams = teams.concat(extractWorryChefsSimpleTeamsFromTab(href, gids, pageNames[i], tab));
 		}

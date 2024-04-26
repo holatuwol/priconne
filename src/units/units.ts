@@ -5,6 +5,7 @@ function updateUnitNames(
 ) : Record<string, string> {
 
 	acc[source[next]] = next;
+	acc[source[next].replace('.', '')] = next;
 	return acc;
 }
 
