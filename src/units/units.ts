@@ -20,6 +20,7 @@ Object.entries(aliases).reduce((acc, next) => {
 
 Object.entries(unitIds).forEach(([key, value]) => {
 	unitIds[key.toLowerCase()] = value;
+	unitIds[key.toLowerCase().replace('.', '')] = value;
 });
 
 function getUnitIcon(

@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Priconne - CB19 Hits Planner</title>
+<title>Priconne - CB75 Hits Planner</title>
 
 <!-- Bootstrap -->
 <link rel="stylesheet" href="themes/bootstrap@3.3.7.css">
@@ -17,12 +17,12 @@
 <body>
 <div class="container" role="main">
 
-<h1 contenteditable spellcheck="false">CB19 Hits Planner for Princess Connect</h1>
+<h1 contenteditable spellcheck="false">CB75 Hits Planner for Princess Connect</h1>
 
-<div id="clan-battle-dates" data-start-time="2022-08-26T13:00:00.000Z" data-end-time="2022-08-31T07:59:59.999Z">
+<div id="clan-battle-dates" data-start-time="2024-05-25T20:00:00.000Z" data-end-time="2024-05-30T14:59:59.999Z">
 </div>
 
-<div id="planner-notice" data-cb-id="19">
+<div id="planner-notice" data-cb-id="75">
 </div>
 
 <ul class="nav nav-tabs">
@@ -40,14 +40,12 @@
 
 <h3>Explanation</h3>
 
-<p>This is a database of timelines for Clan Battle 19 (<a href="https://rwiki.jp/priconne_redive/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/019_9%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
+<p>This is a database of timelines for Clan Battle 75 (<a href="https://rwiki.jp/priconne_redive/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/075_05%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
 
 <div id="team-prefixes">
 <ul>
-	<li><strong>CN</strong>: found in the <a href="https://docs.qq.com/sheet/DWlhOaWJXYnZwVklT?tab=h843zy" target="_blank">Old CN Timeline Compilation</a> spreadsheet posted to maincord</li>
-	<li><strong>TheLab</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vR0msD_1sQIsCh-mtFKgs5d4gDrKRcLTI1GSwpnUbyGkf6xy6sjbK3sScfRg-ayUebiixKD9a2MeaX5/pubhtml" target="_blank">TheLab CB 19 Public</a> spreadsheet posted to maincord</li>
-	<li>... various videos from KR aggregated into <a href="https://www.youtube.com/playlist?list=PLJKG4G4o2OQTUOwuQS_SXmddpnmKyOuw4" target="_blank">a playlist</a> by jwu89#5829</li>
-	<li>... various videos from JP aggregated into the <a href="https://docs.google.com/spreadsheets/d/1rwXA7E6fdfk1wlH9cOaPaXquXdx5cFK-/edit#gid=1132351142" target="_blank">CB - JP comps</a> spreadsheet shared by Xehanort#6829</li>
+	<li><strong>aikurumi</strong>: found in the <a href="https://aikurumi.cn/gvg;serverType=jp" target="_blank">aikurumi</a> tool posted to maincord</li>
+	<li><strong>WorryChefs</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVwQxnNV5wx8ju4cQb_RnzqDMPc88bn-V6K7gt8irULNBGyQbcXngm7cMeubYaCheswv31xMj7biAm/pubhtml" target="_blank">WorryChefs CB75</a> sheet maintained by the Holy Church of Jun discord</li>
 </ul>
 </div>
 
@@ -64,28 +62,8 @@
 
 <div id="regions-available">
 	<span class="checkbox-inline">
-		<input name="regions-available" id="server-global" type="checkbox" value="global" checked onchange="filterAvailableTeams();" />
-		<label for="server-global">Global</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-CN" type="checkbox" value="CN" checked onchange="filterAvailableTeams();" />
-		<label for="server-CN">China</label>
-	</span>
-	<span class="checkbox-inline">
 		<input name="regions-available" id="server-JP" type="checkbox" value="JP" checked onchange="filterAvailableTeams();" />
 		<label for="server-JP">Japan</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-KR" type="checkbox" value="KR" checked onchange="filterAvailableTeams();" />
-		<label for="server-KR">Korea</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-TH" type="checkbox" value="TH" checked onchange="filterAvailableTeams();" />
-		<label for="server-TH">Thailand</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-TW" type="checkbox" value="TW" checked onchange="filterAvailableTeams();" />
-		<label for="server-TW">Taiwan</label>
 	</span>
 </div>
 
@@ -112,10 +90,6 @@
 		<input name="timings-available" id="timing-unspecified" type="checkbox" value="unspecified" onchange="filterAvailableTeams();" />
 		<label for="timing-unspecified">unspecified</label>
 	</span>
-	<span class="checkbox-inline" title="the team has been confirmed to not work at all, but retained in the planner for academic reasons">
-		<input name="timings-available" id="timing-non-functional" type="checkbox" value="non-functional" onchange="filterAvailableTeams();" />
-		<label for="timing-non-functional">non-functional</label>
-	</span>
 </div>
 
 <h3>Chosen Teams</h3>
@@ -139,7 +113,6 @@
 		<th>team ID</th>
 		<th>timing</th>
 		<th colspan=5 data-sortable="false">&nbsp;</th>
-		<th>alt bosses</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -163,7 +136,6 @@
 		<th>timeline</th>
 		<th>timing</th>
 		<th colspan=5 data-sortable="false">&nbsp;</th>
-		<th>alt bosses</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -178,7 +150,8 @@
 
 <div id="data-source">
 	<ul>
-		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQE7NlsVZxWuKWOI5S6RQJg599aesmL0t-CaJUKpPVMZ-XI1gqf0DvLbe1VE2ePPUjSpR3k_wbu--l_/pub" target="_blank">CB19 Team Reference</a>, maintained by holatuwol#3708</li>
+		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRS9NDeZCtota13G16Pt0Oaj70ihi1ALT7jsNn-nFYO35yVJUsDAooHcNJLr9-7irh4FpiRfRkhaLsW/pub" target="_blank">Clan Battle 75 Team Reference</a>, maintained by holatuwol</li>
+		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVwQxnNV5wx8ju4cQb_RnzqDMPc88bn-V6K7gt8irULNBGyQbcXngm7cMeubYaCheswv31xMj7biAm/pub" target="_blank">WorryChefs CB75</a>, maintained by the Holy Church of Jun discord</li>
 	</ul>
 </div>
 
@@ -287,7 +260,7 @@
 <!-- SweetAlert2 -->
 <script src="themes/sweetalert2@11.js"></script>
 
-<script>var hasSixStar = new Set(['Pecorine', 'Kokkoro', 'Karyl']);</script>
+<script>var hasSixStar = new Set(['Pecorine', 'Kokkoro', 'Kyaru', 'Rino', 'Lima', 'Io', 'Yukari', 'Maho', 'Yui', 'Rei', 'Hiyori', 'Hatsune', 'Tamaki', 'Mifuyu', 'Shizuru', 'Ayane', 'Saren', 'Akino', 'Ninon', 'Mahiru', 'Suzuna', 'Akari', 'Yori', 'Misogi', 'Mimi', 'Kyouka', 'Nozomi', 'Suzume', 'Kurumi', 'Kaori', 'Aoi', 'Djeeta', 'Nanaka', 'Arisa', 'Monika', 'Misaki', 'Chika', 'S.Pecorine', 'S.Kokkoro', 'S.Kyaru', 'Kuuka', 'Rin', 'Miyako', 'Misato', 'Eriko', 'Shinobu', 'Ilya', 'Tomo', 'Shefi', 'Mitsuki', 'Jun', 'Ayumi', 'Christina', 'Anna', 'Muimi', 'Yuki', 'Tsumugi', 'Matsuri', 'Makoto', 'Kasumi', 'Shiori', 'Inori', 'Kaya', 'NY.Yui', 'NY.Rei', 'NY.Hiyori']);</script>
 <script src="bosses.js?t=1716612843"></script>
 <script src="units.js?t=1716613554"></script>
 <script src="teams.js?t=1716615545"></script>

@@ -34,9 +34,13 @@ function getWorryChefsDamage(
 }
 
 function parseWorryChefsDamage(
-	boss: string,
+	boss: string | null,
 	text: string | null
 ) : number {
+
+	if (!boss) {
+		return 0;
+	}
 
 	var damageString = (text || '').replace(/ to /g, '-').replace(/[ ,]/g, '');
 	var damageMatcher = /[0-9\.\~\-/]+[kms]?/i.exec(damageString);
@@ -165,22 +169,31 @@ function extractWorryChefsManualTeamsFromTab(
 	tab: HTMLDivElement
 ) : ClanBattleTeam[] {
 
-	var boss = tabName.split(' ')[0];
-
-	if (boss.length != 2 || (!(boss.charAt(0) in bossStats[currentCBId]['bossHP'])) || boss.charAt(1) <= '0' || boss.charAt(1) >= '6') {
-		return [];
-	}
-
 	var statusCells = Array.from(tab.querySelectorAll('td')).filter(it => (it.textContent || '').toUpperCase() == 'STATUS');
 
 	var rows = statusCells.map(it => <HTMLTableRowElement> it.closest('tr')).filter(it => it && getSiblingRowElement(it, 1).cells[1].textContent != '').map(it => getSiblingRowElement(it, -5));
+
+	var bosses = <(string | null)[]> [];
+
+	if (tabName.indexOf('Archives') != -1) {
+		bosses = rows.map(it => (it.cells[2].textContent || '__').charAt(1) == '_' ? null : (it.cells[2].textContent || '').substring(0, 2));
+	}
+	else {
+		var boss = tabName.split(' ')[0];
+
+		if (boss.length != 2 || (!(boss.charAt(0) in bossStats[currentCBId]['bossHP'])) || boss.charAt(1) <= '0' || boss.charAt(1) >= '6') {
+			return [];
+		}
+
+		bosses = rows.map(it => boss);
+	}
 
 	var indices = rows.map(it => 'WorryChefs ' + it.cells[2].textContent);
 	var ids = rows.map(it => it.cells[0].getAttribute('id'));
 	var medias = <string[]> ids.map(getWorryChefsTimelineURL.bind(null, baseURL, gids[tabName]));
 
 	var unitRows = rows.map(it => getSiblingRowElement(it, 2));
-	var damages = unitRows.map(it => parseWorryChefsDamage(boss, (<HTMLTableRowElement>it.previousSibling).cells[3].textContent));
+	var damages = unitRows.map((it, i) => parseWorryChefsDamage(bosses[i], (<HTMLTableRowElement>it.previousSibling).cells[3].textContent));
 	var unitNames = unitRows.map(it => Array.from(it.cells).splice(1, 5).map(it => it.textContent || ''));
 
 	var buildRows = unitRows.map(it => getSiblingRowElement(it, 5));
@@ -192,6 +205,12 @@ function extractWorryChefsManualTeamsFromTab(
 	var teams = <ClanBattleTeam[]> [];
 
 	for (var i = 0; i < rows.length; i++) {
+		if (!bosses[i]) {
+			continue;
+		}
+
+		var boss = <string> bosses[i];
+
 		teams.push({
 			boss: boss,
 			region: 'JP',
@@ -401,7 +420,7 @@ function extractWorryChefsTeams(
 			continue;
 		}
 
-		if (pageName.indexOf('Manual') != -1) {
+		if ((pageName.indexOf('Manual') != -1) || (pageName.indexOf('Archives') != -1)) {
 			teams = teams.concat(extractWorryChefsManualTeamsFromTab(href, gids, pageNames[i], tab));
 		}
 		else if (pageName.indexOf('Cope Finder') != -1) {
@@ -411,7 +430,6 @@ function extractWorryChefsTeams(
 			teams = teams.concat(extractWorryChefsBruteForceTeamsFromTab(href, gids, pageNames[i], tab));
 		}
 		else if (pageName.indexOf('Set and Forget') != -1) {
-			console.log('hi');
 			teams = teams.concat(extractWorryChefsBruteForceTeamsFromTab(href, gids, pageNames[i], tab));
 		}
 		else {
