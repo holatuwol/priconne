@@ -1,27 +1,26 @@
-function updateUnitNames(
-	source: Record<string, string>,
-	acc: Record<string, string>,
-	next: string
-) : Record<string, string> {
-
-	acc[source[next]] = next;
-	acc[source[next].replace('.', '')] = next;
+var positions = unitData.reduce((acc, next) => {
+	acc[next[0]] = parseInt(next[1]);
 	return acc;
-}
+}, <Record<string, number>> {});
 
-var unitIds = <Record<string, string>> Array.from(Object.keys(unitNames)).reduce(updateUnitNames.bind(null, unitNames), <Record<string, string>> {});
-unitIds = Array.from(Object.keys(altNames)).reduce(updateUnitNames.bind(null, altNames), unitIds);
+var unitNames = unitData.reduce((acc, next) => {
+	acc[next[0]] = next[2];
+	return acc;
+}, <Record<string, string>> {});
 
-Object.entries(aliases).reduce((acc, next) => {
-	unitIds[next[0]] = unitIds[next[1]];
+var altNames = unitData.reduce((acc, next) => {
+	acc[next[0]] = (next.length <= 4) ? next[2] : next[4];
+	return acc;
+}, <Record<string, string>> {});
 
-	return unitIds;
-}, unitIds);
-
-Object.entries(unitIds).forEach(([key, value]) => {
-	unitIds[key.toLowerCase()] = value;
-	unitIds[key.toLowerCase().replace('.', '')] = value;
-});
+var unitIds = unitData.reduce((acc, next) => {
+	for (var i = 2; i < next.length; i++) {
+		acc[next[i]] = next[0];
+		acc[next[i].toLowerCase()] = next[0];
+		acc[next[i].toLowerCase().replace('.', '')] = next[0];
+	}
+	return acc;
+}, <Record<string, string>> {});
 
 function getUnitIcon(
 	unitId: string,

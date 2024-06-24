@@ -9,7 +9,6 @@
   },
   "include": [
     "src/units/unit_data.ts",
-    "src/units/unit_alias.ts"
     "src/units/units.ts",
   ]
 }

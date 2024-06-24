@@ -25,8 +25,8 @@ for id in $(grep -o '"[0-9]*"' src/units/unit_data.ts | sort -u | cut -d'"' -f 2
   done
 done
 
-for name in $(grep hasSixStar static/cb73.html | grep -o "'[^']*'" | cut -d"'" -f 2); do
-  id=$(grep "^${name}," unit_data.csv | cut -d',' -f 3)
+for name in $(grep hasSixStar static/cb76.html | grep -o "'[^']*'" | cut -d"'" -f 2); do
+  id=$(grep ",${name}," unit_data.csv | cut -d',' -f 1)
   if [ "" != "${id}" ]; then
     get_image ${id}61
   fi

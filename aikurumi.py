@@ -4,7 +4,7 @@ import pandas as pd
 
 units_df = pd.read_csv('unit_data.csv')
 
-units = {unit_id: unit_name for unit_id, unit_name in sorted(zip(units_df['unitId'], units_df['name']), key=lambda x: x[1])}
+units = {unit_id: unit_name for unit_id, unit_name in sorted(zip(units_df['id'], units_df['en_long']), key=lambda x: x[1])}
 
 def get_link(video):
 	return '%s - %s' % (video['name'], video['link'])
