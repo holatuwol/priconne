@@ -37,10 +37,6 @@ function decodeAvailableUnits() {
 			decodeUnit,
 			<Record<string, ClanBattleBuild>> {});
 	}
-
-	document.querySelectorAll('#units-available input[type="checkbox"]').forEach((it: HTMLInputElement) => {
-		it.checked = hasUnitAvailable(availableUnits, it.value);
-	});
 };
 
 function encodeUnit(

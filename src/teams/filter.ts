@@ -172,8 +172,6 @@ function updateCountElement() : void {
 	}
 }
 
-teamUpdateListeners.push(updateCountElement);
-
 function filterAvailableTeamsHelper() {
 	var availableBosses = getCheckboxValues('#bosses-available input[type="checkbox"]:checked, #bosses-available input[type="hidden"]');
 	var availableRegions = getCheckboxValues('#regions-available input[type="checkbox"]:checked, #regions-available input[type="hidden"]');
@@ -516,8 +514,6 @@ function markUnavailableTeams() : void {
 	Array.from(availableBody.rows).forEach(markUnavailableTeam.bind(null, borrowStrategy, chosenTeams));
 };
 
-teamUpdateListeners.push(markUnavailableTeams);
-
 function renderUnavailableTeams() : void {
 	var unavailableStyleElement = <HTMLInputElement> document.querySelector('input[name="unavailable-style"]:checked');
 	var unavailableStyle = unavailableStyleElement ? unavailableStyleElement.value : 'hide';
@@ -545,7 +541,16 @@ function toggleBuildVisibility() {
 };
 
 function fireTeamUpdateListeners() : void {
-	for (var i = 0; i < teamUpdateListeners.length; i++) {
-		teamUpdateListeners[i]();
-	}
+	markUnavailableTeams();
+	updateCountElement();
+
+	Array.from(getCheckboxValues('#units-available input[type="checkbox"]:checked')).forEach((it: string) => {
+		var unitId = unitIds[it];
+		document.querySelectorAll('#teams-available tr .unit-info img[data-unit-id="' + unitId + '"].unavailable').forEach(it => it.classList.remove('unavailable'));
+	});
+
+	Array.from(getCheckboxValues('#units-available input[type="checkbox"]:not(:checked)')).forEach((it: string) => {
+		var unitId = unitIds[it];
+		document.querySelectorAll('#teams-available tr .unit-info img[data-unit-id="' + unitId + '"]:not(.unavailable)').forEach(it => it.classList.add('unavailable'));
+	});
 }

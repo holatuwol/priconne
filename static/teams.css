@@ -173,6 +173,10 @@ dt:not(:first-child) {
 	opacity: 0.2;
 }
 
+#teams-available tr .unit-info img.unavailable {
+	opacity: 0.2;
+}
+
 #teams-available td.unit-info,
 #teams-selected td.unit-info {
 	text-align: center;

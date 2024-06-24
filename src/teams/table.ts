@@ -15,8 +15,9 @@ function addUnit(text: string | null) : void {
 	container.classList.add('checkbox');
 
 	var input = document.createElement('input');
+	var unitId = unitIds[text];
 
-	input.setAttribute('id', 'unit' + unitIds[text]);
+	input.setAttribute('id', 'unit' + unitId);
 	input.setAttribute('type', 'checkbox');
 	input.value = text;
 	input.onchange = encodeAvailableUnits;
@@ -48,7 +49,15 @@ function addUnits(teams: ClanBattleTeam[]) {
 	Array.from(unitNames).sort().forEach(addUnit);
 }
 
-function getTeamUnitCell(unit: ClanBattleUnit) {
+function toggleUnit(unitId: string) : void {
+	var unitInputElement = <HTMLInputElement | null> document.querySelector('#unit' + unitId);
+
+	if (unitInputElement) {
+		unitInputElement.click();
+	}
+}
+
+function getTeamUnitCell(unit: ClanBattleUnit) : HTMLTableCellElement {
 	var cell = document.createElement('td');
 	cell.classList.add('unit-info');
 
@@ -70,8 +79,10 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 	img.setAttribute('title', unit.name);
 
 	if (unitId) {
+		img.onclick = toggleUnit.bind(null, unitId);
 		img.setAttribute('src', getUnitIcon(unitId, hasSixStarIds.has(unitId) ? 6 : 3));
 
+		img.setAttribute('data-unit-id', unitId);
 		img.setAttribute('data-unit-en-name', enUnitNames[unitId].toLowerCase());
 		img.setAttribute('data-unit-ja-name', jaUnitNames[unitId]);
 		img.setAttribute('data-unit-alt-name', altNames[unitId]);

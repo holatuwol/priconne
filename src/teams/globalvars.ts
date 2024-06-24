@@ -32,7 +32,5 @@ var averageRE = /Avg:? ([0-9\.,kmw]+)/i;
 var otkRE = /((?:\d+%\s)?(?:OTK|OHKO))/i;
 var overtimeRE = /(?:[0-9]+s|same) (?:EV|OT)/i;
 
-var teamUpdateListeners = <Function[]> [];
-
 var singleSubRE = /([^\-=,:±<>]*)\s+(?:to|->)\s+([^\-=,:±<>]+)/i;
 var singleFlippedRE = /([^\-=,:±<>]*)\s+(?:X)\s+([^\-=,:±<>]+)/;
