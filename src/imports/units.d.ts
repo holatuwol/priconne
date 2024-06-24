@@ -1,7 +1,12 @@
-declare var unitIds : Record<string, string>;
 declare var unitNames : Record<string, string>;
+declare var enUnitNames : Record<string, string>;
+declare var jaUnitNames : Record<string, string>;
 declare var altNames : Record<string, string>;
 declare var positions : Record<string, number>;
+declare var unitIds : Record<string, string>;
+declare var unitIdsList : string[][];
+
+declare function getMatchingUnitIds(name: string) : string[];
 
 declare function fixUnitName(unitName: string) : string;
 

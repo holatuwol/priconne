@@ -122,7 +122,7 @@
 <h3>Available Teams</h3>
 
 <div class="form-group">
-<input class="form-control" id="team-filter" type="text" onfocus="this.select()" onkeyup="filterAvailableTeams();" placeholder="search for teams by unit name or team ID, exclude teams with suicidal vampires with -Illya" />
+<input class="form-control" id="team-filter" type="text" onfocus="this.select()" oninput="filterAvailableTeams();" placeholder="search for teams by unit name or team ID, exclude teams with suicidal vampires with -Illya" />
 <p style="text-align: right"><span id="visible-teams-count">0</span> team<span id="visible-teams-plural">s</span> match</p>
 </div>
 
@@ -260,9 +260,12 @@
 <!-- SweetAlert2 -->
 <script src="themes/sweetalert2@11.js"></script>
 
+<!-- Wanakana -->
+<script src="themes/wanakana@5.3.1.js"></script>
+
 <script>var hasSixStar = new Set(['Pecorine', 'Kokkoro', 'Kyaru', 'Rino', 'Lima', 'Io', 'Yukari', 'Maho', 'Yui', 'Rei', 'Hiyori', 'Hatsune', 'Tamaki', 'Mifuyu', 'Shizuru', 'Ayane', 'Saren', 'Akino', 'Ninon', 'Mahiru', 'Suzuna', 'Akari', 'Yori', 'Misogi', 'Mimi', 'Kyouka', 'Nozomi', 'Suzume', 'Kurumi', 'Kaori', 'Aoi', 'Djeeta', 'Nanaka', 'Arisa', 'Monika', 'Misaki', 'Chika', 'S.Pecorine', 'S.Kokkoro', 'S.Kyaru', 'Kuuka', 'Rin', 'Miyako', 'Misato', 'Eriko', 'Shinobu', 'Ilya', 'Tomo', 'Shefi', 'Mitsuki', 'Jun', 'Ayumi', 'Christina', 'Anna', 'Muimi', 'Yuki', 'Tsumugi', 'Matsuri', 'Makoto', 'Kasumi', 'Shiori']);</script>
 <script src="bosses.js?t=1719178317"></script>
-<script src="units.js?t=1719187500"></script>
-<script src="teams.js?t=1719187256"></script>
+<script src="units.js?t=1719193331"></script>
+<script src="teams.js?t=1719194057"></script>
 
 </html>

@@ -8,43 +8,63 @@ function getRowTerms(
 
 function isMatchesSearchTerms(
 	row: HTMLTableRowElement,
-	searchTerms: string[]
+	searchTerms: string[],
+	unitIdTerms: string[][],
 ) : boolean {
 
 	var rowDamage = getDamage(row.getAttribute('data-damage'));
 
 	var images = Array.from(row.querySelectorAll('img'));
 
-	var rowTerms = getRowTerms(images, 'data-unit-name').concat(getRowTerms(images, 'data-unit-alt-name')).concat(getRowTerms([row], 'data-timeline'));
+	var rowTerms = getRowTerms(images, 'data-unit-en-name').concat(getRowTerms(images, 'data-unit-ja-name')).concat(getRowTerms(images, 'data-unit-alt-name')).concat(getRowTerms([row], 'data-timeline'));
 
 	for (var i = 0; i < searchTerms.length; i++) {
 		var hasMatch = false;
+		var searchTerm = searchTerms[i];
 
-		if (searchTerms[i].charAt(0) == '>') {
-			hasMatch = getDamage(searchTerms[i].substring(1)) <= rowDamage;
+		if (searchTerm.charAt(0) == '>') {
+			hasMatch = getDamage(searchTerm.substring(1)) <= rowDamage;
+
+			if (!hasMatch) {
+				return false;
+			}
+
+			continue;
 		}
-		else if (searchTerms[i].charAt(0) == '-') {
-			var searchTerm = searchTerms[i].substring(1);
 
-			var unitTerm = fixUnitName(searchTerm);
-			unitTerm = (unitTerm in unitIds) ? unitTerm.toLowerCase() : '';
+		var negation = false;
 
-			for (var j = 0, hasMatch = true; j < rowTerms.length && hasMatch; j++) {
-				hasMatch = (unitTerm != '') ? rowTerms[j] != unitTerm : rowTerms[j].indexOf(searchTerm) == -1;
+		if (searchTerm.charAt(0) == '-') {
+			negation = true;
+			searchTerm = searchTerm.substring(1);
+		}
+		else if (searchTerm.charAt(0) == '+') {
+			searchTerm = searchTerm.substring(1);
+		}
+
+		var matchingUnitIds = unitIdTerms[i];
+
+		if (matchingUnitIds.length == 1) {
+			var enTerm = enUnitNames[matchingUnitIds[0]];
+			var jaTerm = jaUnitNames[matchingUnitIds[0]];
+
+			for (var j = 0; j < rowTerms.length && !hasMatch; j++) {
+				hasMatch = rowTerms[j] == enTerm || rowTerms[j] == jaTerm;
 			}
 		}
 		else {
-			var searchTerm = (searchTerms[i].charAt(0) == '+') ? searchTerms[i].substring(1) : searchTerms[i];
+			var enTerm = searchTerm.toLowerCase();
+			var jaTerm = wanakana.toKatakana(searchTerm);
 
-			var unitTerm = fixUnitName(searchTerm);
-			unitTerm = (unitTerm in unitIds) ? unitTerm.toLowerCase() : '';
-
-			for (var j = 0, hasMatch = false; j < rowTerms.length && !hasMatch; j++) {
-				hasMatch = (unitTerm != '') ? rowTerms[j] == unitTerm : rowTerms[j].indexOf(searchTerm) != -1;
+			for (var j = 0; j < rowTerms.length && !hasMatch; j++) {
+				hasMatch = rowTerms[j].indexOf(enTerm) != -1 || rowTerms[j].indexOf(jaTerm) != -1;
 			}
 		}
 
-		if (!hasMatch) {
+		if (hasMatch && negation) {
+			return false;
+		}
+		else if (!hasMatch) {
 			return false;
 		}
 	}
@@ -122,10 +142,11 @@ function filterAvailableTeam(
 	availableRegions: Set<String>,
 	availableTimings: Set<String>,
 	searchTerms: string[],
+	unitIdTerms: string[][],
 	row: HTMLTableRowElement
 ) : void {
 
-	if (isPlausibleTeam(availableBosses, availableRegions, availableTimings, row) && isMatchesSearchTerms(row, searchTerms)) {
+	if (isPlausibleTeam(availableBosses, availableRegions, availableTimings, row) && isMatchesSearchTerms(row, searchTerms, unitIdTerms)) {
 		row.classList.remove('filtered-out');
 	}
 	else {
@@ -163,10 +184,11 @@ function filterAvailableTeamsHelper() {
 	var searchText = filter.value.trim().toLowerCase().replace(/\./g, '');
 
 	var searchTerms = searchText ? searchText.split(/\s+/g) : [];
+	var unitIdTerms = searchTerms.map(getMatchingUnitIds);
 
 	document.querySelectorAll('tr.special-visible').forEach((it) => it.classList.remove('special-visible'));
 
-	Array.from(availableBody.rows).forEach(filterAvailableTeam.bind(null, availableBosses, availableRegions, new Set(availableTimings), searchTerms));
+	Array.from(availableBody.rows).forEach(filterAvailableTeam.bind(null, availableBosses, availableRegions, new Set(availableTimings), searchTerms, unitIdTerms));
 
 	var plausibleFilter = isPlausibleTeam.bind(null, availableBosses, availableRegions, availableTimings);
 

@@ -8,6 +8,7 @@
     "strictNullChecks": true
   },
   "include": [
+  	"src/imports/wanakana.d.ts",
     "src/units/unit_data.ts",
     "src/units/units.ts",
   ]

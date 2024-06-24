@@ -3,21 +3,148 @@ var positions = unitData.reduce((acc, next) => {
 	return acc;
 }, <Record<string, number>> {});
 
-var unitNames = unitData.reduce((acc, next) => {
+var enUnitNames = unitData.reduce((acc, next) => {
 	acc[next[0]] = next[2];
 	return acc;
 }, <Record<string, string>> {});
+
+var jaUnitNames = unitData.reduce((acc, next) => {
+	acc[next[0]] = next[3];
+	return acc;
+}, <Record<string, string>> {});
+
+var unitNames = Object.assign({}, enUnitNames);
 
 var altNames = unitData.reduce((acc, next) => {
 	acc[next[0]] = (next.length <= 4) ? next[2] : next[4];
 	return acc;
 }, <Record<string, string>> {});
 
-var unitIds = unitData.reduce((acc, next) => {
-	for (var i = 2; i < next.length; i++) {
+function getEnUnitNames(name: string) : string[] {
+	var names = [name, name.toLowerCase()];
+
+	var pos = name.indexOf('(');
+
+	if (pos != -1) {
+		var invertedName = name.substring(pos + 1, name.length - 1) + " " + name.substring(0, pos - 1);
+
+		names.push(invertedName);
+		names.push(invertedName.toLowerCase());
+	}
+
+	pos = name.indexOf('.');
+
+	if (pos != -1) {
+		var noPeriodName = name.replace(/\./g, '');
+
+		names.push(noPeriodName);
+		names.push(noPeriodName.toLowerCase());
+	}
+
+	return names;
+}
+
+function getJaUnitNames(name: string) : string[] {
+	var names = [name, wanakana.toHiragana(name)];
+
+	var codePoints = Array.from(name);
+	var pos = -1;
+
+	for (var i = 0; i < codePoints.length; i++) {
+		if (codePoints[i] =='（') {
+			pos = i;
+			break;
+		}
+	}
+
+	if (pos != -1) {
+		var invertedName = codePoints.slice(pos + 1, name.length - 1).join('') + codePoints.slice(0, pos).join('');
+
+		names.push(invertedName);
+		names.push(wanakana.toHiragana(invertedName));
+	}
+
+	return names;
+}
+
+var unitIdsList = unitData.reduce((acc, next) => {
+	var names = [next[0]];
+
+	names = names.concat(getEnUnitNames(next[2]));
+
+	names = names.concat(getJaUnitNames(next[3]));
+
+	for (var i = 4; i < next.length; i++) {
+		names = names.concat(getEnUnitNames(next[i]));
+	}
+
+	acc.push(names);
+
+	return acc;
+}, <string[][]> []);
+
+function getMatchingUnitIds(term: string) : string[] {
+	if (!term) {
+		return [];
+	}
+
+	if (wanakana.isJapanese(term)) {
+		term = wanakana.toKatakana(term);
+	}
+	else {
+		term = term.toLowerCase();
+	}
+
+	term = term.replace(/\./g, '');
+
+	if (term in unitIds) {
+		return [unitIds[term]];
+	}
+
+	var prefixMatches = unitIdsList.filter(it => {
+		for (var i = 1; i < it.length; i++) {
+			if (it[i].indexOf(term) == 0) {
+				return true;
+			}
+		}
+
+		return false;
+	}).map(it => it[0]);
+
+	if (prefixMatches.length > 0) {
+		return prefixMatches;
+	}
+
+	var substringMatches = unitIdsList.filter(it => {
+		for (var i = 1; i < it.length; i++) {
+			if (it[i].indexOf(term) != -1) {
+				return true;
+			}
+		}
+
+		return false;
+	}).map(it => it[0]);
+
+	if (substringMatches.length > 0) {
+		return substringMatches;
+	}
+
+	var re = new RegExp(term.replace(new RegExp('', 'gi'), '.*'));
+
+	return unitIdsList.filter(it => {
+		for (var i = 1; i < it.length; i++) {
+			if (re.test(it[i])) {
+				return true;
+			}
+		}
+
+		return false;
+	}).map(it => it[0]);
+}
+
+var unitIds = unitIdsList.reduce((acc, next) => {
+	for (var i = 1; i < next.length; i++) {
 		acc[next[i]] = next[0];
-		acc[next[i].toLowerCase()] = next[0];
-		acc[next[i].toLowerCase().replace('.', '')] = next[0];
 	}
 	return acc;
 }, <Record<string, string>> {});
@@ -39,54 +166,11 @@ function getUnitIcon(
 }
 
 function fixUnitName(unitName: string) : string {
-	unitName = unitName.replace(/[0-9]/g, '').replace(/\. +/g, '.').trim();
+	var unitIds = getMatchingUnitIds(unitName.replace(/[0-9]\. /g, ''));
 
-	if (!unitName) {
-		return unitName;
+	if (unitIds.length == 1) {
+		return enUnitNames[unitIds[0]];
 	}
 
-	if (unitName in unitIds) {
-		return unitNames[unitIds[unitName]];
-	}
-
-	if (unitName.toLowerCase() in unitIds) {
-		return unitNames[unitIds[unitName.toLowerCase()]];
-	}
-
-	var name = unitName;
-
-	var ch = name.charAt(0);
-
-	if (ch >= 'a' && ch <= 'z') {
-		name = ch.toUpperCase() + name.substring(1);
-	}
-
-	if (name in unitIds) {
-		return unitNames[unitIds[name]];
-	}
-
-	var pos = name.indexOf('.');
-
-	if (pos != -1) {
-		var testName = name.substring(0, pos).toUpperCase() + '.' + name.charAt(pos + 1).toUpperCase() + name.substring(pos + 2);
-
-		if (testName in unitIds) {
-			return unitNames[unitIds[testName]];
-		}
-	}
-	else {
-		for (var i = 1; i < name.length && name.charAt(i-1) >= 'A' && name.charAt(i-1) <= 'Z'; i++) {
-			var testName = name.substring(0, i) + '.' + name.charAt(i).toUpperCase() + name.substring(i + 1);
-
-			if (testName in unitIds) {
-				return unitNames[unitIds[testName]];
-			}
-		}
-	}
-
-	if (unitName.indexOf(' ') != -1) {
-		return fixUnitName(unitName.substring(0, unitName.indexOf(' ')));
-	}
-
-	return name;
+	return unitName;
 }

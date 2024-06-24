@@ -54,12 +54,14 @@ elif [ "" != "${1}" ]; then
 
 fi
 
-aws --profile=administrator s3 ls s3://holatuwol/priconne/unit/ > s3_bucket.txt
+for folder in themes unit; do
+	aws --profile=administrator s3 ls s3://holatuwol/priconne/${folder}/ > s3_bucket.txt
 
-for file in static/unit/*; do
-	if [ "" == "$(grep $(basename ${file}) s3_bucket.txt)" ]; then
-		s3upload ${file} unit/$(basename ${file})
-	fi
+	for file in static/${folder}/*; do
+		if [ "" == "$(grep $(basename ${file}) s3_bucket.txt)" ]; then
+			s3upload ${file} ${folder}/$(basename ${file})
+		fi
+	done
 done
 
 rm s3_bucket.txt

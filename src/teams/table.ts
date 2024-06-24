@@ -56,19 +56,25 @@ function getTeamUnitCell(unit: ClanBattleUnit) {
 		return cell;
 	}
 
-	if (!unitIds[unit.name]) {
+	var unitId = undefined;
+
+	if (unitIds[unit.name]) {
+		unitId = unitIds[unit.name];
+	}
+	else {
 		console.warn('unknown unit name:', unit.name);
 	}
 
 	var img = document.createElement('img');
 
 	img.setAttribute('title', unit.name);
-	img.setAttribute('data-unit-name', unit.name);
 
-	if (unitIds[unit.name]) {
-		img.setAttribute('src', getUnitIcon(unitIds[unit.name], hasSixStarIds.has(unitIds[unit.name]) ? 6 : 3));
+	if (unitId) {
+		img.setAttribute('src', getUnitIcon(unitId, hasSixStarIds.has(unitId) ? 6 : 3));
 
-		img.setAttribute('data-unit-alt-name', altNames[unitIds[unit.name]])
+		img.setAttribute('data-unit-en-name', enUnitNames[unitId].toLowerCase());
+		img.setAttribute('data-unit-ja-name', jaUnitNames[unitId]);
+		img.setAttribute('data-unit-alt-name', altNames[unitId]);
 	}
 
 	cell.appendChild(img);
