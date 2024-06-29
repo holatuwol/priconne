@@ -55,16 +55,20 @@ function parseWorryChefsDamage(
 function getWorryChefsTimelineURL(
 	baseURL: string,
 	gid: string,
-	id: string
+	id: string,
+	columnId: string,
+	timelineId?: string
 ) : string {
 
-	if (baseURL.indexOf('edit') == -1) {
-		return baseURL + '?gid=' + gid + '#' + id;
+	if (baseURL.indexOf('edit') != -1) {
+		var x = id.indexOf('R');
+
+		return baseURL + '#gid=' + gid + '&range=' + columnId + (parseInt(id.substring(x + 1)) + 1);
 	}
 
-	var x = id.indexOf('R');
+	var rowURL = baseURL + '?gid=' + gid + '#' + id;
 
-	return baseURL + '#gid=' + gid + '&range=A' + (parseInt(id.substring(x + 1)) + 1);
+	return timelineId ? (rowURL + ':~:text=' + timelineId) : rowURL;
 }
 
 function getWorryChefsSimpleTeams(
@@ -75,7 +79,7 @@ function getWorryChefsSimpleTeams(
 	grid: HTMLTableCellElement[][]
 ) : ClanBattleTeam[] {
 
-	var indices = grid[0].filter((it, i) => i % 10 == 2).map(it => 'WorryChefs ' + (it.textContent || ''));
+	var indices = grid[0].filter((it, i) => i % 10 == 2).map(it => (it.textContent || ''));
 	var damages = grid[0].filter((it, i) => i % 10 == 8).map(it => (it.textContent || '').trim());
 	var valid = damages.map(it => !!it);
 
@@ -87,8 +91,10 @@ function getWorryChefsSimpleTeams(
 		}
 
 		var boss = tier + (i+1);
+		var columnIndex = 10 * i + 4;
+		var columnId = getColumnId(columnIndex);
 
-		var buildGrid = <string[][]> grid.map(it => Array.from(it.slice(10*i+4, 10*i+9)).map(it => it.textContent || ''));
+		var buildGrid = <string[][]> grid.map(it => Array.from(it.slice(columnIndex, columnIndex + 5)).map(it => it.textContent || ''));
 
 		var unitNames = buildGrid[2];
 		var levels = buildGrid[6];
@@ -105,8 +111,8 @@ function getWorryChefsSimpleTeams(
 			region: 'JP',
 			timing: 'semi auto',
 			id: id,
-			index: indices[i],
-			timeline: indices[i] + ' ' + getWorryChefsTimelineURL(baseURL, gid, id),
+			index: 'WorryChefs ' + indices[i],
+			timeline: 'WorryChefs ' + indices[i] + ' ' + getWorryChefsTimelineURL(baseURL, gid, id, columnId, indices[i]),
 			damage: parseWorryChefsDamage(boss, damages[i]),
 			units: unitNames.map((it, j) => {
 				var build = getStringAsBuild(levels[j]);
@@ -190,7 +196,7 @@ function extractWorryChefsManualTeamsFromTab(
 
 	var indices = rows.map(it => 'WorryChefs ' + it.cells[2].textContent);
 	var ids = rows.map(it => it.cells[0].getAttribute('id'));
-	var medias = <string[]> ids.map(getWorryChefsTimelineURL.bind(null, baseURL, gids[tabName]));
+	var medias = <string[]> ids.map(getWorryChefsTimelineURL.bind(null, baseURL, gids[tabName], 'A'));
 
 	var unitRows = rows.map(it => getSiblingRowElement(it, 2));
 	var damages = unitRows.map((it, i) => parseWorryChefsDamage(bosses[i], (<HTMLTableRowElement>it.previousSibling).cells[3].textContent));
@@ -256,7 +262,10 @@ function getWorryChefsCopeTeams(
 			continue;
 		}
 
-		var buildGrid = <string[][]> grid.slice(3, 5).map(it => Array.from(it.slice(7*i+3, 7*i+8)).map(it => it.textContent || ''));
+		var columnIndex = 7 * i + 3;
+		var columnId = getColumnId(columnIndex);
+
+		var buildGrid = <string[][]> grid.slice(3, 5).map(it => Array.from(it.slice(columnIndex, columnIndex + 5)).map(it => it.textContent || ''));
 
 		var unitNames = buildGrid[0];
 		var stars = buildGrid[1];
@@ -266,7 +275,7 @@ function getWorryChefsCopeTeams(
 			region: 'JP',
 			timing: 'full auto',
 			id: id,
-			timeline: 'WorryChefs Cope Finder ' + getWorryChefsTimelineURL(baseURL, gid, id),
+			timeline: 'WorryChefs Cope Finder ' + getWorryChefsTimelineURL(baseURL, gid, id, columnId),
 			damage: parseWorryChefsDamage(boss, damages[i]),
 			units: unitNames.map((it, j) => {
 				return {
@@ -317,7 +326,7 @@ function getWorryChefsBruteForceTeams(
 
 	var teams = <ClanBattleTeam[]> [];
 
-	var indices = grid[0].filter((it, i) => i % 7 == 2).map(it => 'WorryChefs ' + (it.textContent || ''));
+	var indices = grid[0].filter((it, i) => i % 7 == 2).map(it => (it.textContent || ''));
 	var damages = grid[2].filter((it, i) => i % 7 == 2).map(it => (it.textContent || '').trim());
 	var valid = damages.map(it => !!it);
 
@@ -329,8 +338,10 @@ function getWorryChefsBruteForceTeams(
 		}
 
 		var boss = tier + (i+1);
+		var columnIndex = 7 * i + 3;
+		var columnId = getColumnId(columnIndex);
 
-		var buildGrid = <string[][]> grid.map(it => Array.from(it.slice(7*i+3, 7*i+8)).map(it => it.textContent || ''));
+		var buildGrid = <string[][]> grid.map(it => Array.from(it.slice(columnIndex, columnIndex + 5)).map(it => it.textContent || ''));
 
 		var unitNames = buildGrid[3];
 		var stars = buildGrid[4];
@@ -341,8 +352,8 @@ function getWorryChefsBruteForceTeams(
 			region: 'JP',
 			timing: 'full auto',
 			id: id,
-			index: indices[i],
-			timeline: indices[i] + ' ' + timeline + ' ' + getWorryChefsTimelineURL(baseURL, gid, id),
+			index: 'WorryChefs ' + indices[i],
+			timeline: 'WorryChefs ' + indices[i] + ' ' + timeline + ' ' + getWorryChefsTimelineURL(baseURL, gid, id, columnId, indices[i]),
 			damage: parseWorryChefsDamage(boss, damages[i]),
 			units: unitNames.map((it, j) => {
 				return {

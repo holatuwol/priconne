@@ -49,10 +49,6 @@
 </ul>
 </div>
 
-<p>The Options tab allows you to enter in a set of URLs containing team data. Once those teams are loaded, you can select units you do not have and update various display options, as well as configure where the tool can check to find teams.</p>
-
-<p>The column headers (boss, damage, team ID, timing) are all clickable, and clicking on the header will sort the table by that column. After finding a team you like, click the "choose" button next to a team to choose it, and the teams that conflict with it will disappear. If you decide the team removed too many good teams, click the "remove" button to unchoose it.</p>
-
 <h3>Desired Bosses</h3>
 
 <div id="bosses-available">
@@ -110,8 +106,8 @@
 		<th>boss</th>
 		<th>damage</th>
 		<th>region</th>
-		<th>team ID</th>
-		<th>timing</th>
+		<th data-sortable="false">team ID</th>
+		<th data-sortable="false">timing</th>
 		<th colspan=5 data-sortable="false">&nbsp;</th>
 	</tr>
 	</thead>
@@ -133,8 +129,8 @@
 		<th>boss</th>
 		<th>damage</th>
 		<th>region</th>
-		<th>timeline</th>
-		<th>timing</th>
+		<th data-sortable="false">team ID</th>
+		<th data-sortable="false">timing</th>
 		<th colspan=5 data-sortable="false">&nbsp;</th>
 	</tr>
 	</thead>
@@ -266,6 +262,6 @@
 <script>var hasSixStar = new Set(['Pecorine', 'Kokkoro', 'Kyaru', 'Rino', 'Lima', 'Io', 'Yukari', 'Maho', 'Yui', 'Rei', 'Hiyori', 'Hatsune', 'Tamaki', 'Mifuyu', 'Shizuru', 'Ayane', 'Saren', 'Akino', 'Ninon', 'Mahiru', 'Suzuna', 'Akari', 'Yori', 'Misogi', 'Mimi', 'Kyouka', 'Nozomi', 'Suzume', 'Kurumi', 'Kaori', 'Aoi', 'Djeeta', 'Nanaka', 'Arisa', 'Monika', 'Misaki', 'Chika', 'S.Pecorine', 'S.Kokkoro', 'S.Kyaru', 'Kuuka', 'Rin', 'Miyako', 'Misato', 'Eriko', 'Shinobu', 'Ilya', 'Tomo', 'Shefi', 'Mitsuki', 'Jun', 'Ayumi', 'Christina', 'Anna', 'Muimi', 'Yuki', 'Tsumugi', 'Matsuri', 'Makoto']);</script>
 <script src="bosses.js?t=1719178317"></script>
 <script src="units.js?t=1719201680"></script>
-<script src="teams.js?t=1719259764"></script>
+<script src="teams.js?t=1719679234"></script>
 
 </html>

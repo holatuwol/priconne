@@ -1,3 +1,13 @@
+function getColumnId(columnIndex: number) : string {
+	var prefix = '';
+
+	if (columnIndex >= 26) {
+		prefix = String.fromCharCode(64 + Math.floor(columnIndex / 26));
+	}
+
+	return prefix + String.fromCharCode(65 + (columnIndex % 26));
+}
+
 function convertToCSV(
 	container: HTMLElement,
 	tabId: string
