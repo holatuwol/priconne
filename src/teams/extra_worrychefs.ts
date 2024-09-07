@@ -440,10 +440,10 @@ function extractWorryChefsTeams(
 		else if (pageName.indexOf('Brute Force') != -1) {
 			teams = teams.concat(extractWorryChefsBruteForceTeamsFromTab(href, gids, pageNames[i], tab));
 		}
-		else if (pageName.indexOf('Set and Forget') != -1) {
+		else if ((pageName.indexOf('Set and Forget') != -1) || (pageName.indexOf('Set & Forget') != -1)) {
 			teams = teams.concat(extractWorryChefsBruteForceTeamsFromTab(href, gids, pageNames[i], tab));
 		}
-		else {
+		else if ((pageName.indexOf('Welcome') == -1) && (pageName.indexOf('Boss Info') == -1) && (pageName.indexOf('Summary') == -1) && (pageName.indexOf('Logging') == -1)) {
 			teams = teams.concat(extractWorryChefsSimpleTeamsFromTab(href, gids, pageNames[i], tab));
 		}
 	}

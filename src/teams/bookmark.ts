@@ -33,9 +33,26 @@ function decodeAvailableUnits() {
 			<Record<string, ClanBattleBuild>> {});
 	}
 	else {
-		availableUnits = BigInt('0x' + hash.substring(1)).toString(2).split('').reverse().reduce(
-			decodeUnit,
-			<Record<string, ClanBattleBuild>> {});
+		var encodedUnitList = hash.substring(1);
+
+		if (encodedUnitList.charAt(0) == 'z') {
+			availableUnits = Array.from(Object.keys(unitIds)).reduce(
+				storeUnit,
+				<Record<string, ClanBattleBuild>> {});
+
+			var missingUnits = BigInt('0x' + encodedUnitList.substring(1)).toString(2).split('').reverse().reduce(
+				decodeUnit,
+				<Record<string, ClanBattleBuild>> {});
+
+			for (var key in missingUnits) {
+				delete availableUnits[key];
+			}
+		}
+		else {
+			availableUnits = BigInt('0x' + encodedUnitList).toString(2).split('').reverse().reduce(
+				decodeUnit,
+				<Record<string, ClanBattleBuild>> {});
+		}
 	}
 };
 
@@ -44,7 +61,7 @@ function encodeUnit(
 	next: string
 ) : number[] {
 
-	acc[parseInt(unitIds[next]) - 1000] = 1;
+	acc[parseInt(next) - 1000] = 1;
 
 	return acc;
 }
@@ -58,13 +75,15 @@ function encodeAvailableUnitsHelper() {
 		storeUnit,
 		<Record<string, ClanBattleBuild>> {});
 
+	var missingUnitIds = Array.from(Object.keys(unitNames)).filter(it => !(unitNames[it] in availableUnits));
+
 	var maxUnitId = Math.max.apply(null, Array.from(Object.values(unitIds)).map(it => parseInt(it)));
 	var bits = <number[]> new Array(maxUnitId + 1 - 1000).fill(0);
-	bits = Array.from(Object.keys(availableUnits)).reduce(encodeUnit, bits);
+	bits = missingUnitIds.reduce(encodeUnit, bits);
 
 	var bitString = '0b' + bits.reverse().join('');
 
-	var hash = '#' + BigInt(bitString).toString(16);
+	var hash = '#z' + BigInt(bitString).toString(16);
 
 	var bookmark = location.protocol + '//' + location.host + location.pathname + location.search + hash;
 
