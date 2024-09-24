@@ -2,9 +2,11 @@ import json
 import os
 import pandas as pd
 
-units_df = pd.read_csv('unit_data.csv')
+units_df = pd.read_csv('unit_data.csv', dtype={'id': 'str', 'range': 'str', 'en_long': 'str', 'ja_long': 'str', 'en_alias': 'str'})
 
-units = {unit_id: unit_name for unit_id, unit_name in sorted(zip(units_df['id'], units_df['en_long']), key=lambda x: x[1])}
+units_df = units_df[~units_df['en_long'].isna()]
+
+units = {unit_id: unit_name for unit_id, unit_name in sorted(zip(units_df['id'].astype(int), units_df['en_long']), key=lambda x: x[1])}
 
 def get_link(video):
 	return '%s - %s' % (video['name'], video['link'])
