@@ -2,7 +2,8 @@
 	display: flex;
 	flex-direction: row;
 	gap: 3em;
-	height: 8em;
+	min-height: 8em;
+	align-items: start;
 }
 
 #clan-battle-dates .panel {

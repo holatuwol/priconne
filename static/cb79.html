@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Priconne - CB24 Hits Planner</title>
+<title>Priconne - CB79 Hits Planner</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="icon" href="favicon.png" />
@@ -19,12 +19,12 @@
 <body>
 <div class="container" role="main">
 
-<h1 contenteditable spellcheck="false">CB24 Hits Planner for Princess Connect</h1>
+<h1 contenteditable spellcheck="false">CB79 Hits Planner for Princess Connect</h1>
 
-<div id="clan-battle-dates" data-start-time="2023-01-26T13:00:00.000Z" data-end-time="2023-01-31T07:59:59.999Z">
+<div id="clan-battle-dates" data-start-time="2024-09-25T20:00:00.000Z" data-end-time="2024-09-30T14:59:59.999Z">
 </div>
 
-<div id="planner-notice" data-cb-id="24">
+<div id="planner-notice" data-cb-id="79">
 </div>
 
 <ul class="nav nav-tabs">
@@ -34,6 +34,9 @@
   <li class="nav-item">
     <a href="#options" data-toggle="tab">Options</a>
   </li>
+  <li class="nav-item">
+    <a href="#help" data-toggle="tab">Help</a>
+  </li>
 </ul>
 
 <div class="tab-content">
@@ -42,23 +45,14 @@
 
 <h3>Explanation</h3>
 
-<p>This is a database of timelines for Clan Battle 24 (<a href="https://rwiki.jp/priconne_redive/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/024_02%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
+<p>This is a database of timelines for Clan Battle 79 (<a href="https://rwiki.jp/priconne_redive/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/079_09%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
 
 <div id="team-prefixes">
 <ul>
-	<li><strong>CN</strong>: found in the <a href="https://docs.qq.com/sheet/DWlhOaWJXYnZwVklT?tab=1eo804" target="_blank">Old CN Timeline Compilation</a> spreadsheet posted to maincord</li>
-	<li><strong>kawaiiclubmusic</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRmbVUGu_YLEJBt258TRNHTqZ24UiW-RH3vg45xN9hEtRP9xTzwak6s30CjoGpiUFFDFkfkdyhoas4f/pub" target="_blank">@kawaiiclubmusic CB24 global auto comps : global auto comps</a> spreadsheet shared by kawaiiclubmusic#6076</li>
-	<li>... various videos from JP and TH aggregated into the <a href="https://docs.google.com/spreadsheets/d/1hKHOfbIFgH_2xJrLF7ddQLwS54w0CMu_NqybdH3Cc4Q/edit#gid=1521329497">CB - JP comps</a> spreadsheet shared by Xehanort#6829, with data entry assistance from Umbrum#6935</li>
-	<li>... various videos from CN and JP aggregated into the <a href="https://docs.google.com/spreadsheets/d/17dg5HQR6cc8JPDSKGUqh_jFzIfz2V4bxn-zNKanSA9M/edit#gid=1790290916" target="_blank">CB - TLs</a> spreadsheet shared by Xehanort#6829</li>
+	<li><strong>aikurumi</strong>: found in the <a href="https://aikurumi.cn/gvg;serverType=jp" target="_blank">aikurumi</a> tool posted to maincord</li>
+	<li><strong>WorryChefs</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/1Jw0NXbdzPHsndDz20SZx93IlARP14bZqYTo5mPaeEO0/pubhtml" target="_blank">WorryChefs CB79</a> sheet maintained by the Holy Church of Jun discord</li>
 </ul>
 </div>
-
-<p>There are also many teams that I didn't have time to do data entry for (and no one volunteered any spreadsheets related to them), so be sure to check these data sources as well if you're looking for teams.</p>
-
-<ul>
-	<li>various videos from JP/KR/TW in <a href="https://www.bilibili.com/video/BV1iS4y1F7QD/" target="_blank">a bilibili playlist 1</a> and <a href="https://www.bilibili.com/video/BV1VM4y1c7gZ/" target="_blank">a bilibili playlist 2</a> shared on maincord by Jzzzzzz#3411</li>
-	<li>various videos from KR aggregated into <a href="https://www.youtube.com/playlist?list=PLJKG4G4o2OQTQB7MBrq-2GpVES_oZMVpb" target="_blank">a YouTube playlist</a> by jwu89#5829</li>
-</ul>
 
 <h3>Desired Bosses</h3>
 
@@ -69,28 +63,8 @@
 
 <div id="regions-available">
 	<span class="checkbox-inline">
-		<input name="regions-available" id="server-global" type="checkbox" value="global" checked onchange="filterAvailableTeams();" />
-		<label for="server-global">Global</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-CN" type="checkbox" value="CN" checked onchange="filterAvailableTeams();" />
-		<label for="server-CN">China</label>
-	</span>
-	<span class="checkbox-inline">
 		<input name="regions-available" id="server-JP" type="checkbox" value="JP" checked onchange="filterAvailableTeams();" />
 		<label for="server-JP">Japan</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-KR" type="checkbox" value="KR" checked onchange="filterAvailableTeams();" />
-		<label for="server-KR">Korea</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-TH" type="checkbox" value="TH" checked onchange="filterAvailableTeams();" />
-		<label for="server-TH">Thailand</label>
-	</span>
-	<span class="checkbox-inline">
-		<input name="regions-available" id="server-TW" type="checkbox" value="TW" checked onchange="filterAvailableTeams();" />
-		<label for="server-TW">Taiwan</label>
 	</span>
 </div>
 
@@ -116,10 +90,6 @@
 	<span class="checkbox-inline" title="the team was listed somewhere, but I have no idea what kind of timing is needed for it">
 		<input name="timings-available" id="timing-unspecified" type="checkbox" value="unspecified" onchange="filterAvailableTeams();" />
 		<label for="timing-unspecified">unspecified</label>
-	</span>
-	<span class="checkbox-inline" title="the team has been confirmed to not work at all, but retained in the planner for academic reasons">
-		<input name="timings-available" id="timing-non-functional" type="checkbox" value="non-functional" onchange="filterAvailableTeams();" />
-		<label for="timing-non-functional">non-functional</label>
 	</span>
 </div>
 
@@ -164,8 +134,8 @@
 		<th>boss</th>
 		<th>damage</th>
 		<th>region</th>
-		<th data-sortable="false">team ID</th>
-		<th data-sortable="false">timing</th>
+		<th>timeline</th>
+		<th>timing</th>
 		<th colspan=5 data-sortable="false">&nbsp;</th>
 	</tr>
 	</thead>
@@ -181,8 +151,8 @@
 
 <div id="data-source">
 	<ul>
-		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSvqAwDxSQK7S0eiAStXjPjf37opfbxRsid77RBGHGSEXW8WapQw5cFaEltuo_q_2klXYI1sHYvJ0R1/pub" target="_blank">CB24 Team Reference</a>, maintained by holatuwol#3708</li>
-		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRmbVUGu_YLEJBt258TRNHTqZ24UiW-RH3vg45xN9hEtRP9xTzwak6s30CjoGpiUFFDFkfkdyhoas4f/pub" target="_blank">@kawaiiclubmusic CB24 global auto comps : global auto comps</a>, maintained by kawaiiclubmusic#6076</li>
+		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSoy55DpUUjFB4m6m68PZ1pTNMKkTrWJjDZezWP87W33XyUhNQptGRH8qsAo91ZgHqWK_REdOAJBSMu/pub" target="_blank">Clan Battle 79 Team Reference</a>, maintained by holatuwol</li>
+		<li><a href="https://docs.google.com/spreadsheets/d/1Jw0NXbdzPHsndDz20SZx93IlARP14bZqYTo5mPaeEO0/pub" target="_blank">WorryChefs CB79</a>, maintained by the Holy Church of Jun discord</li>
 	</ul>
 </div>
 
@@ -261,6 +231,37 @@
 
 <button onclick="updateExtraTeams();">load extra teams</button>
 
+</div>
+
+<div id="help" class="tab-pane fade">
+
+<h3>How do I choose a team?</h3>
+
+<p>Decide on the bosses that you want to hit and then decide your comfort level with timings. If you're not sure on which boss you want to hit, just hit the "select all" link for the tier you're interested in.</p>
+
+<p>Click on the damage header to sort by damage. The boss, damage, and region column headers are all clickable. Clicking on one of those column header will sort the rows in the table by that column. Clicking on the column header again will sort those rows in reverse.</p>
+
+<p>Scan the list to find a team that you think you can work with. Trial it, and if you can use that team and you find the damage to be satisfactory, click the "choose" button next to a team to choose it, and the teams that conflict with it will disappear. If you decide the team removed too many good teams, click the "remove" button to unchoose it and look for another team.</p>
+
+<h3>How do I remove units I don't have?</h3>
+
+<p>In the list of available teams, click on a unit, and the planner will assume you need to borrow that unit and gray that unit out in every team it appears in. You can also click the unit again if that was a mistake, or you're thinking of raising that unit to avoid borrowing.</p>
+
+<p>If it's impossible to make any given team due to requiring at least one too many unavailable units, that team will be hidden from the list of available teams, unless you change the behavior in Options. That feature is essentially what makes this a planner.</p>
+
+<p>If you want to visit the planner again on a later date with the same set of units marked as unavailable, the link for that is in the Options tab just above the list of checkboxes that show the Available Units. You can also use this list of checkboxes to bulk update your list of available units.</p>
+
+<h3>How do I find a team with a specific unit?</h3>
+
+<p>Searching for teams that include (or exclude) a specific unit is easiest to explain by examples.</p>
+
+<ul>
+<li><code>smi</code> matches one of the following: "<strong>s.mi</strong>fuyu", "<strong>s.mi</strong>sato", "<strong>s.mi</strong>sogi", "<strong>s.mi</strong>mi"</li>
+<li><code>smim</code> matches the following: "<strong>s.mim</strong>i"</li>
+<li><code>smio</code> matches one of the following: "<strong>s.mi</strong>sat<strong>o</strong>" and "<strong>s.mi</strong>s<strong>o</strong>gi", but also "<strong>s</strong>u<strong>m</strong>mer.<strong>io</strong>", "t<strong>s</strong>u<strong>m</strong>ug<strong>i</strong>.hall<strong>o</strong>ween", etc.</li>
+<li><code>つむぎ</code> matches the following: 「<strong>ツムギ</strong>」</li>
+</ul>
+
 <h3>Acknowledgements</h3>
 
 <dl>
@@ -294,7 +295,7 @@
 <!-- Wanakana -->
 <script src="themes/wanakana@5.3.1.js"></script>
 
-<script>var hasSixStar = new Set(['Pecorine', 'Kokkoro', 'Karyl', 'Rino', 'Lima', 'Io', 'Yukari', 'Maho']);</script>
+<script>var hasSixStar = new Set(['Pecorine', 'Kokkoro', 'Kyaru', 'Rino', 'Lima', 'Io', 'Yukari', 'Maho', 'Yui', 'Rei', 'Hiyori', 'Hatsune', 'Tamaki', 'Mifuyu', 'Shizuru', 'Ayane', 'Saren', 'Akino', 'Ninon', 'Mahiru', 'Suzuna', 'Akari', 'Yori', 'Misogi', 'Mimi', 'Kyouka', 'Nozomi', 'Suzume', 'Kurumi', 'Kaori', 'Aoi', 'Djeeta', 'Nanaka', 'Arisa', 'Monika', 'Misaki', 'Chika', 'S.Pecorine', 'S.Kokkoro', 'S.Kyaru', 'Kuuka', 'Rin', 'Miyako', 'Misato', 'Eriko', 'Shinobu', 'Ilya', 'Tomo', 'Shefi', 'Mitsuki', 'Jun', 'Ayumi', 'Christina', 'Anna', 'Muimi', 'Yuki', 'Tsumugi', 'Matsuri', 'Makoto', 'Kasumi', 'Shiori', 'Inori', 'Kaya', 'NY.Yui', 'NY.Rei', 'NY.Hiyori', 'Ruka']);</script>
 <script src="bosses.js?t=1727095406"></script>
 <script src="units.js?t=1727097534"></script>
 <script src="teams.js?t=1727095406"></script>
