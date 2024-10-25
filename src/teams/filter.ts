@@ -546,11 +546,11 @@ function fireTeamUpdateListeners() : void {
 
 	Array.from(getCheckboxValues('#units-available input[type="checkbox"]:checked')).forEach((it: string) => {
 		var unitId = unitIds[it];
-		document.querySelectorAll('#teams-available tr .unit-info img[data-unit-id="' + unitId + '"].unavailable').forEach(it => it.classList.remove('unavailable'));
+		document.querySelectorAll('.unit-info img[data-unit-id="' + unitId + '"].unavailable').forEach(it => it.classList.remove('unavailable'));
 	});
 
 	Array.from(getCheckboxValues('#units-available input[type="checkbox"]:not(:checked)')).forEach((it: string) => {
 		var unitId = unitIds[it];
-		document.querySelectorAll('#teams-available tr .unit-info img[data-unit-id="' + unitId + '"]:not(.unavailable)').forEach(it => it.classList.add('unavailable'));
+		document.querySelectorAll('.unit-info img[data-unit-id="' + unitId + '"]:not(.unavailable)').forEach(it => it.classList.add('unavailable'));
 	});
 }

@@ -153,14 +153,14 @@ function extractWorryChefsSimpleTeamsFromTab(
 	var rowsPerTeam = parseInt(currentCBId) <= 72 ? 11 : 13;
 
 	for (var i = 6; i < rows.length - 1; i += rowsPerTeam) {
+
+		while ((i < grid.length - 10) && (grid[i][2].textContent || '').trim().length == 0) {
+			i++;
+		}
+
 		var idHolder = rows[i].querySelector('th');
 		var id = idHolder ? idHolder.getAttribute('id') || '' : '';
 		var newTeams = getWorryChefsSimpleTeams(baseURL, gids[tabName], id, tier, grid.slice(i, i + 10));
-
-		if (newTeams.length == 0) {
-			i++;
-			continue;
-		}
 
 		Array.prototype.push.apply(teams, newTeams);
 	}

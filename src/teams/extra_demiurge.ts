@@ -156,6 +156,4 @@ function extractDemiurgeTeamsLocal(
 	demiurgeTeams = teams;
 
 	updateExtraTeamsHelper();
-
-	console.log(teams.map(getTeamAsCSVRow).join('\n'));
 }

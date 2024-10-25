@@ -327,6 +327,4 @@ function extractPCRGTeamsLocal(
 	pcrgTeams = teams;
 
 	updateExtraTeamsHelper();
-
-	console.log(teams.map(getTeamAsCSVRow).join('\n'));
 }

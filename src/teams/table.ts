@@ -220,12 +220,12 @@ function addAvailableTeam(team: ClanBattleTeam) : void {
 	button.onclick = function() {
 		var clonedRow = <HTMLTableRowElement> row.cloneNode(true);
 
-		var links = row.querySelectorAll('a');
-		var clonedLinks = clonedRow.querySelectorAll('a');
+		var clickableElements = <NodeListOf<HTMLElement>> row.querySelectorAll('a, img');
+		var clonedClickableElements = <NodeListOf<HTMLElement>> clonedRow.querySelectorAll('a, img');
 
-		for (var i = 0; i < links.length; i++) {
-			if (!links[i].href) {
-				clonedLinks[i].onclick = HTMLAnchorElement.prototype.click.bind(links[i]);
+		for (var i = 0; i < clickableElements.length; i++) {
+			if (clickableElements[i].onclick) {
+				clonedClickableElements[i].onclick = HTMLElement.prototype.click.bind(clickableElements[i]);
 			}
 		}
 
