@@ -5,6 +5,7 @@ aikurumi.csv
 raw_*.json
 unit_data.csv
 
+/static/cb.html
 /static/equipment
 /static/item
 /static/unit

@@ -15,6 +15,10 @@ s3upload() {
 	rm temp
 }
 
+LATEST_CB=$(grep -F 'var latestCBId' src/teams/globalvars.ts | cut -d"'" -f 2)
+
+cp "static/cb${LATEST_CB}.html" static/cb.html
+
 if [ "" != "${1}" ] && [ -f static/${1} ]; then
 	s3upload static/${1} $(basename ${1})
 elif [ "" != "${1}" ]; then
