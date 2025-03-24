@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Priconne - CB77 Hits Planner</title>
+<title>Priconne - CB83 Hits Planner</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="icon" href="favicon.png" />
@@ -19,12 +19,12 @@
 <body>
 <div class="container" role="main">
 
-<h1 contenteditable spellcheck="false">CB77 Hits Planner for Princess Connect</h1>
+<h1 contenteditable spellcheck="false">CB83 Hits Planner for Princess Connect</h1>
 
-<div id="clan-battle-dates" data-start-time="2024-07-25T20:00:00.000Z" data-end-time="2024-07-30T14:59:59.999Z">
+<div id="clan-battle-dates" data-start-time="2025-01-25T20:00:00.000Z" data-end-time="2025-01-30T14:59:59.999Z">
 </div>
 
-<div id="planner-notice" data-cb-id="77">
+<div id="planner-notice" data-cb-id="83">
 </div>
 
 <ul class="nav nav-tabs">
@@ -34,6 +34,9 @@
   <li class="nav-item">
     <a href="#options" data-toggle="tab">Options</a>
   </li>
+  <li class="nav-item">
+    <a href="#help" data-toggle="tab">Help</a>
+  </li>
 </ul>
 
 <div class="tab-content">
@@ -42,12 +45,12 @@
 
 <h3>Explanation</h3>
 
-<p>This is a database of timelines for Clan Battle 77 (<a href="https://priconne_redive.rwiki.jp/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/077_07%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
+<p>This is a database of timelines for Clan Battle 83 (<a href="https://priconne_redive.rwiki.jp/%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%90%E3%83%88%E3%83%AB/083_01%E6%9C%88" target="_blank">JP wiki</a>), augmented to allow you to (more easily?) select three non-conflicting teams. Each team is annotated with the boss, the expected damage, and a team ID that lets you know where you can find additional information.</p>
 
 <div id="team-prefixes">
 <ul>
 	<li><strong>aikurumi</strong>: found in the <a href="https://aikurumi.cn/gvg;serverType=jp" target="_blank">aikurumi</a> tool posted to maincord</li>
-	<li><strong>WorryChefs</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRiaUCsrq-voh5eT21eGjBrIYwjhhPOQgb2duDW2fV2xAYdBVHs3pmZPdoPOPqlwXldzmgyjVxF6aGL/pubhtml" target="_blank">WorryChefs CB77</a> sheet maintained by the Holy Church of Jun discord</li>
+	<li><strong>WorryChefs</strong>: found in the <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTq4fkN2KmMUJK4XFpFCs0M83fjdA0vRVs0R4PhHpi-OZj7bcejQ5_-I-1KTbnPkuNDsiK63R0HJV3i/pubhtml" target="_blank">WorryChefs CB83</a> sheet maintained by the Holy Church of Jun discord</li>
 </ul>
 </div>
 
@@ -148,8 +151,8 @@
 
 <div id="data-source">
 	<ul>
-		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRiF_M8qu0U592Eu6Wm9SMA0uFetcSc_tB75V9UaSyAoNahCNs1mfsHhgH65BiaIiwk5yA8qftvn7Ll/pub" target="_blank">Clan Battle 77 Team Reference</a>, maintained by holatuwol</li>
-		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRiaUCsrq-voh5eT21eGjBrIYwjhhPOQgb2duDW2fV2xAYdBVHs3pmZPdoPOPqlwXldzmgyjVxF6aGL/pub" target="_blank">WorryChefs CB77</a>, maintained by the Holy Church of Jun discord</li>
+		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTN4SXzsUlPo28AhCbD-qzY22b1YdjRUfUevrnki244hcGDOrCDnqxuRhQIouIwQ7o0-U9rMd6v0vly/pub" target="_blank">Clan Battle 83 Team Reference</a>, maintained by holatuwol</li>
+		<li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTq4fkN2KmMUJK4XFpFCs0M83fjdA0vRVs0R4PhHpi-OZj7bcejQ5_-I-1KTbnPkuNDsiK63R0HJV3i/pub" target="_blank">WorryChefs CB83</a>, maintained by the Holy Church of Jun discord</li>
 	</ul>
 </div>
 
@@ -227,6 +230,46 @@
 <p style="text-align: right"><span id="default-teams-count">0</span> default team<span id="default-teams-plural">s</span>, <span id="extra-teams-count">0</span> extra team<span id="extra-teams-plural">s</span> loaded</p>
 
 <button onclick="updateExtraTeams();">load extra teams</button>
+
+</div>
+
+<div id="help" class="tab-pane fade">
+
+<h3>How do I choose a team?</h3>
+
+<p>Decide on the bosses that you want to hit and then decide your comfort level with timings. If you're not sure on which boss you want to hit, just hit the "select all" link for the tier you're interested in.</p>
+
+<p>Click on the damage header to sort by damage. The boss, damage, and region column headers are all clickable. Clicking on one of those column header will sort the rows in the table by that column. Clicking on the column header again will sort those rows in reverse.</p>
+
+<p>Scan the list to find a team that you think you can work with. Trial it, and if you can use that team and you find the damage to be satisfactory, click the "choose" button next to a team to choose it, and the teams that conflict with it will disappear. If you decide the team removed too many good teams, click the "remove" button to unchoose it and look for another team.</p>
+
+<h3>How do I remove units I don't have?</h3>
+
+<p>In the list of available teams, click on a unit, and the planner will assume you need to borrow that unit and gray that unit out in every team it appears in. You can also click the unit again if that was a mistake, or you're thinking of raising that unit to avoid borrowing.</p>
+
+<p>If it's impossible to make any given team due to requiring at least one too many unavailable units, that team will be hidden from the list of available teams, unless you change the behavior in Options. That feature is essentially what makes this a planner.</p>
+
+<p>If you want to visit the planner again on a later date with the same set of units marked as unavailable, the link for that is in the Options tab just above the list of checkboxes that show the Available Units. You can also use this list of checkboxes to bulk update your list of available units.</p>
+
+<h3>How do I find a team with a specific unit?</h3>
+
+<p>Searching for teams that include (or exclude) a specific unit is easiest to explain by examples.</p>
+
+<ul>
+<li><code>smi</code> matches one of the following: "<strong>s.mi</strong>fuyu", "<strong>s.mi</strong>sato", "<strong>s.mi</strong>sogi", "<strong>s.mi</strong>mi"</li>
+<li><code>smim</code> matches the following: "<strong>s.mim</strong>i"</li>
+<li><code>smio</code> matches one of the following: "<strong>s.mi</strong>sat<strong>o</strong>" and "<strong>s.mi</strong>s<strong>o</strong>gi", but also "<strong>s</strong>u<strong>m</strong>mer.<strong>io</strong>", "t<strong>s</strong>u<strong>m</strong>ug<strong>i</strong>.hall<strong>o</strong>ween", etc.</li>
+<li><code>つむぎ</code> matches the following: 「<strong>ツムギ</strong>」</li>
+</ul>
+
+<h3>Acknowledgements</h3>
+
+<dl>
+	<dt>Maintained by:</dt>
+	<dd>holatuwol#3708</dd>
+	<dt>Images taken from:</dt>
+	<dd><a href="https://pricalc.ooo/units">PriCalc Unit Viewer</a> and <a href="https://redive.estertion.win/">https://redive.estertion.win/</a></dt>
+</dl>
 
 </div>
 

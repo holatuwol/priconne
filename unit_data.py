@@ -4,9 +4,12 @@ import pandas as pd
 import sys
 
 if len(sys.argv) > 1 and sys.argv[1] == 'pull':
+	print('Updating unit_data.csv')
 	df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vQNZv9nmkVrGAaih2c4NyYfSiwmB3CC5mmicG_NOvb1kuXrdVUyCmW1q1DWIcCqXgtwPlYK_inNO3VV/pub?output=csv')
 
 	df.to_csv('unit_data.csv', index=False)
+else:
+	print('Using existing unit_data.csv')
 
 df = pd.read_csv('unit_data.csv', dtype={'id': 'str', 'range': 'str', 'en_long': 'str', 'ja_long': 'str', 'en_alias': 'str'})
 
