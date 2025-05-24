@@ -105,6 +105,15 @@ function expandGoogleSheetURLs(
 	var xhr = new XMLHttpRequest();
 
 	xhr.onload = function() {
+		if (this.readyState != XMLHttpRequest.DONE) {
+			return;
+		}
+
+		if (this.status != 200) {
+			setTimeout(expandGoogleSheetURLs.bind(null, href, gids, xhrCallback, gidsCallback), 500);
+			return;
+		}
+
 		var container = document.implementation.createHTMLDocument().documentElement;
 		container.innerHTML = xhr.responseText;
 
@@ -246,26 +255,26 @@ function getGoogleSheetsGrid(rows : HTMLTableRowElement[]) : HTMLTableCellElemen
 // https://stackoverflow.com/a/58181757
 
 function csv2arr(str : string) : string[][] {
-    let line = ["",];
-    const ret = [line,];
-    let quote = false;
+	let line = ["",];
+	const ret = [line,];
+	let quote = false;
 
-    for (let i = 0; i < str.length; i++) {
-        const cur = str[i];
-        const next = str[i + 1];
+	for (let i = 0; i < str.length; i++) {
+		const cur = str[i];
+		const next = str[i + 1];
 
-        if (!quote) {
-            const cellIsEmpty = line[line.length - 1].length === 0;
-            if (cur === '"' && cellIsEmpty) quote = true;
-            else if (cur === ",") line.push("");
-            else if (cur === "\r" && next === "\n") { line = ["",]; ret.push(line); i++; }
-            else if (cur === "\n" || cur === "\r") { line = ["",]; ret.push(line); }
-            else line[line.length - 1] += cur;
-        } else {
-            if (cur === '"' && next === '"') { line[line.length - 1] += cur; i++; }
-            else if (cur === '"') quote = false;
-            else line[line.length - 1] += cur;
-        }
-    }
-    return ret;
+		if (!quote) {
+			const cellIsEmpty = line[line.length - 1].length === 0;
+			if (cur === '"' && cellIsEmpty) quote = true;
+			else if (cur === ",") line.push("");
+			else if (cur === "\r" && next === "\n") { line = ["",]; ret.push(line); i++; }
+			else if (cur === "\n" || cur === "\r") { line = ["",]; ret.push(line); }
+			else line[line.length - 1] += cur;
+		} else {
+			if (cur === '"' && next === '"') { line[line.length - 1] += cur; i++; }
+			else if (cur === '"') quote = false;
+			else line[line.length - 1] += cur;
+		}
+	}
+	return ret;
 };

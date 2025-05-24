@@ -4,11 +4,11 @@ s3upload() {
 	gzip -c ${1} > temp
 
 	if [[ ${2} == *.html ]]; then
-		aws s3 --profile administrator cp temp "s3://holatuwol/priconne/${2}" \
+		aws s3 cp temp "s3://holatuwol/priconne/${2}" \
 			--acl public-read --metadata-directive REPLACE --content-encoding gzip \
 			--content-type 'text/html; charset=utf-8'
 	else
-		aws s3 --profile administrator cp temp "s3://holatuwol/priconne/${2}" \
+		aws s3 cp temp "s3://holatuwol/priconne/${2}" \
 			--acl public-read --metadata-directive REPLACE --content-encoding gzip
 	fi
 
@@ -59,7 +59,7 @@ elif [ "" != "${1}" ]; then
 fi
 
 for folder in themes unit; do
-	aws --profile=administrator s3 ls s3://holatuwol/priconne/${folder}/ > s3_bucket.txt
+	aws s3 ls s3://holatuwol/priconne/${folder}/ > s3_bucket.txt
 
 	for file in static/${folder}/*; do
 		if [ "" == "$(grep $(basename ${file}) s3_bucket.txt)" ]; then
